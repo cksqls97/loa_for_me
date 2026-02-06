@@ -30,9 +30,8 @@ export default function MaterialCalculator() {
   
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
-  // Load from local storage or API
+  // Load from local storage
   useEffect(() => {
-    // 1. Try LocalStorage first for instant load
     const saved = localStorage.getItem('matCalcData');
     if (saved) {
       try {
@@ -44,41 +43,12 @@ export default function MaterialCalculator() {
         if (data.activeTab) setActiveTab(data.activeTab);
       } catch (e) { console.error(e); }
     }
-
-    // 2. Then fetch from API (background sync)
-    const userId = localStorage.getItem('loa_user_id') || crypto.randomUUID();
-    localStorage.setItem('loa_user_id', userId);
-
-    fetch(`http://localhost:5000/api/user-data/${userId}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data) {
-                setTargetSlots(data.targetSlots);
-                setOwnedRare(data.ownedRare);
-                setOwnedUncommon(data.ownedUncommon);
-                setOwnedCommon(data.ownedCommon);
-                // Note: Server currently doesn't store activeTab, but we could add it if needed.
-                // For now, let's keep it local or default to superior if not simulated.
-            }
-        })
-        .catch(err => console.error("API Load Error", err));
   }, []);
 
-  // Save to local storage and API
+  // Save to local storage
   useEffect(() => {
     const data = { targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab };
     localStorage.setItem('matCalcData', JSON.stringify(data));
-
-    const userId = localStorage.getItem('loa_user_id');
-    if (userId) {
-        fetch('http://localhost:5000/api/user-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            // Note: We are sending extra field 'activeTab' which might be ignored by server unless schema updated, 
-            // but it's fine for now as we primarily sync material counts.
-            body: JSON.stringify({ userId, targetSlots, ownedRare, ownedUncommon, ownedCommon }) 
-        }).catch(err => console.error("API Save Error", err));
-    }
   }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab]);
 
   const results: Results = useMemo(() => {
