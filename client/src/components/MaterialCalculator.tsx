@@ -106,6 +106,15 @@ export default function MaterialCalculator() {
   const fetchPrices = useCallback(async (currentKey: string) => {
     if (!currentKey) return;
     
+    // Sanitize and Validate Key
+    const cleanKey = currentKey.trim();
+    if (/[^\x00-\x7F]/.test(cleanKey)) {
+        addLog("[오류] API Key에 허용되지 않는 문자(한글/특수문자)가 포함되어 있습니다.");
+        addLog("API Key는 영문, 숫자, 기본 기호만 가능합니다.");
+        setIsLoading(false);
+        return;
+    }
+
     setIsLoading(true);
     addLog("시세 자동 조회 시작...");
     
@@ -339,19 +348,19 @@ export default function MaterialCalculator() {
 
   // Animation Classes
   // Fixed: Use origin-center consistently to prevent animation artifacts.
-  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       isConfigured 
       ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-[55%] -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       isConfigured 
       ? 'top-6 left-[calc(100%-21.5rem)] -translate-x-0 -translate-y-0 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-[55%] translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125'
   }`;
 
-  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
+  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       isConfigured
       ? 'top-6 scale-75'
       : 'top-[20%] scale-100'
