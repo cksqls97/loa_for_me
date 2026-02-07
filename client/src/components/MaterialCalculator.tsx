@@ -338,16 +338,16 @@ export default function MaterialCalculator() {
   if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
   // Animation Classes
-  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-in-out pointer-events-none ${
+  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
       isConfigured 
-      ? 'top-6 left-6 scale-100' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[140%] md:-translate-y-1/2 md:-translate-x-[120%] scale-110'
+      ? 'top-6 left-6 scale-100 origin-top-left' 
+      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[160%] md:-translate-y-1/2 md:-translate-x-[110%] scale-110 md:scale-125 origin-center'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-in-out pointer-events-none ${
+  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
       isConfigured 
-      ? 'top-6 right-6 scale-100' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[40%] md:-translate-y-1/2 md:translate-x-[20%] scale-110'
+      ? 'top-6 right-6 scale-100 origin-top-right' 
+      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[60%] md:-translate-y-1/2 md:translate-x-[10%] scale-110 md:scale-125 origin-center'
   }`;
 
   return (
