@@ -588,32 +588,41 @@ export default function MaterialCalculator() {
               </h2>
               
               {history.length > 0 ? (
-                <div className="space-y-3">
-                    {history.map((entry) => (
-                      <div key={entry.id} className="bg-black/20 border border-white/5 rounded-xl p-4 flex items-center justify-between hover:bg-black/30 transition-colors">
-                          <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                  <span className={`text-[10px] px-2 py-0.5 rounded text-black font-bold ${entry.type === 'abidos' ? 'bg-blue-400' : 'bg-indigo-400'}`}>
-                                      {entry.type === 'abidos' ? '아비도스' : '상급 아비도스'}
-                                  </span>
-                                  <span className="text-xs text-slate-500 font-mono">
-                                      {new Date(entry.timestamp).toLocaleString()}
-                                  </span>
-                              </div>
-                              <div className="text-sm text-slate-300">
-                                  총 비용: <span className="text-white font-bold">{Math.floor(entry.totalCost).toLocaleString()} G</span>
-                                  <span className="mx-2 text-slate-600">|</span>
-                                  예상 결과: <span className="text-white font-bold">{Math.floor(entry.expectedOutput).toLocaleString()} 개</span>
-                              </div>
-                          </div>
-                          <div className="text-right">
-                              <div className="text-[10px] text-slate-500 font-bold mb-1">개당 제작 가치</div>
-                              <div className="text-xl font-black text-blue-400">
-                                  {Math.floor(entry.unitCost).toLocaleString()} <span className="text-xs font-bold text-slate-400">G</span>
-                              </div>
-                          </div>
-                      </div>
-                    ))}
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left border-collapse border border-slate-600">
+                        <thead className="bg-[#2d3748] text-slate-300 font-bold">
+                            <tr>
+                                <th className="border border-slate-600 px-3 py-2">시간</th>
+                                <th className="border border-slate-600 px-3 py-2">종류</th>
+                                <th className="border border-slate-600 px-3 py-2 text-right">단가</th>
+                                <th className="border border-slate-600 px-3 py-2 text-right">총 비용</th>
+                                <th className="border border-slate-600 px-3 py-2 text-right">예상 결과</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {history.map((entry) => (
+                                <tr key={entry.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="border border-slate-600 px-3 py-2 text-slate-400 font-mono text-xs">
+                                        {new Date(entry.timestamp).toLocaleString()}
+                                    </td>
+                                    <td className="border border-slate-600 px-3 py-2">
+                                        <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${entry.type === 'abidos' ? 'text-blue-400 bg-blue-400/10' : 'text-indigo-400 bg-indigo-400/10'}`}>
+                                            {entry.type === 'abidos' ? '아비도스' : '상급 아비도스'}
+                                        </span>
+                                    </td>
+                                    <td className="border border-slate-600 px-3 py-2 text-right font-bold text-blue-400">
+                                        {Math.floor(entry.unitCost).toLocaleString()} G
+                                    </td>
+                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300">
+                                        {Math.floor(entry.totalCost).toLocaleString()} G
+                                    </td>
+                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300">
+                                        {Math.floor(entry.expectedOutput).toLocaleString()} 개
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
               ) : (
                 <div className="text-center py-20 text-slate-500">
