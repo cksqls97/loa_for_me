@@ -8,6 +8,7 @@ interface APISettingsProps {
   logs: string[];
   className?: string;
   forceExpanded?: boolean;
+  apiError?: string | null;
 }
 
 export default function APISettings({
@@ -17,7 +18,8 @@ export default function APISettings({
   isLoading,
   logs,
   className = "fixed top-6 right-6 z-50 flex flex-col items-end pointer-events-none",
-  forceExpanded = false
+  forceExpanded = false,
+  apiError
 }: APISettingsProps) {
   const [showSettings, setShowSettings] = useState(false);
   const isOpen = showSettings || forceExpanded;
@@ -33,7 +35,7 @@ export default function APISettings({
       </button>
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-right ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
+          <div className={`pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
               <div className="flex flex-col gap-4">
                   <div>
                       <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Lost Ark API Key</label>
@@ -42,8 +44,9 @@ export default function APISettings({
                           value={apiKey}
                           onChange={(e) => setApiKey(e.target.value)}
                           placeholder="API Key 입력"
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none transition-colors"
+                          className={`w-full bg-black/40 border rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none transition-colors ${apiError ? 'border-red-500 animate-pulse' : 'border-white/10'}`}
                       />
+                      {apiError && <p className="text-[10px] text-red-400 font-bold mt-2 text-center animate-in fade-in slide-in-from-top-1">{apiError}</p>}
                   </div>
                   
                   <button 

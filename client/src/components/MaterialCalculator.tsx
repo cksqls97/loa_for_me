@@ -54,6 +54,7 @@ export default function MaterialCalculator() {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [apiError, setApiError] = useState<string | null>(null);
   
   // Bonus Stats
   const [costReduction, setCostReduction] = useState<number | null>(null);
@@ -106,11 +107,15 @@ export default function MaterialCalculator() {
   const fetchPrices = useCallback(async (currentKey: string) => {
     if (!currentKey) return;
     
+    setApiError(null);
+    setIsPriceLoaded(false);
+
     // Sanitize and Validate Key
     const cleanKey = currentKey.trim();
     if (/[^\x00-\x7F]/.test(cleanKey)) {
-        addLog("[오류] API Key에 허용되지 않는 문자(한글/특수문자)가 포함되어 있습니다.");
-        addLog("API Key는 영문, 숫자, 기본 기호만 가능합니다.");
+        const errorMsg = "API Key에 허용되지 않는 문자(한글/특수문자)가 포함되어 있습니다.";
+        addLog(`[오류] ${errorMsg}`);
+        setApiError(errorMsg);
         setIsLoading(false);
         return;
     }
@@ -134,7 +139,7 @@ export default function MaterialCalculator() {
       for (const item of itemsToCheck) {
            addLog(`[요청] ${item.name} (ID: ${item.id}, Cat: ${item.categoryCode})`); 
           try {
-              const result = await LostArkService.getMarketPrice(currentKey, item.id, item.name, item.categoryCode);
+              const result = await LostArkService.getMarketPrice(cleanKey, item.id, item.name, item.categoryCode);
               if (result !== null) {
                    addLog(`[수신] ${item.name}: ${result.price}G / unit: ${result.bundleCount}`);
                   newPrices[item.key] = result.price;
@@ -144,6 +149,9 @@ export default function MaterialCalculator() {
               }
           } catch (e: any) {
               addLog(`[에러] ${item.name}: ${e.message}`);
+              if (e.message.includes('401') || e.message.includes('403')) {
+                  throw new Error("API Key 인증 실패 (401/403)");
+              }
           }
       }
 
@@ -154,7 +162,9 @@ export default function MaterialCalculator() {
 
     } catch (error: any) {
       console.error(error);
-      addLog(`전체 에러: ${error.message}`);
+      const msg = error.message || "시세 조회 중 오류 발생";
+      addLog(`전체 에러: ${msg}`);
+      setApiError(msg);
     } finally {
       setIsLoading(false);
     }
@@ -341,8 +351,8 @@ export default function MaterialCalculator() {
     }
   };
 
-  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null;
-  const isFullyReady = isConfigured && isPriceLoaded;
+  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && !apiError && isPriceLoaded;
+  const isFullyReady = isConfigured;
 
   if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
@@ -402,6 +412,7 @@ export default function MaterialCalculator() {
         logs={logs}
         className={apiClass}
         forceExpanded={!isConfigured}
+        apiError={apiError}
       />
 
       {/* Main Content Layer */}
