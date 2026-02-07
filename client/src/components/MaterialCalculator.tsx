@@ -29,6 +29,15 @@ interface Results {
   common: CalculationResult;
 }
 
+interface CraftingEntry {
+  id: string;
+  timestamp: number;
+  type: MaterialType;
+  unitCost: number;
+  totalCost: number;
+  expectedOutput: number;
+}
+
 export default function MaterialCalculator() {
   const [activeTab, setActiveTab] = useState<MaterialType>('superior');
   const [targetSlots, setTargetSlots] = useState<number>(1);
@@ -65,6 +74,10 @@ export default function MaterialCalculator() {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isPriceLoaded, setIsPriceLoaded] = useState<boolean>(false);
   const [enableTransition, setEnableTransition] = useState<boolean>(false);
+  
+  // History State
+  const [view, setView] = useState<'calculator' | 'history'>('calculator');
+  const [history, setHistory] = useState<CraftingEntry[]>([]);
 
   // Load from local storage
   useEffect(() => {
@@ -80,6 +93,7 @@ export default function MaterialCalculator() {
         if (data.apiKey) setApiKey(data.apiKey);
         if (typeof data.costReduction === 'number') setCostReduction(data.costReduction);
         if (typeof data.greatSuccessChance === 'number') setGreatSuccessChance(data.greatSuccessChance);
+        if (data.history) setHistory(data.history);
       } catch (e) { console.error(e); }
     }
     setIsInitialized(true);
@@ -99,10 +113,14 @@ export default function MaterialCalculator() {
         activeTab, 
         apiKey,
         costReduction,
-        greatSuccessChance 
+        activeTab, 
+        apiKey,
+        costReduction,
+        greatSuccessChance,
+        history
     };
     localStorage.setItem('matCalcData', JSON.stringify(data));
-  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, apiKey, costReduction, greatSuccessChance]);
+  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, apiKey, costReduction, greatSuccessChance, history]);
 
   const addLog = (msg: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -288,7 +306,64 @@ export default function MaterialCalculator() {
           usageProfit,
           outputQty: totalExpectedOutput
       };
+      return {
+          grossRevenue,
+          sellingRevenue,
+          matCost: totalMaterialCost,
+          goldCost: totalGoldCost,
+          totalCost: totalCost,
+          sellingProfit,
+          usageProfit,
+          outputQty: totalExpectedOutput
+      };
   }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance]);
+
+  const saveHistory = useCallback(() => {
+    // Calculate Unit Cost based on Standard Recipe (ignoring owned counts)
+    // 1. Current Price specific to activeTab
+    const currentRecipe = COSTS[activeTab];
+    const slots = targetSlots;
+    if (slots <= 0) return;
+
+    // Material Cost
+    let matCost = 0;
+    (['rare', 'uncommon', 'common'] as const).forEach(key => {
+       const needed = currentRecipe[key] * slots;
+       const price = prices[key];
+       const bundle = bundleCounts[key] || 1;
+       const unitPrice = price / bundle;
+       matCost += needed * unitPrice;
+    });
+
+    // Gold Cost
+    const baseGold = currentRecipe.gold * slots;
+    const reductionMult = 1 - ((costReduction || 0) / 100);
+    const goldCost = baseGold * reductionMult;
+
+    const totalCost = matCost + goldCost;
+
+    // Expected Output
+    // Output per slot = 10 * (1 + prob)
+    const baseProb = 0.05;
+    const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100));
+    const outputPerSlot = 10 * (1 + finalProb);
+    const expectedOutput = outputPerSlot * slots;
+
+    // Unit Cost
+    const unitCost = totalCost / expectedOutput;
+
+    const newEntry: CraftingEntry = {
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      type: activeTab,
+      unitCost,
+      totalCost,
+      expectedOutput
+    };
+
+    setHistory(prev => [newEntry, ...prev]);
+    addLog(`[기록] 제작 완료 - 단가: ${Math.floor(unitCost)}G`);
+  }, [activeTab, targetSlots, prices, bundleCounts, costReduction, greatSuccessChance]);
 
   const handleUpdate = () => {
      setOwnedRare(prev => {
@@ -303,6 +378,11 @@ export default function MaterialCalculator() {
         const data = results.common;
         return (prev + (data.buyCount * data.bundleSize)) - data.needed;
      });
+     setOwnedCommon(prev => {
+        const data = results.common;
+        return (prev + (data.buyCount * data.bundleSize)) - data.needed;
+     });
+     saveHistory();
   };
 
   const openPip = async () => {
@@ -425,8 +505,11 @@ export default function MaterialCalculator() {
       />
 
       {/* Main Content Layer */}
-      {/* Added pt-24 to separate from fixed title */}
-      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 pt-24 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
+      {/* Added pt-32 to separate from fixed title and toggle */}
+      <div className={`max-w-5xl w-full relative transition-opacity duration-1000 pt-32 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
+        
+        {view === 'calculator' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             
@@ -484,7 +567,59 @@ export default function MaterialCalculator() {
             activeTab={activeTab}
             results={results}
             prices={prices}
+        </section>
+
+        <PurchaseRequirements 
+            activeTab={activeTab}
+            results={results}
+            prices={prices}
         />
+        </div>
+        ) : (
+          <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl min-h-[500px]">
+              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <span className="w-1 h-6 bg-blue-500 rounded-full"/>
+                  제작 기록
+                  <span className="text-xs font-normal text-slate-500 ml-2">최신순 정렬</span>
+              </h2>
+              
+              {history.length > 0 ? (
+                <div className="space-y-3">
+                    {history.map((entry) => (
+                      <div key={entry.id} className="bg-black/20 border border-white/5 rounded-xl p-4 flex items-center justify-between hover:bg-black/30 transition-colors">
+                          <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                  <span className={`text-[10px] px-2 py-0.5 rounded text-black font-bold ${entry.type === 'abidos' ? 'bg-blue-400' : 'bg-indigo-400'}`}>
+                                      {entry.type === 'abidos' ? '아비도스' : '상급 아비도스'}
+                                  </span>
+                                  <span className="text-xs text-slate-500 font-mono">
+                                      {new Date(entry.timestamp).toLocaleString()}
+                                  </span>
+                              </div>
+                              <div className="text-sm text-slate-300">
+                                  총 비용: <span className="text-white font-bold">{Math.floor(entry.totalCost).toLocaleString()} G</span>
+                                  <span className="mx-2 text-slate-600">|</span>
+                                  예상 결과: <span className="text-white font-bold">{Math.floor(entry.expectedOutput).toLocaleString()} 개</span>
+                              </div>
+                          </div>
+                          <div className="text-right">
+                              <div className="text-[10px] text-slate-500 font-bold mb-1">개당 제작 가치</div>
+                              <div className="text-xl font-black text-blue-400">
+                                  {Math.floor(entry.unitCost).toLocaleString()} <span className="text-xs font-bold text-slate-400">G</span>
+                              </div>
+                          </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center py-20 text-slate-500">
+                    <p className="mb-2 text-4xl">📝</p>
+                    <p>아직 제작 기록이 없습니다.</p>
+                    <p className="text-sm mt-2">화면 공유(오버레이) 모드에서 '제작 완료'를 눌러 기록해보세요.</p>
+                </div>
+              )}
+          </section>
+        )}
       </div>
 
       {pipWindow && createPortal(
