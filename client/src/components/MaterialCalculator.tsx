@@ -338,30 +338,41 @@ export default function MaterialCalculator() {
   if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
   // Animation Classes
-  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
+  // Fixed: Use origin-center consistently to prevent animation artifacts.
+  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
-      ? 'top-6 left-6 scale-100 origin-top-left' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125 origin-center'
+      ? 'top-24 left-6 scale-100' 
+      : 'top-1/2 left-1/2 -translate-x-[55%] -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
+  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
-      ? 'top-6 right-6 scale-100 origin-top-right' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125 origin-center'
+      ? 'top-24 right-6 scale-100' 
+      : 'top-1/2 left-1/2 -translate-x-[55%] translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125'
+  }`;
+
+  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
+      isConfigured
+      ? 'top-6 scale-75'
+      : 'top-[20%] scale-100'
   }`;
 
   return (
     <>
-      {/* Dark Backdrop for Setup Mode */}
       <div className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 transition-opacity duration-1000 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="absolute top-[20%] text-center space-y-3 px-4">
-              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl">
-                  <span className="text-blue-500">Lost Ark</span> Material Calculator
-              </h1>
-              <p className="text-slate-400 text-sm md:text-base font-medium">
+          <div className="absolute top-[20%] text-center space-y-3 px-4 pt-16">
+              {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
+              <p className="text-slate-400 text-sm md:text-base font-medium transition-opacity duration-500 delay-200">
                   정확한 이득 계산을 위해 <span className="text-white font-bold">API Key</span>와 <span className="text-white font-bold">제작 보너스</span>를 설정해주세요.
               </p>
           </div>
+      </div>
+
+      {/* Animated Title */}
+      <div className={titleClass}>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl flex items-center gap-2">
+                <span className="text-blue-500">Lost Ark</span> Material Calculator
+            </h1>
       </div>
 
       {/* Settings Layer */}
@@ -384,16 +395,14 @@ export default function MaterialCalculator() {
         forceExpanded={!isConfigured}
       />
 
-      {/* Main Content Layer - only visible when ready */}
-      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
+      {/* Main Content Layer */}
+      {/* Added pt-24 to separate from fixed title */}
+      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 pt-24 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             
             <header className="mb-6 relative z-10">
-                <h1 className="text-2xl font-black tracking-tighter text-white mb-5 flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-blue-500 rounded-full inline-block"></span>
-                    재료 계산기
-                </h1>
+                {/* Title Removed */}
                 
                 {/* Tabs */}
                 <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner">
