@@ -398,10 +398,7 @@ export default function MaterialCalculator() {
         const data = results.common;
         return (prev + (data.buyCount * data.bundleSize)) - data.needed;
      });
-     setOwnedCommon(prev => {
-        const data = results.common;
-        return (prev + (data.buyCount * data.bundleSize)) - data.needed;
-     });
+
      saveHistory();
   };
 
