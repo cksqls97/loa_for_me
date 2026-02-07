@@ -59,7 +59,7 @@ export class LostArkService {
       }
        return null;
     } catch (error) {
-      console.error("Failed to fetch market price:", error);
+      // console.error("Failed to fetch market price:", error);
       throw error;
     }
   }

@@ -167,7 +167,7 @@ export default function MaterialCalculator() {
       addLog("시세 업데이트 완료");
 
     } catch (error: any) {
-      console.error(error);
+      // console.error(error);
       const msg = error instanceof Error ? error.message : String(error) || "시세 조회 중 오류 발생";
       addLog(`전체 에러: ${msg}`);
       setApiError(msg);
