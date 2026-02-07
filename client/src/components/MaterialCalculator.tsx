@@ -378,7 +378,10 @@ export default function MaterialCalculator() {
 
   return (
     <>
-      <div className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 transition-opacity duration-1000 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0' : 'opacity-100'}`}>
+      <div 
+          className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0 invisible' : 'opacity-100'}`}
+          style={{ transition: `opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear ${isConfigured ? '1s' : '0s'}` }}
+      >
           <div className="absolute top-[20%] text-center space-y-3 px-4 pt-16">
               {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
               <p className="text-slate-400 text-sm md:text-base font-medium transition-opacity duration-500 delay-200">
