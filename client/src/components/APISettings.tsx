@@ -6,6 +6,8 @@ interface APISettingsProps {
   fetchPrices: (key: string) => void;
   isLoading: boolean;
   logs: string[];
+  className?: string;
+  forceExpanded?: boolean;
 }
 
 export default function APISettings({
@@ -13,20 +15,24 @@ export default function APISettings({
   setApiKey,
   fetchPrices,
   isLoading,
-  logs
+  logs,
+  className = "fixed top-6 right-6 z-50 flex flex-col items-end pointer-events-none",
+  forceExpanded = false
 }: APISettingsProps) {
   const [showSettings, setShowSettings] = useState(false);
+  const isOpen = showSettings || forceExpanded;
 
   return (
-    <div className="fixed top-6 right-6 z-50 flex flex-col items-end pointer-events-none">
+    <div className={className}>
       <button 
           onClick={() => setShowSettings(!showSettings)}
-          className="pointer-events-auto px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white/80 hover:text-white border border-white/10 rounded-lg text-sm font-bold transition-all shadow-lg"
+          disabled={forceExpanded}
+          className={`pointer-events-auto px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white/80 hover:text-white border border-white/10 rounded-lg text-sm font-bold transition-all shadow-lg ${forceExpanded ? 'opacity-50 cursor-default' : ''}`}
       >
-          {showSettings ? '설정 닫기' : 'API 설정'}
+          {isOpen ? (forceExpanded ? '필수 설정' : '설정 닫기') : 'API 설정'}
       </button>
       
-      {showSettings && (
+      {isOpen && (
           <div className="pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-right">
               <div className="flex flex-col gap-3">
                   <div>

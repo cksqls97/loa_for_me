@@ -56,8 +56,8 @@ export default function MaterialCalculator() {
   const [logs, setLogs] = useState<string[]>([]);
   
   // Bonus Stats
-  const [costReduction, setCostReduction] = useState<number>(0);
-  const [greatSuccessChance, setGreatSuccessChance] = useState<number>(0);
+  const [costReduction, setCostReduction] = useState<number | null>(null);
+  const [greatSuccessChance, setGreatSuccessChance] = useState<number | null>(null);
 
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
@@ -216,7 +216,7 @@ export default function MaterialCalculator() {
       // 2. Gold Cost
       // Apply reduction: Gold * (1 - reduction/100)
       const baseGold = currentRecipe.gold * slots;
-      const reductionMult = 1 - (costReduction / 100);
+      const reductionMult = 1 - ((costReduction || 0) / 100);
       const totalGoldCost = baseGold * reductionMult;
 
       // 3. Expected Revenue
@@ -226,7 +226,7 @@ export default function MaterialCalculator() {
       // Probability: 5% * (1 + bonus/100)
       
       const baseProb = 0.05;
-      const finalProb = baseProb * (1 + (greatSuccessChance / 100)); // e.g. 0.05 * 1.07 = 0.0535
+      const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100)); // e.g. 0.05 * 1.07 = 0.0535
       // Expected output per slot = 10*(1-p) + 20*p = 10 - 10p + 20p = 10 + 10p = 10 * (1 + p)
       const expectedOutputPerSlot = 10 * (1 + finalProb);
       const totalExpectedOutput = expectedOutputPerSlot * slots;
@@ -327,13 +327,34 @@ export default function MaterialCalculator() {
     }
   };
 
+  const isReady = !!apiKey && costReduction !== null && greatSuccessChance !== null;
+
+  // Animation Classes
+  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-in-out pointer-events-none ${
+      isReady 
+      ? 'top-6 left-6 scale-100' 
+      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[140%] md:-translate-y-1/2 md:-translate-x-[120%] scale-110'
+  }`;
+
+  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-in-out pointer-events-none ${
+      isReady 
+      ? 'top-6 right-6 scale-100' 
+      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[40%] md:-translate-y-1/2 md:translate-x-[20%] scale-110'
+  }`;
+
   return (
     <>
+      {/* Dark Backdrop for Setup Mode */}
+      <div className={`fixed inset-0 bg-[#0f111a]/90 backdrop-blur-sm z-40 transition-opacity duration-1000 pointer-events-none ${isReady ? 'opacity-0' : 'opacity-100'}`} />
+
+      {/* Settings Layer */}
       <BonusSettings 
         costReduction={costReduction}
         setCostReduction={setCostReduction}
         greatSuccessChance={greatSuccessChance}
         setGreatSuccessChance={setGreatSuccessChance}
+        className={bonusClass}
+        forceExpanded={!isReady}
       />
 
       <APISettings 
@@ -342,9 +363,12 @@ export default function MaterialCalculator() {
         fetchPrices={fetchPrices}
         isLoading={isLoading}
         logs={logs}
+        className={apiClass}
+        forceExpanded={!isReady}
       />
 
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
+      {/* Main Content Layer - only visible when ready */}
+      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 ${isReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             
