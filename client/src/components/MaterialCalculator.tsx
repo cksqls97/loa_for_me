@@ -478,9 +478,25 @@ export default function MaterialCalculator() {
 
       {/* Animated Title */}
       <div className={titleClass}>
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl flex items-center gap-2">
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
                 <span className="text-blue-500">Lost Ark</span> Material Calculator
             </h1>
+            
+            {/* View Toggle */}
+            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10 transition-all duration-500 delay-200 ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <button 
+                  onClick={() => setView('calculator')}
+                  className={`px-6 py-1.5 rounded-full text-xs font-bold transition-all ${view === 'calculator' ? 'bg-white text-black shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                >
+                  재료 계산기
+                </button>
+                <button 
+                  onClick={() => setView('history')}
+                  className={`px-6 py-1.5 rounded-full text-xs font-bold transition-all ${view === 'history' ? 'bg-white text-black shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                >
+                  제작 기록
+                </button>
+            </div>
       </div>
 
       {/* Settings Layer */}
