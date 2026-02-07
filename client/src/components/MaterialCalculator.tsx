@@ -342,25 +342,25 @@ export default function MaterialCalculator() {
   const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
       ? 'top-24 left-6 scale-100' 
-      : 'top-1/2 left-1/2 -translate-x-[55%] -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125'
+      : 'top-[20%] md:top-[22%] left-1/2 -translate-x-[55%] md:-translate-x-[115%] scale-110 md:scale-125'
   }`;
 
   const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
       ? 'top-24 right-6 scale-100' 
-      : 'top-1/2 left-1/2 -translate-x-[55%] translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125'
+      : 'top-[50%] md:top-[22%] left-1/2 -translate-x-[55%] md:translate-x-[15%] scale-110 md:scale-125'
   }`;
 
   const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       isConfigured
       ? 'top-6 scale-75'
-      : 'top-[20%] scale-100'
+      : 'top-[8%] md:top-[12%] scale-100'
   }`;
 
   return (
     <>
       <div className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 transition-opacity duration-1000 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="absolute top-[20%] text-center space-y-3 px-4 pt-16">
+          <div className="absolute top-[8%] md:top-[12%] text-center space-y-3 px-4 pt-14 md:pt-16">
               {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
               <p className="text-slate-400 text-sm md:text-base font-medium transition-opacity duration-500 delay-200">
                   정확한 이득 계산을 위해 <span className="text-white font-bold">API Key</span>와 <span className="text-white font-bold">제작 보너스</span>를 설정해주세요.
