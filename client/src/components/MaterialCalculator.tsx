@@ -79,6 +79,7 @@ export default function MaterialCalculator() {
   // History State
   const [view, setView] = useState<'calculator' | 'history'>('calculator');
   const [history, setHistory] = useState<CraftingEntry[]>([]);
+  const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
 
   // Load from local storage
   useEffect(() => {
@@ -352,13 +353,15 @@ export default function MaterialCalculator() {
 
     // Expected Profit
     const fusionKey = activeTab === 'abidos' ? 'fusion' : 'superiorFusion';
-    const outputPrice = prices[fusionKey as keyof typeof prices];
+    const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
     const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
-    const outputUnitPrice = outputPrice / outputBundle;
+    const outputUnitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
     
     // Revenue (Net after 5% tax)
     const totalRevenue = (expectedOutput * outputUnitPrice) * 0.95;
     const expectedProfit = totalRevenue - totalCost;
+
+    addLog(`[디버그] ${fusionKey} 가격: ${outputPrice}, 번들: ${outputBundle}, 개당가격: ${outputUnitPrice}, 예상수익: ${expectedProfit}`);
 
     const newEntry: CraftingEntry = {
       id: crypto.randomUUID(),
@@ -601,11 +604,21 @@ export default function MaterialCalculator() {
           </div>
         ) : (
           <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl min-h-[500px]">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <span className="w-1 h-6 bg-blue-500 rounded-full"/>
-                  제작 기록
-                  <span className="text-xs font-normal text-slate-500 ml-2">최신순 정렬</span>
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-500 rounded-full"/>
+                    제작 기록
+                    <span className="text-xs font-normal text-slate-500 ml-2">최신순 정렬</span>
+                </h2>
+                {history.length > 0 && (
+                    <button 
+                        onClick={() => setIsDeleteMode(!isDeleteMode)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDeleteMode ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                    >
+                        {isDeleteMode ? '편집 완료' : '목록 편집'}
+                    </button>
+                )}
+              </div>
               
               {history.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -618,7 +631,7 @@ export default function MaterialCalculator() {
                                 <th className="border border-slate-600 px-3 py-2 text-right">총 비용</th>
                                 <th className="border border-slate-600 px-3 py-2 text-right">예상 결과</th>
                                 <th className="border border-slate-600 px-3 py-2 text-right">예상 수익</th>
-                                <th className="border border-slate-600 px-3 py-2 text-center w-[50px]">삭제</th>
+                                {isDeleteMode && <th className="border border-slate-600 px-3 py-2 text-center w-[50px] bg-red-900/20 text-red-200">삭제</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -644,15 +657,17 @@ export default function MaterialCalculator() {
                                     <td className={`border border-slate-600 px-3 py-2 text-right font-bold whitespace-nowrap ${entry.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                         {entry.expectedProfit > 0 ? '+' : ''}{Math.floor(entry.expectedProfit || 0).toLocaleString()} G
                                     </td>
-                                    <td className="border border-slate-600 px-3 py-2 text-center">
-                                        <button 
-                                            onClick={() => deleteHistory(entry.id)}
-                                            className="text-slate-500 hover:text-red-400 transition-colors p-1"
-                                            title="삭제"
-                                        >
-                                            ✕
-                                        </button>
-                                    </td>
+                                    {isDeleteMode && (
+                                        <td className="border border-slate-600 px-3 py-2 text-center bg-red-900/10">
+                                            <button 
+                                                onClick={() => deleteHistory(entry.id)}
+                                                className="text-white bg-red-500 hover:bg-red-600 transition-colors w-6 h-6 rounded flex items-center justify-center mx-auto"
+                                                title="삭제"
+                                            >
+                                                ✕
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
@@ -664,7 +679,7 @@ export default function MaterialCalculator() {
                                 <td className={`border border-slate-600 px-3 py-3 text-right text-lg ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                     {totalProfit > 0 ? '+' : ''}{Math.floor(totalProfit).toLocaleString()} G
                                 </td>
-                                <td className="border border-slate-600 bg-[#1a202c]"></td>
+                                {isDeleteMode && <td className="border border-slate-600 bg-[#1a202c]"></td>}
                             </tr>
                         </tfoot>
                     </table>
