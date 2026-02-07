@@ -80,6 +80,10 @@ export default function MaterialCalculator() {
   const [view, setView] = useState<'calculator' | 'history'>('calculator');
   const [history, setHistory] = useState<CraftingEntry[]>([]);
   const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
+  
+  // Sort & Filter State
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [filterType, setFilterType] = useState<'all' | 'abidos' | 'superior'>('all');
 
   // Load from local storage
   useEffect(() => {
@@ -380,10 +384,26 @@ export default function MaterialCalculator() {
   const deleteHistory = (id: string) => {
     setHistory(prev => prev.filter(entry => entry.id !== id));
   };
+
+  const filteredHistory = useMemo(() => {
+    let data = [...history];
+
+    // Filter
+    if (filterType !== 'all') {
+        data = data.filter(entry => entry.type === (filterType === 'superior' ? 'superior' : 'abidos'));
+    }
+
+    // Sort
+    data.sort((a, b) => {
+        return sortOrder === 'newest' ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
+    });
+
+    return data;
+  }, [history, filterType, sortOrder]);
    
   const totalProfit = useMemo(() => {
-    return history.reduce((sum, entry) => sum + (entry.expectedProfit || 0), 0);
-  }, [history]);
+    return filteredHistory.reduce((sum, entry) => sum + (entry.expectedProfit || 0), 0);
+  }, [filteredHistory]);
 
   const handleUpdate = () => {
      setOwnedRare(prev => {
@@ -605,19 +625,57 @@ export default function MaterialCalculator() {
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <span className="w-1 h-6 bg-blue-500 rounded-full"/>
                     제작 기록
-                    <span className="text-xs font-normal text-slate-500 ml-2">최신순 정렬</span>
+                    <span className="text-xs font-normal text-slate-500 ml-2">
+                        {history.length}개의 기록
+                    </span>
                 </h2>
-                {history.length > 0 && (
+                
+                <div className="flex items-center gap-2">
+                    {/* Filter Toggle */}
+                    <div className="flex bg-black/40 p-1 rounded-lg border border-white/5">
+                        <button 
+                            onClick={() => setFilterType('all')}
+                            className={`px-3 py-1 rounded text-xs font-bold transition-all ${filterType === 'all' ? 'bg-slate-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            전체
+                        </button>
+                        <button 
+                            onClick={() => setFilterType('abidos')}
+                            className={`px-3 py-1 rounded text-xs font-bold transition-all ${filterType === 'abidos' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            아비도스
+                        </button>
+                        <button 
+                            onClick={() => setFilterType('superior')}
+                            className={`px-3 py-1 rounded text-xs font-bold transition-all ${filterType === 'superior' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            상급
+                        </button>
+                    </div>
+
+                    {/* Sort Toggle */}
                     <button 
-                        onClick={() => setIsDeleteMode(!isDeleteMode)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDeleteMode ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                        onClick={() => setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest')}
+                        className="px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1"
                     >
-                        {isDeleteMode ? '편집 완료' : '목록 편집'}
+                        <span>{sortOrder === 'newest' ? '최신순' : '오래된순'}</span>
+                        <svg className={`w-3 h-3 transition-transform ${sortOrder === 'newest' ? 'rotate-0' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
-                )}
+
+                    {history.length > 0 && (
+                        <button 
+                            onClick={() => setIsDeleteMode(!isDeleteMode)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDeleteMode ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                        >
+                            {isDeleteMode ? '완료' : '편집'}
+                        </button>
+                    )}
+                </div>
               </div>
               
-              {history.length > 0 ? (
+              {filteredHistory.length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left border-collapse border border-slate-600">
                         <thead className="bg-[#2d3748] text-slate-300 font-bold whitespace-nowrap">
@@ -632,7 +690,7 @@ export default function MaterialCalculator() {
                             </tr>
                         </thead>
                         <tbody>
-                            {history.map((entry) => (
+                            {filteredHistory.map((entry) => (
                                 <tr key={entry.id} className="hover:bg-white/5 transition-colors">
                                     <td className="border border-slate-600 px-3 py-2 text-slate-400 font-mono text-xs whitespace-nowrap">
                                         {new Date(entry.timestamp).toLocaleString()}
