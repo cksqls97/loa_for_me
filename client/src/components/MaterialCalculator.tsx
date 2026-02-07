@@ -148,8 +148,9 @@ export default function MaterialCalculator() {
                   addLog(`[실패] ${item.name}: 데이터 없음 (result is null)`);
               }
           } catch (e: any) {
-              addLog(`[에러] ${item.name}: ${e.message}`);
-              if (e.message.includes('401') || e.message.includes('403')) {
+              const errMsg = e instanceof Error ? e.message : String(e);
+              addLog(`[에러] ${item.name}: ${errMsg}`);
+              if (errMsg.includes('401') || errMsg.includes('403')) {
                   throw new Error("API Key 인증 실패 (401/403)");
               }
           }
@@ -162,7 +163,7 @@ export default function MaterialCalculator() {
 
     } catch (error: any) {
       console.error(error);
-      const msg = error.message || "시세 조회 중 오류 발생";
+      const msg = error instanceof Error ? error.message : String(error) || "시세 조회 중 오류 발생";
       addLog(`전체 에러: ${msg}`);
       setApiError(msg);
     } finally {
