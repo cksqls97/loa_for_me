@@ -351,8 +351,8 @@ export default function MaterialCalculator() {
     }
   };
 
-  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && !apiError && isPriceLoaded;
-  const isFullyReady = isConfigured;
+  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && !apiError;
+  const isFullyReady = isConfigured && isPriceLoaded;
 
   if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
