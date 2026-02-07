@@ -341,13 +341,13 @@ export default function MaterialCalculator() {
   // Fixed: Use origin-center consistently to prevent animation artifacts.
   const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
-      ? 'top-6 left-6 scale-100' 
+      ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-[55%] -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125'
   }`;
 
   const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       isConfigured 
-      ? 'top-6 right-6 scale-100' 
+      ? 'top-6 left-[calc(100%-21.5rem)] -translate-x-0 -translate-y-0 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-[55%] translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125'
   }`;
 
