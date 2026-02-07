@@ -509,72 +509,63 @@ export default function MaterialCalculator() {
       <div className={`max-w-5xl w-full relative transition-opacity duration-1000 pt-32 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         
         {view === 'calculator' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            
-            <header className="mb-6 relative z-10">
-                {/* Title Removed */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 
-                {/* Tabs */}
-                <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner">
+                <header className="mb-6 relative z-10">
+                    <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner">
+                        <button 
+                            onClick={() => setActiveTab('abidos')}
+                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                        >
+                            <span>아비도스</span>
+                            {prices.fusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.fusion} G</span>}
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('superior')}
+                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                        >
+                            <span>상급 아비도스</span>
+                            {prices.superiorFusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.superiorFusion} G</span>}
+                        </button>
+                    </div>
+                </header>
+
+                <MaterialInputs 
+                    targetSlots={targetSlots}
+                    setTargetSlots={setTargetSlots}
+                    ownedRare={ownedRare}
+                    setOwnedRare={setOwnedRare}
+                    ownedUncommon={ownedUncommon}
+                    setOwnedUncommon={setOwnedUncommon}
+                    ownedCommon={ownedCommon}
+                    setOwnedCommon={setOwnedCommon}
+                    prices={prices}
+                    bundleCounts={bundleCounts}
+                />
+
+                <div className="pt-5 border-t border-white/5 mt-6">
                     <button 
-                        onClick={() => setActiveTab('abidos')}
-                        className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                        onClick={openPip} 
+                        className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                     >
-                        <span>아비도스</span>
-                        {prices.fusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.fusion} G</span>}
+                        <span>오버레이 실행</span>
+                        <svg className="w-4 h-4 opacity-70 group-hover/btn:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 00-2 2h10a2 2 0 00-2-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
                     </button>
-                    <button 
-                        onClick={() => setActiveTab('superior')}
-                        className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
-                    >
-                        <span>상급 아비도스</span>
-                        {prices.superiorFusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.superiorFusion} G</span>}
-                    </button>
+                    
+                    <ProfitDisplay profitStats={profitStats} />
                 </div>
-            </header>
+            </section>
 
-            <MaterialInputs 
-                targetSlots={targetSlots}
-                setTargetSlots={setTargetSlots}
-                ownedRare={ownedRare}
-                setOwnedRare={setOwnedRare}
-                ownedUncommon={ownedUncommon}
-                setOwnedUncommon={setOwnedUncommon}
-                ownedCommon={ownedCommon}
-                setOwnedCommon={setOwnedCommon}
+            <PurchaseRequirements 
+                activeTab={activeTab}
+                results={results}
                 prices={prices}
-                bundleCounts={bundleCounts}
             />
-
-            <div className="pt-5 border-t border-white/5 mt-6">
-                <button 
-                    onClick={openPip} 
-                    className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
-                >
-                    <span>오버레이 실행</span>
-                    <svg className="w-4 h-4 opacity-70 group-hover/btn:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 00-2 2h10a2 2 0 00-2-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </button>
-                
-                <ProfitDisplay profitStats={profitStats} />
-            </div>
-        </section>
-
-        <PurchaseRequirements 
-            activeTab={activeTab}
-            results={results}
-            prices={prices}
-        </section>
-
-        <PurchaseRequirements 
-            activeTab={activeTab}
-            results={results}
-            prices={prices}
-        />
-        </div>
+          </div>
         ) : (
           <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl min-h-[500px]">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
