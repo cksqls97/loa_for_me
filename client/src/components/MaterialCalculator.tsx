@@ -64,6 +64,7 @@ export default function MaterialCalculator() {
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isPriceLoaded, setIsPriceLoaded] = useState<boolean>(false);
+  const [enableTransition, setEnableTransition] = useState<boolean>(false);
 
   // Load from local storage
   useEffect(() => {
@@ -82,6 +83,10 @@ export default function MaterialCalculator() {
       } catch (e) { console.error(e); }
     }
     setIsInitialized(true);
+    
+    // Enable transitions after initial render to prevent flash
+    const timer = setTimeout(() => setEnableTransition(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   // Save to local storage
@@ -381,7 +386,11 @@ export default function MaterialCalculator() {
     <>
       <div 
           className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0 invisible' : 'opacity-100'}`}
-          style={{ transition: `opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear ${isConfigured ? '1s' : '0s'}` }}
+          style={{ 
+            transition: enableTransition 
+                ? `opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear ${isConfigured ? '1s' : '0s'}`
+                : 'none' 
+          }}
       >
           <div className="absolute top-[20%] text-center space-y-3 px-4 pt-16">
               {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
