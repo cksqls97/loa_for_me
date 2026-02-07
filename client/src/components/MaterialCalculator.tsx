@@ -61,6 +61,8 @@ export default function MaterialCalculator() {
 
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+
   // Load from local storage
   useEffect(() => {
     const saved = localStorage.getItem('matCalcData');
@@ -77,6 +79,7 @@ export default function MaterialCalculator() {
         if (typeof data.greatSuccessChance === 'number') setGreatSuccessChance(data.greatSuccessChance);
       } catch (e) { console.error(e); }
     }
+    setIsInitialized(true);
   }, []);
 
   // Save to local storage
@@ -328,6 +331,8 @@ export default function MaterialCalculator() {
   };
 
   const isReady = !!apiKey && costReduction !== null && greatSuccessChance !== null;
+
+  if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
   // Animation Classes
   const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-in-out pointer-events-none ${
