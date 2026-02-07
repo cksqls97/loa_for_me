@@ -598,7 +598,6 @@ export default function MaterialCalculator() {
                 prices={prices}
             />
           </div>
-          </div>
         ) : (
           <HistoryView history={history} onDelete={deleteHistory} />
         )}
