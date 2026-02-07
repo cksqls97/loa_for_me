@@ -31,7 +31,7 @@ export default function BonusSettings({
       </button>
       
       {isOpen && (
-          <div className="pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left">
+          <div className={`pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
               <div className="flex flex-col gap-4">
                   <div>
                       <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">제작 수수료 감소 (%)</label>
