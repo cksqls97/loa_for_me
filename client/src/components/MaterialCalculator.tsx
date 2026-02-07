@@ -568,6 +568,19 @@ export default function MaterialCalculator() {
                              {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()}
                          </div>
                     </div>
+                    <div className="profit-box" style={{ borderColor: profitStats.usageProfit >= 0 ? '#34d39966' : '#f8717166' }}>
+                         <span className="profit-label">사용 시 (수수료 없음)</span>
+                         <div className="calc-row">
+                            <span style={{color:'#94a3b8'}}>가치</span> 
+                            {Math.floor(profitStats.grossRevenue).toLocaleString()} 
+                            <span style={{color:'#64748b'}}>-</span> 
+                            <span style={{color:'#94a3b8'}}>비용</span> 
+                            {Math.floor(profitStats.totalCost).toLocaleString()}
+                         </div>
+                         <div className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
+                         </div>
+                    </div>
                 </div>
             )}
             <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
