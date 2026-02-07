@@ -1,0 +1,73 @@
+import React, { useState } from 'react';
+
+interface APISettingsProps {
+  apiKey: string;
+  setApiKey: (key: string) => void;
+  fetchPrices: (key: string) => void;
+  isLoading: boolean;
+  logs: string[];
+}
+
+export default function APISettings({
+  apiKey,
+  setApiKey,
+  fetchPrices,
+  isLoading,
+  logs
+}: APISettingsProps) {
+  const [showSettings, setShowSettings] = useState(false);
+
+  return (
+    <div className="fixed top-6 right-6 z-50 flex flex-col items-end pointer-events-none">
+      <button 
+          onClick={() => setShowSettings(!showSettings)}
+          className="pointer-events-auto px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white/80 hover:text-white border border-white/10 rounded-lg text-sm font-bold transition-all shadow-lg"
+      >
+          {showSettings ? '설정 닫기' : 'API 설정'}
+      </button>
+      
+      {showSettings && (
+          <div className="pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-right">
+              <div className="flex flex-col gap-3">
+                  <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Lost Ark API Key</label>
+                      <input 
+                          type="password"
+                          value={apiKey}
+                          onChange={(e) => setApiKey(e.target.value)}
+                          placeholder="API Key 입력"
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none transition-colors"
+                      />
+                  </div>
+                  
+                  <button 
+                      onClick={() => fetchPrices(apiKey)}
+                      disabled={isLoading}
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                  >
+                      {isLoading ? '시세 조회 중...' : '시세 조회하기 (초기화)'}
+                  </button>
+
+                  <div className="mt-2 pt-3 border-t border-white/10">
+                       <div className="flex justify-between items-center mb-2">
+                          <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">API 로그</h3>
+                          {isLoading && <span className="text-[10px] text-blue-400 font-bold animate-pulse">조회 중...</span>}
+                       </div>
+                       <div className="h-48 overflow-y-auto bg-black/40 rounded-lg p-2 border border-white/5 custom-scrollbar">
+                         {logs.length > 0 ? (
+                           <div className="space-y-1.5">
+                             {logs.map((log, i) => (
+                               <p key={i} className="text-[11px] text-slate-400 font-mono leading-relaxed border-b border-white/5 pb-1 last:border-0">{log}</p>
+                             ))}
+                           </div>
+                         ) : (
+                           <p className="text-[11px] text-slate-600 text-center py-4">로그 기록이 없습니다.</p>
+                         )}
+                       </div>
+                  </div>
+              </div>
+          </div>
+      )}
+    </div>
+  );
+}
