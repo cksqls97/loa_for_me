@@ -341,19 +341,28 @@ export default function MaterialCalculator() {
   const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
       isConfigured 
       ? 'top-6 left-6 scale-100 origin-top-left' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[160%] md:-translate-y-1/2 md:-translate-x-[110%] scale-110 md:scale-125 origin-center'
+      : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125 origin-center'
   }`;
 
   const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none ${
       isConfigured 
       ? 'top-6 right-6 scale-100 origin-top-right' 
-      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[60%] md:-translate-y-1/2 md:translate-x-[10%] scale-110 md:scale-125 origin-center'
+      : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[60%] md:-translate-y-[40%] md:translate-x-[15%] scale-110 md:scale-125 origin-center'
   }`;
 
   return (
     <>
       {/* Dark Backdrop for Setup Mode */}
-      <div className={`fixed inset-0 bg-[#0f111a]/90 backdrop-blur-sm z-40 transition-opacity duration-1000 pointer-events-none ${isConfigured ? 'opacity-0' : 'opacity-100'}`} />
+      <div className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 transition-opacity duration-1000 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="absolute top-[20%] text-center space-y-3 px-4">
+              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl">
+                  <span className="text-blue-500">Lost Ark</span> Material Calculator
+              </h1>
+              <p className="text-slate-400 text-sm md:text-base font-medium">
+                  정확한 이득 계산을 위해 <span className="text-white font-bold">API Key</span>와 <span className="text-white font-bold">제작 보너스</span>를 설정해주세요.
+              </p>
+          </div>
+      </div>
 
       {/* Settings Layer */}
       <BonusSettings 

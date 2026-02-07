@@ -54,23 +54,25 @@ export default function APISettings({
                       {isLoading ? '시세 조회 중...' : '시세 조회하기 (초기화)'}
                   </button>
 
-                  <div className="mt-2 pt-3 border-t border-white/10">
-                       <div className="flex justify-between items-center mb-2">
-                          <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">API 로그</h3>
-                          {isLoading && <span className="text-[10px] text-blue-400 font-bold animate-pulse">조회 중...</span>}
-                       </div>
-                       <div className="h-48 overflow-y-auto bg-black/40 rounded-lg p-2 border border-white/5 custom-scrollbar">
-                         {logs.length > 0 ? (
-                           <div className="space-y-1.5">
-                             {logs.map((log, i) => (
-                               <p key={i} className="text-[11px] text-slate-400 font-mono leading-relaxed border-b border-white/5 pb-1 last:border-0">{log}</p>
-                             ))}
-                           </div>
-                         ) : (
-                           <p className="text-[11px] text-slate-600 text-center py-4">로그 기록이 없습니다.</p>
-                         )}
-                       </div>
-                  </div>
+                  {!forceExpanded && (
+                    <div className="mt-2 pt-3 border-t border-white/10">
+                         <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">API 로그</h3>
+                            {isLoading && <span className="text-[10px] text-blue-400 font-bold animate-pulse">조회 중...</span>}
+                         </div>
+                         <div className="h-48 overflow-y-auto bg-black/40 rounded-lg p-2 border border-white/5 custom-scrollbar">
+                           {logs.length > 0 ? (
+                             <div className="space-y-1.5">
+                               {logs.map((log, i) => (
+                                 <p key={i} className="text-[11px] text-slate-400 font-mono leading-relaxed border-b border-white/5 pb-1 last:border-0">{log}</p>
+                               ))}
+                             </div>
+                           ) : (
+                             <p className="text-[11px] text-slate-600 text-center py-4">로그 기록이 없습니다.</p>
+                           )}
+                         </div>
+                    </div>
+                  )}
               </div>
           </div>
       )}
