@@ -62,6 +62,7 @@ export default function MaterialCalculator() {
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [isPriceLoaded, setIsPriceLoaded] = useState<boolean>(false);
 
   // Load from local storage
   useEffect(() => {
@@ -139,6 +140,7 @@ export default function MaterialCalculator() {
 
       setPrices(prev => ({ ...prev, ...newPrices }));
       setBundleCounts(prev => ({ ...prev, ...newBundles }));
+      setIsPriceLoaded(true);
       addLog("시세 업데이트 완료");
 
     } catch (error: any) {
@@ -330,19 +332,20 @@ export default function MaterialCalculator() {
     }
   };
 
-  const isReady = !!apiKey && costReduction !== null && greatSuccessChance !== null;
+  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null;
+  const isFullyReady = isConfigured && isPriceLoaded;
 
   if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
 
   // Animation Classes
   const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-in-out pointer-events-none ${
-      isReady 
+      isConfigured 
       ? 'top-6 left-6 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-[140%] md:-translate-y-1/2 md:-translate-x-[120%] scale-110'
   }`;
 
   const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-in-out pointer-events-none ${
-      isReady 
+      isConfigured 
       ? 'top-6 right-6 scale-100' 
       : 'top-1/2 left-1/2 -translate-x-1/2 translate-y-[40%] md:-translate-y-1/2 md:translate-x-[20%] scale-110'
   }`;
@@ -350,7 +353,7 @@ export default function MaterialCalculator() {
   return (
     <>
       {/* Dark Backdrop for Setup Mode */}
-      <div className={`fixed inset-0 bg-[#0f111a]/90 backdrop-blur-sm z-40 transition-opacity duration-1000 pointer-events-none ${isReady ? 'opacity-0' : 'opacity-100'}`} />
+      <div className={`fixed inset-0 bg-[#0f111a]/90 backdrop-blur-sm z-40 transition-opacity duration-1000 pointer-events-none ${isConfigured ? 'opacity-0' : 'opacity-100'}`} />
 
       {/* Settings Layer */}
       <BonusSettings 
@@ -359,7 +362,7 @@ export default function MaterialCalculator() {
         greatSuccessChance={greatSuccessChance}
         setGreatSuccessChance={setGreatSuccessChance}
         className={bonusClass}
-        forceExpanded={!isReady}
+        forceExpanded={!isConfigured}
       />
 
       <APISettings 
@@ -369,11 +372,11 @@ export default function MaterialCalculator() {
         isLoading={isLoading}
         logs={logs}
         className={apiClass}
-        forceExpanded={!isReady}
+        forceExpanded={!isConfigured}
       />
 
       {/* Main Content Layer - only visible when ready */}
-      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 ${isReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
+      <div className={`max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 relative transition-opacity duration-1000 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             
