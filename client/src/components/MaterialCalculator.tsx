@@ -113,9 +113,6 @@ export default function MaterialCalculator() {
         activeTab, 
         apiKey,
         costReduction,
-        activeTab, 
-        apiKey,
-        costReduction,
         greatSuccessChance,
         history
     };
@@ -483,16 +480,16 @@ export default function MaterialCalculator() {
             </h1>
             
             {/* View Toggle */}
-            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10 transition-all duration-500 delay-200 ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                 <button 
                   onClick={() => setView('calculator')}
-                  className={`px-6 py-1.5 rounded-full text-xs font-bold transition-all ${view === 'calculator' ? 'bg-white text-black shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-white text-black shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
                 >
                   재료 계산기
                 </button>
                 <button 
                   onClick={() => setView('history')}
-                  className={`px-6 py-1.5 rounded-full text-xs font-bold transition-all ${view === 'history' ? 'bg-white text-black shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-white text-black shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
                 >
                   제작 기록
                 </button>
