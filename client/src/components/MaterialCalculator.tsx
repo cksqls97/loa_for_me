@@ -8,7 +8,7 @@ import BonusSettings from './BonusSettings';
 import APISettings from './APISettings';
 import MaterialInputs from './MaterialInputs';
 import ProfitDisplay from './ProfitDisplay';
-import ProfitDisplay from './ProfitDisplay';
+
 import PurchaseRequirements from './PurchaseRequirements';
 import HistoryView from './HistoryView';
 
