@@ -36,6 +36,7 @@ interface CraftingEntry {
   unitCost: number;
   totalCost: number;
   expectedOutput: number;
+  expectedProfit: number;
 }
 
 export default function MaterialCalculator() {
@@ -349,18 +350,37 @@ export default function MaterialCalculator() {
     // Unit Cost
     const unitCost = totalCost / expectedOutput;
 
+    // Expected Profit
+    const fusionKey = activeTab === 'abidos' ? 'fusion' : 'superiorFusion';
+    const outputPrice = prices[fusionKey as keyof typeof prices];
+    const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
+    const outputUnitPrice = outputPrice / outputBundle;
+    
+    // Revenue (Net after 5% tax)
+    const totalRevenue = (expectedOutput * outputUnitPrice) * 0.95;
+    const expectedProfit = totalRevenue - totalCost;
+
     const newEntry: CraftingEntry = {
       id: crypto.randomUUID(),
       timestamp: Date.now(),
       type: activeTab,
       unitCost,
       totalCost,
-      expectedOutput
+      expectedOutput,
+      expectedProfit
     };
 
     setHistory(prev => [newEntry, ...prev]);
-    addLog(`[기록] 제작 완료 - 단가: ${Math.floor(unitCost)}G`);
+    addLog(`[기록] 제작 완료 - 이익: ${Math.floor(expectedProfit).toLocaleString()}G`);
   }, [activeTab, targetSlots, prices, bundleCounts, costReduction, greatSuccessChance]);
+
+  const deleteHistory = (id: string) => {
+    setHistory(prev => prev.filter(entry => entry.id !== id));
+  };
+   
+  const totalProfit = useMemo(() => {
+    return history.reduce((sum, entry) => sum + (entry.expectedProfit || 0), 0);
+  }, [history]);
 
   const handleUpdate = () => {
      setOwnedRare(prev => {
@@ -590,38 +610,63 @@ export default function MaterialCalculator() {
               {history.length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left border-collapse border border-slate-600">
-                        <thead className="bg-[#2d3748] text-slate-300 font-bold">
+                        <thead className="bg-[#2d3748] text-slate-300 font-bold whitespace-nowrap">
                             <tr>
                                 <th className="border border-slate-600 px-3 py-2">시간</th>
                                 <th className="border border-slate-600 px-3 py-2">종류</th>
                                 <th className="border border-slate-600 px-3 py-2 text-right">단가</th>
                                 <th className="border border-slate-600 px-3 py-2 text-right">총 비용</th>
                                 <th className="border border-slate-600 px-3 py-2 text-right">예상 결과</th>
+                                <th className="border border-slate-600 px-3 py-2 text-right">예상 수익</th>
+                                <th className="border border-slate-600 px-3 py-2 text-center w-[50px]">삭제</th>
                             </tr>
                         </thead>
                         <tbody>
                             {history.map((entry) => (
                                 <tr key={entry.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="border border-slate-600 px-3 py-2 text-slate-400 font-mono text-xs">
+                                    <td className="border border-slate-600 px-3 py-2 text-slate-400 font-mono text-xs whitespace-nowrap">
                                         {new Date(entry.timestamp).toLocaleString()}
                                     </td>
-                                    <td className="border border-slate-600 px-3 py-2">
+                                    <td className="border border-slate-600 px-3 py-2 whitespace-nowrap">
                                         <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${entry.type === 'abidos' ? 'text-blue-400 bg-blue-400/10' : 'text-indigo-400 bg-indigo-400/10'}`}>
                                             {entry.type === 'abidos' ? '아비도스' : '상급 아비도스'}
                                         </span>
                                     </td>
-                                    <td className="border border-slate-600 px-3 py-2 text-right font-bold text-blue-400">
+                                    <td className="border border-slate-600 px-3 py-2 text-right font-bold text-blue-400 whitespace-nowrap">
                                         {Math.floor(entry.unitCost).toLocaleString()} G
                                     </td>
-                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300">
+                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300 whitespace-nowrap">
                                         {Math.floor(entry.totalCost).toLocaleString()} G
                                     </td>
-                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300">
+                                    <td className="border border-slate-600 px-3 py-2 text-right text-slate-300 whitespace-nowrap">
                                         {Math.floor(entry.expectedOutput).toLocaleString()} 개
+                                    </td>
+                                    <td className={`border border-slate-600 px-3 py-2 text-right font-bold whitespace-nowrap ${entry.expectedProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                        {entry.expectedProfit > 0 ? '+' : ''}{Math.floor(entry.expectedProfit || 0).toLocaleString()} G
+                                    </td>
+                                    <td className="border border-slate-600 px-3 py-2 text-center">
+                                        <button 
+                                            onClick={() => deleteHistory(entry.id)}
+                                            className="text-slate-500 hover:text-red-400 transition-colors p-1"
+                                            title="삭제"
+                                        >
+                                            ✕
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
+                        <tfoot className="bg-[#1a202c] font-bold">
+                            <tr>
+                                <td colSpan={5} className="border border-slate-600 px-3 py-3 text-right text-slate-300">
+                                    총 예상 수익 합계
+                                </td>
+                                <td className={`border border-slate-600 px-3 py-3 text-right text-lg ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    {totalProfit > 0 ? '+' : ''}{Math.floor(totalProfit).toLocaleString()} G
+                                </td>
+                                <td className="border border-slate-600 bg-[#1a202c]"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
               ) : (
