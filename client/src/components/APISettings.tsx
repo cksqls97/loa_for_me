@@ -47,6 +47,10 @@ export default function APISettings({
                           className={`w-full bg-black/40 border rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none transition-colors ${apiError ? 'border-red-500 animate-pulse' : 'border-white/10'}`}
                       />
                       {apiError && <p className="text-[10px] text-red-400 font-bold mt-2 text-center animate-in fade-in slide-in-from-top-1">{apiError}</p>}
+                      <p className="text-[10px] text-slate-400 mt-2 leading-relaxed text-center">
+                          <a href="https://developer-lostark.game.onstove.com/" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline font-bold">Lost Ark Open API</a>
+                          에서 스토브 로그인 후<br/>API Key를 발급받아 입력해주세요.
+                      </p>
                   </div>
                   
                   <button 
