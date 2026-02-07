@@ -334,15 +334,11 @@ export default function MaterialCalculator() {
         .update-btn:active { background: #1d4ed8; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .price-tag { font-size: 10px; color: #94a3b8; margin-left: auto; }
-        .profit-container { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
-        .profit-box { background: #1e293b; border-radius: 8px; padding: 10px; text-align: center; border: 1px solid #334155; }
-        .profit-label { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 6px; }
-        .profit-val { font-size: 24px; font-weight: 900; margin-top: 4px; line-height: 1; }
-        .calc-row { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 4px; }
-        .calc-col { display: flex; flex-direction: column; align-items: center; }
-        .calc-title { font-size: 9px; color: #64748b; font-weight: bold; margin-bottom: 2px; }
-        .calc-col span:last-child { font-size: 13px; font-weight: bold; color: #e2e8f0; }
-        .calc-sep { font-size: 12px; color: #475569; font-weight: bold; margin-top: 10px; }
+        .profit-split-container { display: flex; background: #1e293b; border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid #334155; }
+        .profit-split-item { flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .profit-split-item:first-child { border-right: 1px solid #334155; }
+        .profit-label { font-size: 10px; color: #94a3b8; font-weight: bold; margin-bottom: 4px; }
+        .profit-val { font-size: 18px; font-weight: 900; line-height: 1; }
         .val-plus { color: #34d399; }
         .val-minus { color: #f87171; }
       `;
@@ -554,29 +550,15 @@ export default function MaterialCalculator() {
                 })}
             </div>
             {profitStats && (
-                <div className="profit-container">
-                    <div className="profit-box" style={{ borderColor: profitStats.sellingProfit >= 0 ? '#34d39966' : '#f8717166' }}>
+                <div className="profit-split-container">
+                    <div className="profit-split-item">
                          <span className="profit-label">판매 시 (수수료 5%)</span>
-                         <div className="calc-row">
-                            <span style={{color:'#94a3b8'}}>매출</span> 
-                            {Math.floor(profitStats.sellingRevenue).toLocaleString()} 
-                            <span style={{color:'#64748b'}}>-</span> 
-                            <span style={{color:'#94a3b8'}}>비용</span> 
-                            {Math.floor(profitStats.totalCost).toLocaleString()}
-                         </div>
                          <div className={`profit-val ${profitStats.sellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
                              {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()}
                          </div>
                     </div>
-                    <div className="profit-box" style={{ borderColor: profitStats.usageProfit >= 0 ? '#34d39966' : '#f8717166' }}>
+                    <div className="profit-split-item">
                          <span className="profit-label">사용 시 (수수료 없음)</span>
-                         <div className="calc-row">
-                            <span style={{color:'#94a3b8'}}>가치</span> 
-                            {Math.floor(profitStats.grossRevenue).toLocaleString()} 
-                            <span style={{color:'#64748b'}}>-</span> 
-                            <span style={{color:'#94a3b8'}}>비용</span> 
-                            {Math.floor(profitStats.totalCost).toLocaleString()}
-                         </div>
                          <div className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
                              {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
                          </div>
