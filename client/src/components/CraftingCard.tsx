@@ -40,7 +40,7 @@ export default function CraftingCard({
   const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
 
   useEffect(() => {
-    if (isComplete && expectedOutput) {
+    if (isComplete && expectedOutput !== undefined && !actualOutput) {
        setActualOutput(Math.floor(expectedOutput).toString());
     }
   }, [isComplete, expectedOutput]);
@@ -222,8 +222,7 @@ export default function CraftingCard({
                                   type="number" 
                                   value={actualOutput}
                                   onChange={(e) => setActualOutput(e.target.value)}
-                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-4 py-3 text-white font-bold text-xl outline-none focus:border-emerald-500 transition-colors text-right placeholder-emerald-500/20"
-                                  placeholder="수량"
+                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-4 py-3 text-white font-bold text-xl outline-none focus:border-emerald-500 transition-colors text-right"
                                   autoFocus
                                />
                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">개</span>
