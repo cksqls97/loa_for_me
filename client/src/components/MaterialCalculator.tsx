@@ -423,7 +423,7 @@ export default function MaterialCalculator() {
         .tab-btn.active { background: #334155; color: white; }
         .label { font-size: 11px; font-weight: bold; color: #475569; margin-bottom: 2px; display: block; }
         .input-row { display: flex; align-items: center; background: #1a1d29; border-radius: 8px; padding: 5px 10px; }
-        .input-row span { font-size: 11px; font-weight: bold; width: 40px; }
+        .input-row span { font-size: 11px; font-weight: bold; }
         input { background: transparent; border: none; color: white; text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; }
         .res-box { margin-top: 5px; padding-top: 8px; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 4px; }
         .res-row { display: flex; justify-content: space-between; align-items: center; }
@@ -632,7 +632,7 @@ export default function MaterialCalculator() {
             <div>
                 <label className="label">보유량</label>
                 <div className="input-row" style={{ marginBottom: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
                         {prices.rare > 0 && <span className="price-tag">{prices.rare} G</span>}
                     </div>
@@ -640,7 +640,7 @@ export default function MaterialCalculator() {
                 </div>
                 
                 <div className="input-row" style={{ marginBottom: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
                         {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon} G</span>}
                     </div>
@@ -648,7 +648,7 @@ export default function MaterialCalculator() {
                 </div>
                 
                 <div className="input-row">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
                         {prices.common > 0 && <span className="price-tag">{prices.common} G</span>}
                     </div>
