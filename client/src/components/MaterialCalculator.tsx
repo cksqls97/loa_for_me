@@ -121,12 +121,12 @@ export default function MaterialCalculator() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Revert to setup if API error occurs
+  // Revert to setup if configuration becomes invalid (API Error or Missing Fields)
   useEffect(() => {
-    if (apiError) {
+    if (hasEntered && !isConfigured) {
       setHasEntered(false);
     }
-  }, [apiError]);
+  }, [hasEntered, isConfigured]);
 
   // Save to local storage
   useEffect(() => {
