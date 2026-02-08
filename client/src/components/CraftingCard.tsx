@@ -24,6 +24,7 @@ export default function CraftingCard({
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [producedItems, setProducedItems] = useState<number>(0);
   const [batchProgress, setBatchProgress] = useState<number>(0);
+  const [progressPercent, setProgressPercent] = useState<number>(0);
 
   const totalTargetItems = totalSlots * 10;
   const itemsPerBatch = concurrency * 10;
@@ -45,6 +46,7 @@ export default function CraftingCard({
         setTimeLeft('00:00:00');
         setProducedItems(totalTargetItems);
         setBatchProgress(100);
+        setProgressPercent(100);
         return;
       }
       
@@ -74,6 +76,14 @@ export default function CraftingCard({
           const currentBatchPercent = (currentBatchElapsed / batchDuration) * 100;
           setBatchProgress((currentBatchIndex * 10) + (currentBatchPercent / 10));
       }
+
+      // Time-based Total Progress
+      if (startTime && endTime) {
+        const totalDuration = endTime - startTime;
+        const currentElapsed = now - startTime;
+        const p = Math.floor((currentElapsed / totalDuration) * 100);
+        setProgressPercent(Math.min(100, Math.max(0, p)));
+      }
     };
 
     updateTimer();
@@ -83,7 +93,6 @@ export default function CraftingCard({
 
   const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
   const currentSlots = Math.floor(producedItems / 10);
-  const progressPercent = totalSlots > 0 ? Math.floor((currentSlots / totalSlots) * 100) : 0;
   
   const formatKoreanTime = (ts: number | null) => {
     if (!ts) return '-';
