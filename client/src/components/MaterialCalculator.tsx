@@ -148,11 +148,11 @@ export default function MaterialCalculator() {
     setLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
   };
 
-  const fetchPrices = useCallback(async (currentKey: string) => {
+  const fetchPrices = useCallback(async (currentKey: string, isBackground: boolean = false) => {
     if (!currentKey) return;
     
     setApiError(null);
-    setIsPriceLoaded(false);
+    if (!isBackground) setIsPriceLoaded(false);
 
     // Sanitize and Validate Key
     const cleanKey = currentKey.trim();
@@ -164,8 +164,8 @@ export default function MaterialCalculator() {
         return;
     }
 
-    setIsLoading(true);
-    addLog("시세 자동 조회 시작...");
+    if (!isBackground) setIsLoading(true);
+    addLog(isBackground ? "시세 자동 갱신 중..." : "시세 조회 시작...");
     
     try {
       // Include Fusion Materials in list
@@ -181,15 +181,16 @@ export default function MaterialCalculator() {
       const newBundles: any = {};
 
       for (const item of itemsToCheck) {
-           addLog(`[요청] ${item.name} (ID: ${item.id}, Cat: ${item.categoryCode})`); 
+           // Only log detailed requests for manual updates to reduce noise
+           if (!isBackground) addLog(`[요청] ${item.name} (ID: ${item.id}, Cat: ${item.categoryCode})`); 
           try {
               const result = await LostArkService.getMarketPrice(cleanKey, item.id, item.name, item.categoryCode);
               if (result !== null) {
-                   addLog(`[수신] ${item.name}: ${result.price}G / unit: ${result.bundleCount}`);
+                   if (!isBackground) addLog(`[수신] ${item.name}: ${result.price}G / unit: ${result.bundleCount}`);
                   newPrices[item.key] = result.price;
                   newBundles[item.key] = result.bundleCount;
               } else {
-                  addLog(`[실패] ${item.name}: 데이터 없음 (result is null)`);
+                  if (!isBackground) addLog(`[실패] ${item.name}: 데이터 없음 (result is null)`);
               }
           } catch (e: any) {
               const errMsg = e instanceof Error ? e.message : String(e);
@@ -203,7 +204,7 @@ export default function MaterialCalculator() {
       setPrices(prev => ({ ...prev, ...newPrices }));
       setBundleCounts(prev => ({ ...prev, ...newBundles }));
       setIsPriceLoaded(true);
-      addLog("시세 업데이트 완료");
+      addLog(isBackground ? "시세 갱신 완료" : "시세 업데이트 완료");
 
     } catch (error: any) {
       // console.error(error);
@@ -221,15 +222,16 @@ export default function MaterialCalculator() {
   useEffect(() => {
       if (!apiKey) return;
 
-      fetchPrices(apiKey);
+      // Initial load (Manual-like)
+      fetchPrices(apiKey, false);
 
       const now = new Date();
       const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
       
       const timeoutId = setTimeout(() => {
-          fetchPrices(apiKey);
+          fetchPrices(apiKey, true); // Background update
           intervalRef.current = setInterval(() => {
-              fetchPrices(apiKey);
+              fetchPrices(apiKey, true); // Background update
           }, 60000);
       }, msUntilNextMinute);
 
