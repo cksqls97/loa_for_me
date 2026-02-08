@@ -500,12 +500,32 @@ export default function MaterialCalculator() {
     endTime: number | null;
     type: MaterialType;
     concurrency: number;
-  }>({
-    isActive: false,
-    endTime: null,
-    type: 'superior',
-    concurrency: 3
+  // Crafting Timer State
+  const [craftingState, setCraftingState] = useState<{
+    isActive: boolean;
+    endTime: number | null;
+    type: MaterialType;
+    concurrency: number;
+  }>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('craftingState');
+      if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch (e) { console.error('Failed to parse craftingState', e); }
+      }
+    }
+    return {
+      isActive: false,
+      endTime: null,
+      type: 'superior',
+      concurrency: 3
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('craftingState', JSON.stringify(craftingState));
+  }, [craftingState]);
 
   const [showCraftingStatus, setShowCraftingStatus] = useState(false);
 
@@ -556,6 +576,7 @@ export default function MaterialCalculator() {
     // Base Time
     // Abidos: 60m (3600s), Superior: 90m (5400s)
     const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
+    // const baseTimeSec = 1; // TEMPORARY: For testing (1 second)
     
     // Reduction
     // Input is percentage (e.g. 10) + Ninav 10
