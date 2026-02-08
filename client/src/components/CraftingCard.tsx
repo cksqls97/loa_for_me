@@ -113,11 +113,11 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex gap-2 h-12">
+          <div className="flex flex-col gap-2">
             {Array.from({ length: concurrency }).map((_, i) => (
                 <div 
                     key={i} 
-                    className={`flex-1 rounded-lg border relative overflow-hidden transition-all duration-500 ${
+                    className={`h-12 w-full rounded-lg border relative overflow-hidden transition-all duration-500 ${
                         isActive 
                         ? 'bg-slate-800/50 border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]' 
                         : 'bg-white/5 border-white/5 opacity-30'
