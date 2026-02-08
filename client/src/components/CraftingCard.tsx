@@ -209,7 +209,7 @@ export default function CraftingCard({
 
           {/* Slots Visualization */}
           <div className="flex flex-col gap-4 min-h-0 overflow-y-auto pr-1 shrink-0 relative">
-            {isComplete && onRecordResult ? (
+            {isComplete && onRecordResult && (
                  <div className="absolute inset-0 bg-emerald-500/5 rounded-xl border border-emerald-500/20 p-6 flex flex-col justify-center items-center gap-4 animate-in fade-in zoom-in-95 duration-500 hover:bg-emerald-500/10 transition-colors z-50 backdrop-blur-sm">
                        <div className="text-center">
                            <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-1">제작 종료</h4>
