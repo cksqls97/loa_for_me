@@ -521,7 +521,7 @@ export default function MaterialCalculator() {
           </div>
           
           {/* Manual Entry Button */}
-          <div className={`absolute top-[60%] md:top-[65%] left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
+          <div className={`absolute bottom-24 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto z-[60] ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
                <button 
                   onClick={() => setHasEntered(true)}
                   className="group relative px-8 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white text-lg font-black rounded-2xl shadow-2xl hover:shadow-[var(--color-primary)]/50 transition-all active:scale-95 flex items-center gap-3 overflow-hidden"
