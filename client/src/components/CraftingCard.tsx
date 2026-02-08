@@ -335,7 +335,7 @@ export default function CraftingCard({
                         </span>
                     </div>
                 </div>
-            ); }) }
+            ); }) ) }
           </div>
 
       </div>
