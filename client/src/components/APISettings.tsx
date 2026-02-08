@@ -26,7 +26,6 @@ export default function APISettings({
 
   return (
     <div className={className}>
-    <div className={className}>
       {!forceExpanded && (
         <button 
             onClick={() => setShowSettings(!showSettings)}
@@ -37,7 +36,7 @@ export default function APISettings({
       )}
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
+          <div className={`pointer-events-auto mt-3 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'flex flex-col min-h-[520px] w-96 p-6' : 'w-80 p-4'}`}>
                {/* Header for Initial Setup */}
                {forceExpanded && (
                 <h3 className="text-sm font-bold text-[var(--color-primary)] mb-4 text-center uppercase tracking-widest border-b border-white/10 pb-2">API / 시스템 설정</h3>

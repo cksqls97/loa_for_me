@@ -32,7 +32,6 @@ export default function BonusSettings({
 
   return (
     <div className={className}>
-    <div className={className}>
       {!forceExpanded && (
         <button 
             onClick={() => setShowBonus(!showBonus)}
@@ -43,7 +42,7 @@ export default function BonusSettings({
       )}
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left relative ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
+          <div className={`pointer-events-auto mt-3 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left relative ${forceExpanded ? 'flex flex-col min-h-[520px] w-96 p-6' : 'w-80 p-4'}`}>
               
               {/* Header for Initial Setup */}
               {forceExpanded && (
