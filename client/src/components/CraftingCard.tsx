@@ -113,41 +113,40 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex gap-4 h-48">
+          <div className="flex flex-col gap-3 flex-1 min-h-[180px]">
             {Array.from({ length: concurrency }).map((_, i) => (
                 <div 
                     key={i} 
-                    className={`flex-1 rounded-lg border relative overflow-hidden transition-all duration-500 ${
+                    className={`flex-1 w-full rounded-lg border relative overflow-hidden transition-all duration-500 ${
                         isActive 
                         ? 'bg-slate-800/50 border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]' 
                         : 'bg-white/5 border-white/5 opacity-30'
                     }`}
                 >
-                    {/* 10-Unit Grid Overlay (Separators) */}
-                    <div className="absolute inset-0 flex flex-col pointer-events-none z-20">
+                    {/* 10-Unit Grid Overlay (Horizontal Row of Vertical Lines) */}
+                    <div className="absolute inset-0 flex pointer-events-none z-20">
                         {Array.from({ length: 10 }).map((_, idx) => (
-                            <div key={idx} className="flex-1 border-b border-white/5 last:border-0" />
+                            <div key={idx} className="flex-1 border-r border-white/10 last:border-0" />
                         ))}
                     </div>
 
                     {isActive && (
                         <>
-                            {/* Filling Effect (Vertical) */}
+                            {/* Filling Effect (Horizontal: Left to Right) */}
                             <div 
-                                className="absolute bottom-0 left-0 right-0 bg-blue-500/30 transition-all duration-100 ease-linear z-10"
-                                style={{ height: `${batchProgress}%` }}
+                                className="absolute top-0 bottom-0 left-0 bg-blue-500/30 transition-all duration-100 ease-linear z-10"
+                                style={{ width: `${batchProgress}%` }}
                             />
                             
-                            {/* Active Scanner Line (Vertical movement?) or just keep top scanner */}
-                            {/* Let's make a horizontal line scanning up and down or just up */}
+                            {/* Active Scanner Line (Horizontal movement) */}
                             <div 
-                                className="absolute left-0 right-0 h-[2px] bg-blue-400/80 shadow-[0_0_8px_rgba(59,130,246,1)] z-30 transition-all duration-100 ease-linear"
-                                style={{ bottom: `${batchProgress}%` }}
+                                className="absolute top-0 bottom-0 w-[2px] bg-blue-400/80 shadow-[0_0_8px_rgba(59,130,246,1)] z-30 transition-all duration-100 ease-linear"
+                                style={{ left: `${batchProgress}%` }}
                             />
                             
                             {/* Slot Label */}
                             <div className="absolute inset-0 flex items-center justify-center z-40">
-                                <span className="text-[10px] font-bold text-blue-200/50 rotate-90 md:rotate-0">SLOT {i+1}</span>
+                                <span className="text-xs font-bold text-blue-200/50 tracking-widest">SLOT {i+1}</span>
                             </div>
                         </>
                     )}
