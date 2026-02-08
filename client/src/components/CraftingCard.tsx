@@ -106,32 +106,32 @@ export default function CraftingCard({
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-[var(--color-success)]' : 'via-[var(--color-primary)]'} to-transparent opacity-50`} />
       )}
       
-      <div className="p-6 flex-1 flex flex-col gap-6 relative z-10 min-h-0 justify-between">
+      <div className="p-8 flex-1 flex flex-col gap-8 relative z-10 min-h-0 justify-between">
           
           {/* Header Info */}
           <div className="flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
+                <span className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
+                <h3 className={`text-sm font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
                   {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready'}
                 </h3>
               </div>
           </div>
 
           {/* Progress & Stat Row */}
-          <div className="flex flex-col gap-4 shrink-0">
+          <div className="flex flex-col gap-6 shrink-0">
               {/* Count & Percent */}
               <div className="flex items-baseline justify-between">
-                  <div className="flex items-baseline gap-2">
-                      <span className={`text-5xl font-black tracking-tight ${(isActive || isComplete) ? 'text-white' : 'text-slate-500'}`}>
+                  <div className="flex items-baseline gap-3">
+                      <span className={`text-6xl font-black tracking-tight ${(isActive || isComplete) ? 'text-white' : 'text-slate-500'}`}>
                           {(isActive || isComplete) ? currentSlots.toLocaleString() : '-'}
                       </span>
-                      <span className="text-sm text-slate-500 font-bold">
+                      <span className="text-base text-slate-500 font-bold">
                           / {(isActive || isComplete) ? totalSlots.toLocaleString() : '-'} Slots
                       </span>
                   </div>
                   {(isActive || isComplete) && (
-                      <span className={`text-3xl font-black ${isComplete ? 'text-[var(--color-success)]' : 'text-[var(--color-primary)]'}`}>
+                      <span className={`text-5xl font-black ${isComplete ? 'text-[var(--color-success)]' : 'text-[var(--color-primary)]'}`}>
                           {progressPercent}%
                       </span>
                   )}
@@ -139,15 +139,15 @@ export default function CraftingCard({
 
               {/* Timer & ETA Grid */}
               {(isActive || isComplete) && (
-                  <div className="grid grid-cols-2 gap-4 bg-black/20 rounded-xl p-4 border border-white/5">
-                      <div className="flex flex-col gap-1">
-                          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">남은 시간</span>
+                  <div className="grid grid-cols-2 gap-4 bg-black/20 rounded-xl p-5 border border-white/5">
+                      <div className="flex flex-col gap-2">
+                          <span className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">남은 시간</span>
                           <span className={`text-2xl font-bold tracking-tight ${isComplete ? 'text-[var(--color-success)]' : 'text-white'}`}>
                               {timeLeft || '00:00:00'}
                           </span>
                       </div>
-                      <div className="flex flex-col gap-1 border-l border-white/5 pl-4">
-                          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">예상 종료</span>
+                      <div className="flex flex-col gap-2 border-l border-white/5 pl-5">
+                          <span className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">예상 종료</span>
                           <span className="text-xl font-bold tracking-tight text-slate-300">
                               {eta}
                           </span>
@@ -157,7 +157,7 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 shrink-0">
+          <div className="flex flex-col gap-4 min-h-0 overflow-y-auto pr-1 shrink-0">
             {Array.from({ length: concurrency }).map((_, i) => {
                 const totalCycles = Math.ceil(totalSlots / concurrency);
                 const currentElapsed = (isActive && startTime) 
