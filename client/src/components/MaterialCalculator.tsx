@@ -529,7 +529,7 @@ export default function MaterialCalculator() {
     localStorage.setItem('craftingState', JSON.stringify(craftingState));
   }, [craftingState]);
 
-  const [showCraftingStatus, setShowCraftingStatus] = useState(false);
+  // const [showCraftingStatus, setShowCraftingStatus] = useState(false); // Removed
 
   // Timer Logic
   useEffect(() => {
@@ -542,7 +542,7 @@ export default function MaterialCalculator() {
       if (diff <= 0) {
         // Complete
         setCraftingState(prev => ({ ...prev, isActive: false, endTime: null }));
-        setShowCraftingStatus(true);
+        // setShowCraftingStatus(true); // Removed per user request
         
         // Browser Notification
         if (Notification.permission === 'granted') {
@@ -729,12 +729,7 @@ export default function MaterialCalculator() {
         apiError={apiError}
       />
 
-      <CraftingStatus 
-         type={craftingState.type}
-         concurrency={craftingState.concurrency}
-         isVisible={showCraftingStatus}
-         onClose={() => setShowCraftingStatus(false)}
-      />
+
 
       <div className={`max-w-5xl w-full relative transition-opacity duration-1000 pt-32 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         
