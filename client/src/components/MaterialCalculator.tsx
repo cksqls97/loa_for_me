@@ -11,7 +11,7 @@ import ProfitDisplay from './ProfitDisplay';
 import ThemeSelector from './ThemeSelector';
 
 import PurchaseRequirements from './PurchaseRequirements';
-import HistoryView from './HistoryView';
+import CraftingStatus from './CraftingStatus';
 
 type MaterialType = 'abidos' | 'superior';
 
