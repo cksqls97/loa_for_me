@@ -124,7 +124,7 @@ export default function CraftingCard({
               <div className="flex items-center gap-3">
                 <span className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
                 <h3 className={`text-sm font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
-                  {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready'}
+                  {isActive ? '제작 중' : isComplete ? '제작 완료' : '제작 대기'}
                 </h3>
               </div>
 
@@ -150,7 +150,7 @@ export default function CraftingCard({
                           {(isActive || isComplete) ? currentSlots.toLocaleString() : '-'}
                       </span>
                       <span className="text-base text-slate-500 font-bold">
-                          / {(isActive || isComplete) ? totalSlots.toLocaleString() : '-'} Slots
+                          / {(isActive || isComplete) ? totalSlots.toLocaleString() : '-'} 슬롯
                       </span>
                   </div>
                   {(isActive || isComplete) && (
@@ -268,8 +268,8 @@ export default function CraftingCard({
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <span className={`text-[10px] font-bold tracking-widest ${isRowComplete ? 'text-[var(--color-success)]/80' : isRowActive ? 'text-[var(--color-primary)]/80' : 'text-slate-600'}`}>
-                            SLOT {i+1} {isRowRelevant && (isRowActive || isRowComplete) && <span className="text-[10px] opacity-70 ml-1">({myCurrentCycle}/{myTotalCycles})</span>}
-                            {!isRowRelevant && <span className="text-[10px] opacity-50 ml-1">(EMPTY)</span>}
+                            슬롯 {i+1} {isRowRelevant && (isRowActive || isRowComplete) && <span className="text-[10px] opacity-70 ml-1">({myCurrentCycle}/{myTotalCycles})</span>}
+                            {!isRowRelevant && <span className="text-[10px] opacity-50 ml-1">(빈 슬롯)</span>}
                         </span>
                     </div>
                 </div>

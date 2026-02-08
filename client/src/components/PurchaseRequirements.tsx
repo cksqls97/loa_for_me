@@ -65,7 +65,7 @@ export default function PurchaseRequirements({
                     </div>
 
                     <div className={`mt-2 pt-2 border-t border-white/5 flex flex-col gap-0.5 ${cost > 0 ? 'opacity-100' : 'opacity-0'}`}>
-                        <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Est. Cost</span>
+                        <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">예상 비용</span>
                         <span className="text-xs font-bold text-amber-500/90 font-mono">
                             {cost.toLocaleString()} <span className="text-[9px] text-amber-500/50">G</span>
                         </span>

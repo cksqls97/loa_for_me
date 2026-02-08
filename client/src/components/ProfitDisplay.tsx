@@ -30,18 +30,18 @@ export default function ProfitDisplay({ profitStats }: ProfitDisplayProps) {
             
             <div className="bg-black/20 rounded-xl p-3 mb-3 space-y-1.5">
             <div className="flex justify-between items-center text-xs font-bold font-mono">
-                <span className="text-emerald-400/70 uppercase tracking-wider text-[10px]">Revenue</span>
+                <span className="text-emerald-400/70 uppercase tracking-wider text-[10px]">매출</span>
                 <span className="text-white tracking-wide">{Math.floor(profitStats.sellingRevenue).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center text-xs font-bold font-mono">
-                <span className="text-red-400/70 uppercase tracking-wider text-[10px]">Cost</span>
+                <span className="text-red-400/70 uppercase tracking-wider text-[10px]">제작비</span>
                 <span className="text-red-200/80 tracking-wide">-{Math.floor(profitStats.totalCost).toLocaleString()}</span>
             </div>
             </div>
 
             <div className="flex flex-col items-center pt-1">
                 <span className={`text-[9px] font-extrabold mb-1 uppercase tracking-[0.2em] ${profitStats.sellingProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                    NET PROFIT
+                    순이익
                 </span>
                 <span className={`text-3xl font-black tracking-tight ${profitStats.sellingProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()} <span className="text-sm font-bold opacity-50">G</span>
@@ -65,18 +65,18 @@ export default function ProfitDisplay({ profitStats }: ProfitDisplayProps) {
             
             <div className="bg-black/20 rounded-xl p-3 mb-3 space-y-1.5">
             <div className="flex justify-between items-center text-xs font-bold font-mono">
-                <span className="text-sky-400/70 uppercase tracking-wider text-[10px]">Value</span>
+                <span className="text-sky-400/70 uppercase tracking-wider text-[10px]">가치</span>
                 <span className="text-white tracking-wide">{Math.floor(profitStats.grossRevenue).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center text-xs font-bold font-mono">
-                <span className="text-red-400/70 uppercase tracking-wider text-[10px]">Cost</span>
+                <span className="text-red-400/70 uppercase tracking-wider text-[10px]">제작비</span>
                 <span className="text-red-200/80 tracking-wide">-{Math.floor(profitStats.totalCost).toLocaleString()}</span>
             </div>
             </div>
 
             <div className="flex flex-col items-center pt-1">
                 <span className={`text-[9px] font-extrabold mb-1 uppercase tracking-[0.2em] ${profitStats.usageProfit >= 0 ? 'text-sky-600' : 'text-red-600'}`}>
-                    SAVED
+                    절약
                 </span>
                 <span className={`text-3xl font-black tracking-tight ${profitStats.usageProfit >= 0 ? 'text-sky-400' : 'text-red-400'}`}>
                     {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()} <span className="text-sm font-bold opacity-50">G</span>

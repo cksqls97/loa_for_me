@@ -37,7 +37,7 @@ export default function MaterialInputs({
                     min="1" 
                     className="w-full bg-transparent text-4xl font-black text-white focus:outline-none placeholder-slate-700"
                 />
-                <span className="text-base font-bold text-slate-500">Slots</span>
+                <span className="text-base font-bold text-slate-500">슬롯</span>
             </div>
         </div>
 
@@ -61,7 +61,7 @@ export default function MaterialInputs({
                 {prices.rare > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.rare.toLocaleString()} G</span>
-                        <span className="block text-[9px] uppercase">Per {bundleCounts.rare}</span>
+                        <span className="block text-[9px] uppercase">{bundleCounts.rare}개 단위</span>
                     </div>
                 )}
             </div>
@@ -80,7 +80,7 @@ export default function MaterialInputs({
                 {prices.uncommon > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.uncommon.toLocaleString()} G</span>
-                        <span className="block text-[9px] uppercase">Per {bundleCounts.uncommon}</span>
+                        <span className="block text-[9px] uppercase">{bundleCounts.uncommon}개 단위</span>
                     </div>
                 )}
             </div>
@@ -99,7 +99,7 @@ export default function MaterialInputs({
                 {prices.common > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.common.toLocaleString()} G</span>
-                        <span className="block text-[9px] uppercase">Per {bundleCounts.common}</span>
+                        <span className="block text-[9px] uppercase">{bundleCounts.common}개 단위</span>
                     </div>
                 )}
             </div>

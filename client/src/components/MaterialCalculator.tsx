@@ -65,6 +65,7 @@ export default function MaterialCalculator() {
       isPriceLoaded, 
       apiError, 
       logs, 
+      fetchPrices,
       addLog 
   } = useMarketPrices(apiKey);
 
