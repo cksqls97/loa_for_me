@@ -569,13 +569,13 @@ export default function MaterialCalculator() {
 
                 <MaterialInputs 
                     targetSlots={targetSlots}
-                    setTargetSlots={setTargetSlots}
+                    setTargetSlots={(val) => !isNaN(val) && setTargetSlots(val)}
                     ownedRare={ownedRare}
-                    setOwnedRare={setOwnedRare}
+                    setOwnedRare={(val) => !isNaN(val) && setOwnedRare(val)}
                     ownedUncommon={ownedUncommon}
-                    setOwnedUncommon={setOwnedUncommon}
+                    setOwnedUncommon={(val) => !isNaN(val) && setOwnedUncommon(val)}
                     ownedCommon={ownedCommon}
-                    setOwnedCommon={setOwnedCommon}
+                    setOwnedCommon={(val) => !isNaN(val) && setOwnedCommon(val)}
                     prices={prices}
                     bundleCounts={bundleCounts}
                 />
@@ -626,7 +626,7 @@ export default function MaterialCalculator() {
             <div>
                 <label className="label">목표 슬롯</label>
                 <div className="input-row">
-                    <input type="number" value={targetSlots} onChange={(e) => setTargetSlots(Number(e.target.value))} />
+                    <input type="number" value={targetSlots || ''} onChange={(e) => setTargetSlots(Number(e.target.value) || 0)} />
                 </div>
             </div>
             <div>
@@ -636,7 +636,7 @@ export default function MaterialCalculator() {
                         <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
                         {prices.rare > 0 && <span className="price-tag">{prices.rare} G</span>}
                     </div>
-                    <input type="number" value={ownedRare} onChange={(e) => setOwnedRare(Number(e.target.value))} />
+                    <input type="number" value={ownedRare || ''} onChange={(e) => setOwnedRare(Number(e.target.value) || 0)} />
                 </div>
                 
                 <div className="input-row" style={{ marginBottom: 4 }}>
@@ -644,7 +644,7 @@ export default function MaterialCalculator() {
                         <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
                         {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon} G</span>}
                     </div>
-                    <input type="number" value={ownedUncommon} onChange={(e) => setOwnedUncommon(Number(e.target.value))} />
+                    <input type="number" value={ownedUncommon || ''} onChange={(e) => setOwnedUncommon(Number(e.target.value) || 0)} />
                 </div>
                 
                 <div className="input-row">
@@ -652,7 +652,7 @@ export default function MaterialCalculator() {
                         <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
                         {prices.common > 0 && <span className="price-tag">{prices.common} G</span>}
                     </div>
-                    <input type="number" value={ownedCommon} onChange={(e) => setOwnedCommon(Number(e.target.value))} />
+                    <input type="number" value={ownedCommon || ''} onChange={(e) => setOwnedCommon(Number(e.target.value) || 0)} />
                 </div>
                 {results.totalMissingCost > 0 && (
                     <div style={{ textAlign: 'right', marginTop: 4, fontSize: 12, color: '#fbbf24', fontWeight: 'bold' }}>
@@ -666,7 +666,8 @@ export default function MaterialCalculator() {
                     { key: 'uncommon', label: '고급', color: '#1eff00' },
                     { key: 'common', label: '일반', color: '#ffffff' }
                 ].map(({ key, label, color }) => {
-                    const data = results[key as keyof Results];
+                    const data = results[key as keyof Omit<Results, 'totalMissingCost'>] as CalculationResult;
+                    if (!data) return null;
                     return (
                         <div key={key} className="res-row">
                             <span style={{ fontSize: 13, fontWeight: 'bold', color }}>{label}</span>
