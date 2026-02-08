@@ -204,40 +204,46 @@ export default function CraftingCard({
                 </div>
               )}
 
-              {isComplete && onRecordResult && (
-                  <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/20 mt-2 animate-in fade-in slide-in-from-bottom-2">
-                       <h4 className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-2">실제 제작 결과 기록</h4>
-                       <div className="flex gap-2">
+
+          </div>
+
+          {/* Slots Visualization */}
+          <div className="flex flex-col gap-4 min-h-0 overflow-y-auto pr-1 shrink-0 relative">
+            {isComplete && onRecordResult ? (
+                 <div className="absolute inset-0 bg-emerald-500/5 rounded-xl border border-emerald-500/20 p-6 flex flex-col justify-center items-center gap-4 animate-in fade-in zoom-in-95 duration-500 hover:bg-emerald-500/10 transition-colors z-50 backdrop-blur-sm">
+                       <div className="text-center">
+                           <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-1">제작 종료</h4>
+                           <div className="text-[10px] text-emerald-500/60 font-medium">실제 제작된 수량을 입력해주세요</div>
+                       </div>
+                       
+                       <div className="flex gap-2 w-full max-w-[240px]">
                            <div className="relative flex-1">
                                <input 
                                   type="number" 
                                   value={actualOutput}
                                   onChange={(e) => setActualOutput(e.target.value)}
-                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-3 py-2 text-white font-bold text-lg outline-none focus:border-emerald-500 transition-colors text-right"
-                                  placeholder="수량 입력"
+                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-4 py-3 text-white font-bold text-xl outline-none focus:border-emerald-500 transition-colors text-right placeholder-emerald-500/20"
+                                  placeholder="수량"
+                                  autoFocus
                                />
-                               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">개</span>
+                               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">개</span>
                            </div>
                            <button 
                               onClick={() => {
                                   if (!actualOutput) return;
                                   onRecordResult(Number(actualOutput));
                               }}
-                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-colors shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                              className="px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap active:scale-95"
                            >
-                              기록
+                              기록하기
                            </button>
                        </div>
-                       <p className="text-[10px] text-emerald-400/60 mt-2 font-medium text-right">
-                           * 실제 제작된 수랑을 입력하면 수익이 확정됩니다.
+                       <p className="text-[10px] text-emerald-400/40 font-medium text-center max-w-[200px] leading-relaxed">
+                           * 기록 시 수익이 확정되며<br/>히스토리 탭에 저장됩니다.
                        </p>
                   </div>
-              )}
-          </div>
-
-          {/* Slots Visualization */}
-          <div className="flex flex-col gap-4 min-h-0 overflow-y-auto pr-1 shrink-0">
-            {Array.from({ length: concurrency }).map((_, i) => {
+            ) : (
+                Array.from({ length: concurrency }).map((_, i) => {
                 // Calculate total cycles for THIS specific row (thread)
                 const baseCycles = Math.floor(totalSlots / concurrency);
                 const remainder = totalSlots % concurrency;
@@ -263,7 +269,7 @@ export default function CraftingCard({
                 return (
                 <div 
                     key={i} 
-                    className={`w-full aspect-[10/1] rounded-lg border relative overflow-hidden transition-all duration-500 ${
+// Reading file first to be safe.
                         isRowRelevant
                             ? (isRowActive || isRowComplete)
                                 ? `bg-black/20 ${isRowComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
@@ -329,7 +335,7 @@ export default function CraftingCard({
                         </span>
                     </div>
                 </div>
-            ); })}
+            ); }) }
           </div>
 
       </div>
