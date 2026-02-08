@@ -484,23 +484,23 @@ export default function MaterialCalculator() {
   if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
 
   // Animation Classes
-  // Fixed: Use origin-center consistently to prevent animation artifacts.
-  const bonusClass = `fixed z-50 flex flex-col items-start transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+  // Fixed: Optimized positioning to prevent overlap
+  const bonusClass = `fixed z-50 flex flex-col items-center md:items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
-      ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100' 
-      : 'top-1/2 left-1/2 -translate-x-[55%] -translate-y-[160%] md:-translate-y-[40%] md:-translate-x-[115%] scale-110 md:scale-125'
+      ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100 items-start' 
+      : 'top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+  const apiClass = `fixed z-50 flex flex-col items-center md:items-start transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
-      ? 'top-6 right-6 -translate-x-0 -translate-y-0 scale-100' 
-      : 'top-1/2 right-1/2 translate-x-[55%] translate-y-[60%] md:-translate-y-[40%] md:translate-x-[115%] scale-110 md:scale-125'
+      ? 'top-6 right-6 -translate-x-0 -translate-y-0 scale-100 items-end' 
+      : 'top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
   }`;
 
   const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       hasEntered
       ? 'top-6 scale-75'
-      : 'top-[20%] scale-100'
+      : 'top-[15%] md:top-[20%] scale-90 md:scale-100'
   }`;
 
   return (
@@ -521,7 +521,7 @@ export default function MaterialCalculator() {
           </div>
           
           {/* Manual Entry Button */}
-          <div className={`absolute bottom-24 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto z-[60] ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
+          <div className={`absolute bottom-10 md:bottom-24 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto z-[100] ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
                <button 
                   onClick={() => setHasEntered(true)}
                   className="group relative px-8 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white text-lg font-black rounded-2xl shadow-2xl hover:shadow-[var(--color-primary)]/50 transition-all active:scale-95 flex items-center gap-3 overflow-hidden"
