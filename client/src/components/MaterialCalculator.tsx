@@ -295,14 +295,8 @@ export default function MaterialCalculator() {
       const totalGoldCost = baseGold * reductionMult;
 
       // 3. Expected Revenue
-      // Output Fusion items. 
-      // Base: 10 per slot. 
-      // Great Success: 20 per slot.
-      // Probability: 5% * (1 + bonus/100)
-      
       const baseProb = 0.05;
       const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100)); // e.g. 0.05 * 1.07 = 0.0535
-      // Expected output per slot = 10*(1-p) + 20*p = 10 - 10p + 20p = 10 + 10p = 10 * (1 + p)
       const expectedOutputPerSlot = 10 * (1 + finalProb);
       const totalExpectedOutput = expectedOutputPerSlot * slots;
 
@@ -323,6 +317,17 @@ export default function MaterialCalculator() {
       // Usage Profit: No Tax
       const usageProfit = grossRevenue - totalCost;
       
+      // Time / Hourly Calculation
+      const cycles = Math.ceil(slots / concurrency);
+      const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
+      const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
+      const timeMultiplier = Math.max(0, 1 - (totalReduction / 100));
+      const totalTimeSec = cycles * baseTimeSec * timeMultiplier;
+      const totalHours = totalTimeSec / 3600;
+
+      const hourlySellingProfit = totalHours > 0 ? sellingProfit / totalHours : 0;
+      const hourlyUsageProfit = totalHours > 0 ? usageProfit / totalHours : 0;
+
       return {
           grossRevenue,
           sellingRevenue,
@@ -331,19 +336,11 @@ export default function MaterialCalculator() {
           totalCost: totalCost,
           sellingProfit,
           usageProfit,
-          outputQty: totalExpectedOutput
+          outputQty: totalExpectedOutput,
+          hourlySellingProfit,
+          hourlyUsageProfit
       };
-      return {
-          grossRevenue,
-          sellingRevenue,
-          matCost: totalMaterialCost,
-          goldCost: totalGoldCost,
-          totalCost: totalCost,
-          sellingProfit,
-          usageProfit,
-          outputQty: totalExpectedOutput
-      };
-  }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance]);
+  }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance, concurrency, timeReduction, isNinav]);
 
   const saveHistory = useCallback(() => {
     // Calculate Unit Cost based on Standard Recipe (ignoring owned counts)
