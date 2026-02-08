@@ -11,6 +11,9 @@
   --color-primary: #3b82f6; /* blue-500 */
   --color-secondary: #6366f1; /* indigo-500 */
   --color-accent: #fbbf24; /* amber-400 */
+  --color-success: #34d399; /* emerald-400 */
+  --color-danger: #f87171; /* red-400 */
+  --border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Theme Overrides */
@@ -20,6 +23,8 @@
   --color-primary: #10b981; /* emerald-500 */
   --color-secondary: #059669; /* emerald-600 */
   --color-accent: #fcd34d; /* amber-300 */
+  --color-success: #34d399;
+  --color-danger: #f87171;
 }
 
 [data-theme='ocean'] {
@@ -28,6 +33,8 @@
   --color-primary: #06b6d4; /* cyan-500 */
   --color-secondary: #0ea5e9; /* sky-500 */
   --color-accent: #fde047; /* yellow-300 */
+  --color-success: #4ade80;
+  --color-danger: #f87171;
 }
 
 [data-theme='obsidian'] {
@@ -37,6 +44,8 @@
   --color-primary: #ef4444; /* red-500 */
   --color-secondary: #dc2626; /* red-600 */
   --color-accent: #ffffff;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
 }
 
 [data-theme='sunset'] {
@@ -45,6 +54,8 @@
   --color-primary: #f97316; /* orange-500 */
   --color-secondary: #db2777; /* pink-600 */
   --color-accent: #facc15; /* yellow-400 */
+  --color-success: #a3e635;
+  --color-danger: #fb7185;
 }
 
 body {

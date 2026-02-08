@@ -418,33 +418,48 @@ export default function MaterialCalculator() {
       const win = await window.documentPictureInPicture.requestWindow({ width: 360, height: 600 });
       setPipWindow(win);
 
+      // Get current theme variables
+      const computedStyle = getComputedStyle(document.body);
+      
       const style = document.createElement('style');
       style.textContent = `
+        :root {
+          --bg-main: ${computedStyle.getPropertyValue('--bg-main')};
+          --bg-panel: ${computedStyle.getPropertyValue('--bg-panel')};
+          --text-primary: ${computedStyle.getPropertyValue('--text-primary')};
+          --text-secondary: ${computedStyle.getPropertyValue('--text-secondary')};
+          --color-primary: ${computedStyle.getPropertyValue('--color-primary')};
+          --color-secondary: ${computedStyle.getPropertyValue('--color-secondary')};
+          --color-accent: ${computedStyle.getPropertyValue('--color-accent')};
+          --color-success: ${computedStyle.getPropertyValue('--color-success')};
+          --color-danger: ${computedStyle.getPropertyValue('--color-danger')};
+          --border-color: ${computedStyle.getPropertyValue('--border-color')};
+        }
         * { box-sizing: border-box; }
-        body { background: #0f111a; color: white; font-family: 'Pretendard', sans-serif; padding: 12px 10px; margin: 0; overflow: hidden; }
+        body { background: var(--bg-main); color: var(--text-primary); font-family: 'Pretendard', sans-serif; padding: 12px 10px; margin: 0; overflow: hidden; transition: background 0.5s; }
         .container { display: flex; flex-direction: column; gap: 8px; }
-        .tab-box { display: flex; background: #1a1d29; border-radius: 8px; padding: 2px; margin-bottom: 5px; }
-        .tab-btn { flex: 1; padding: 6px; border: none; background: transparent; color: #64748b; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 6px; }
-        .tab-btn.active { background: #334155; color: white; }
-        .label { font-size: 11px; font-weight: bold; color: #475569; margin-bottom: 2px; display: block; }
-        .input-row { display: flex; align-items: center; background: #1a1d29; border-radius: 8px; padding: 5px 10px; }
+        .tab-box { display: flex; background: var(--bg-panel); border-radius: 8px; padding: 2px; margin-bottom: 5px; }
+        .tab-btn { flex: 1; padding: 6px; border: none; background: transparent; color: var(--text-secondary); font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .tab-btn.active.abidos { background: var(--color-primary); color: white; }
+        .tab-btn.active.superior { background: var(--color-secondary); color: white; }
+        .label { font-size: 11px; font-weight: bold; color: var(--text-secondary); margin-bottom: 2px; display: block; }
+        .input-row { display: flex; align-items: center; background: var(--bg-panel); border-radius: 8px; padding: 5px 10px; border: 1px solid var(--border-color); }
         .input-row span { font-size: 11px; font-weight: bold; }
-        input { background: transparent; border: none; color: white; text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; font-family: inherit; }
-        .res-box { margin-top: 5px; padding-top: 8px; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 4px; }
+        input { background: transparent; border: none; color: var(--text-primary); text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; font-family: inherit; }
+        .res-box { margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px; }
         .res-row { display: flex; justify-content: space-between; align-items: center; }
-        .buy-val { color: #fbbf24; font-weight: 900; font-size: 20px; }
-        .update-btn { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 8px; cursor: pointer; }
-        .update-btn:active { background: #1d4ed8; }
+        .buy-val { color: var(--color-accent); font-weight: 900; font-size: 20px; }
+        .update-btn { width: 100%; padding: 10px; background: linear-gradient(to right, var(--color-primary), var(--color-secondary)); color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        .update-btn:active { filter: brightness(0.9); transform: scale(0.98); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .price-tag { font-size: 10px; color: #94a3b8; font-weight: bold; }
-        .profit-split-container { display: flex; background: #1e293b; border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid #334155; }
+        .price-tag { font-size: 10px; color: var(--text-secondary); font-weight: bold; }
+        .profit-split-container { display: flex; background: var(--bg-panel); border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid var(--border-color); }
         .profit-split-item { flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .profit-split-item:first-child { border-right: 1px solid #334155; }
-        .profit-label { font-size: 10px; color: #94a3b8; font-weight: bold; margin-bottom: 4px; }
+        .profit-split-item:first-child { border-right: 1px solid var(--border-color); }
+        .profit-label { font-size: 10px; color: var(--text-secondary); font-weight: bold; margin-bottom: 4px; }
         .profit-val { font-size: 18px; font-weight: 900; line-height: 1; }
-        .val-plus { color: #34d399; }
-        .val-minus { color: #f87171; }
+        .val-plus { color: var(--color-success); }
+        .val-minus { color: var(--color-danger); }
       `;
       win.document.head.appendChild(style);
 
@@ -621,13 +636,13 @@ export default function MaterialCalculator() {
         <div className="container">
              <div className="tab-box">
                 <button 
-                    className={`tab-btn ${activeTab === 'abidos' ? 'active' : ''}`}
+                    className={`tab-btn ${activeTab === 'abidos' ? 'active abidos' : ''}`}
                     onClick={() => setActiveTab('abidos')}
                 >
                     아비도스
                 </button>
                 <button 
-                    className={`tab-btn ${activeTab === 'superior' ? 'active' : ''}`}
+                    className={`tab-btn ${activeTab === 'superior' ? 'active superior' : ''}`}
                     onClick={() => setActiveTab('superior')}
                 >
                     상급 아비도스

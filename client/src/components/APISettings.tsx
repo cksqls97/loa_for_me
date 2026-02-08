@@ -29,26 +29,26 @@ export default function APISettings({
       <button 
           onClick={() => setShowSettings(!showSettings)}
           disabled={forceExpanded}
-          className={`pointer-events-auto px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white/80 hover:text-white border border-white/10 rounded-lg text-sm font-bold transition-all shadow-lg ${forceExpanded ? 'opacity-50 cursor-default' : ''}`}
+          className={`pointer-events-auto px-4 py-2 bg-[var(--bg-panel)] hover:bg-[var(--bg-main)] backdrop-blur-md text-white/80 hover:text-white border border-[var(--border-color)] rounded-lg text-sm font-bold transition-all shadow-lg ${forceExpanded ? 'opacity-50 cursor-default' : ''}`}
       >
           {isOpen ? (forceExpanded ? '필수 설정' : '설정 닫기') : 'API 설정'}
       </button>
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[#0f111a]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
+          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
               <div className="flex flex-col gap-4">
                   <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Lost Ark API Key</label>
+                      <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">Lost Ark API Key</label>
                       <input 
                           type="password"
                           value={apiKey}
                           onChange={(e) => setApiKey(e.target.value)}
                           placeholder="API Key 입력"
-                          className={`w-full bg-black/40 border rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none transition-colors ${apiError ? 'border-red-500 animate-pulse' : 'border-white/10'}`}
+                          className={`w-full bg-[var(--bg-panel)] border rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--color-primary)] outline-none transition-colors ${apiError ? 'border-[var(--color-danger)] animate-pulse' : 'border-[var(--border-color)]'}`}
                       />
                       {apiError && <p className="text-[10px] text-red-400 font-bold mt-2 text-center animate-in fade-in slide-in-from-top-1">{apiError}</p>}
                       <p className="text-[10px] text-slate-400 mt-2 leading-relaxed text-center">
-                          <a href="https://developer-lostark.game.onstove.com/" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline font-bold">Lost Ark Open API</a>
+                          <a href="https://developer-lostark.game.onstove.com/" target="_blank" rel="noreferrer" className="text-[var(--color-primary)] hover:brightness-110 underline font-bold">Lost Ark Open API</a>
                           에서 스토브 로그인 후<br/>API Key를 발급받아 입력해주세요.
                       </p>
                   </div>
@@ -56,29 +56,29 @@ export default function APISettings({
                   <button 
                       onClick={() => fetchPrices(apiKey)}
                       disabled={isLoading}
-                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                      className="w-full py-2.5 bg-[var(--color-primary)] hover:brightness-110 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
                   >
                       {isLoading ? '시세 조회 중...' : '시세 조회하기 (초기화)'}
                   </button>
 
                   {!forceExpanded && (
-                    <div className="mt-2 pt-3 border-t border-white/10">
-                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">API 로그</h3>
-                            {isLoading && <span className="text-[10px] text-blue-400 font-bold animate-pulse">조회 중...</span>}
-                         </div>
-                         <div className="h-48 overflow-y-auto bg-black/40 rounded-lg p-2 border border-white/5 custom-scrollbar">
-                           {logs.length > 0 ? (
-                             <div className="space-y-1.5">
-                               {logs.map((log, i) => (
-                                 <p key={i} className="text-[11px] text-slate-400 font-mono leading-relaxed border-b border-white/5 pb-1 last:border-0">{log}</p>
-                               ))}
-                             </div>
-                           ) : (
-                             <p className="text-[11px] text-slate-600 text-center py-4">로그 기록이 없습니다.</p>
-                           )}
-                         </div>
-                    </div>
+                     <div className="mt-2 pt-3 border-t border-[var(--border-color)]">
+                          <div className="flex justify-between items-center mb-2">
+                             <h3 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">API 로그</h3>
+                             {isLoading && <span className="text-[10px] text-[var(--color-primary)] font-bold animate-pulse">조회 중...</span>}
+                          </div>
+                          <div className="h-48 overflow-y-auto bg-[var(--bg-panel)] rounded-lg p-2 border border-[var(--border-color)] custom-scrollbar">
+                            {logs.length > 0 ? (
+                              <div className="space-y-1.5">
+                                {logs.map((log, i) => (
+                                  <p key={i} className="text-[11px] text-[var(--text-secondary)] font-mono leading-relaxed border-b border-[var(--border-color)] pb-1 last:border-0">{log}</p>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-[11px] text-[var(--text-secondary)] text-center py-4">로그 기록이 없습니다.</p>
+                            )}
+                          </div>
+                     </div>
                   )}
               </div>
           </div>
