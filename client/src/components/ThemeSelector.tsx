@@ -28,7 +28,7 @@ export default function ThemeSelector() {
       {isOpen && (
         <>
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <div className="absolute right-0 mt-2 w-32 bg-[#1a1d29] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden py-1">
+            <div className="absolute bottom-full right-0 mb-2 w-32 bg-[#1a1d29] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden py-1">
                 {Object.entries(THEMES).map(([key, label]) => (
                     <button
                         key={key}
