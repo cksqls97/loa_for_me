@@ -225,7 +225,7 @@ export default function MaterialCalculator() {
   const results: Results = useMemo(() => {
     const slots = Math.max(0, targetSlots);
     const owned = { rare: ownedRare, uncommon: ownedUncommon, common: ownedCommon };
-    const res: any = {};
+    const res: any = { totalMissingCost: 0 };
     const currentCost = COSTS[activeTab];
     
     ['rare', 'uncommon', 'common'].forEach((key) => {
@@ -235,10 +235,14 @@ export default function MaterialCalculator() {
       const bundle = bundleCounts[k as keyof typeof bundleCounts] || 10; 
       const buyCount = deficit <= 0 ? 0 : Math.ceil(deficit / bundle); 
       
-      res[k] = { buyCount, needed, bundleSize: bundle }; 
+      const price = prices[k as keyof typeof prices] || 0;
+      const cost = buyCount * price;
+      
+      res[k] = { buyCount, needed, bundleSize: bundle, cost }; 
+      res.totalMissingCost += cost;
     });
     return res as Results;
-  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, bundleCounts]);
+  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, bundleCounts, prices]);
 
   // Profit Calculation
   const profitStats = useMemo(() => {
