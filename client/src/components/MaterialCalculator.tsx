@@ -506,25 +506,20 @@ export default function MaterialCalculator() {
                 <span className="text-[var(--color-primary)]">Lost Ark</span> Material Calculator
             </h1>
             
-            {/* View Toggle & Theme Selector */}
-            <div className="flex flex-col items-center gap-4">
-                <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                    <button 
-                    onClick={() => setView('calculator')}
-                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                    >
-                    재료 계산기
-                    </button>
-                    <button 
-                    onClick={() => setView('history')}
-                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                    >
-                    제작 기록
-                    </button>
-                </div>
-                <div className={`transition-all duration-500 delay-300 ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                    <ThemeSelector />
-                </div>
+            {/* View Toggle */}
+            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <button 
+                  onClick={() => setView('calculator')}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                >
+                  재료 계산기
+                </button>
+                <button 
+                  onClick={() => setView('history')}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                >
+                  제작 기록
+                </button>
             </div>
       </div>
 
@@ -614,6 +609,12 @@ export default function MaterialCalculator() {
         ) : (
           <HistoryView history={history} onDelete={deleteHistory} />
         )}
+        )}
+      </div>
+
+      {/* Theme Selector - Bottom Right Fixed */}
+      <div className={`fixed bottom-6 right-6 z-50 transition-all duration-500 delay-500 ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+          <ThemeSelector />
       </div>
 
       {pipWindow && createPortal(
