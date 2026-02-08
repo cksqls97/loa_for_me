@@ -641,19 +641,19 @@ export default function MaterialCalculator() {
   // Animation Classes
   // Fixed: Enhanced smooth transitions and centered positioning
   // Removed sudden alignment changes (items-*) to prevent layout jumps
-  const bonusClass = `fixed z-[60] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+  const bonusClass = `fixed z-[60] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 left-6 scale-100 items-start translate-x-0 translate-y-0' 
       : 'top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[calc(50%+16px)] md:translate-x-0 md:-translate-y-1/2 scale-95 items-center md:items-end'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+  const apiClass = `fixed z-50 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 right-6 scale-100 items-end translate-x-0 translate-y-0' 
       : 'top-[65%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-[calc(50%+16px)] md:translate-x-0 md:-translate-y-1/2 scale-95 items-center md:items-start'
   }`;
 
-  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
+  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       hasEntered
       ? 'top-6 scale-75 opacity-100'
       : 'top-[5%] md:top-[7%] scale-100 opacity-100'
