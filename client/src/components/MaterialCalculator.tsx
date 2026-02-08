@@ -23,12 +23,14 @@ interface CalculationResult {
   buyCount: number;
   needed: number;
   bundleSize: number;
+  cost: number;
 }
 
 interface Results {
   rare: CalculationResult;
   uncommon: CalculationResult;
   common: CalculationResult;
+  totalMissingCost: number;
 }
 
 interface CraftingEntry {
@@ -429,7 +431,8 @@ export default function MaterialCalculator() {
         .update-btn { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 8px; cursor: pointer; }
         .update-btn:active { background: #1d4ed8; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .price-tag { font-size: 10px; color: #94a3b8; margin-left: auto; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .price-tag { font-size: 10px; color: #94a3b8; font-family: monospace; }
         .profit-split-container { display: flex; background: #1e293b; border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid #334155; }
         .profit-split-item { flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .profit-split-item:first-child { border-right: 1px solid #334155; }
@@ -629,20 +632,33 @@ export default function MaterialCalculator() {
             <div>
                 <label className="label">보유량</label>
                 <div className="input-row" style={{ marginBottom: 4 }}>
-                    <span style={{ color: '#3b82f6' }}>희귀</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                        <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
+                        {prices.rare > 0 && <span className="price-tag">{prices.rare} G</span>}
+                    </div>
                     <input type="number" value={ownedRare} onChange={(e) => setOwnedRare(Number(e.target.value))} />
                 </div>
-                {prices.rare > 0 && <div className="price-tag">{prices.rare} G</div>}
+                
                 <div className="input-row" style={{ marginBottom: 4 }}>
-                    <span style={{ color: '#1eff00' }}>고급</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                        <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
+                        {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon} G</span>}
+                    </div>
                     <input type="number" value={ownedUncommon} onChange={(e) => setOwnedUncommon(Number(e.target.value))} />
                 </div>
-                {prices.uncommon > 0 && <div className="price-tag">{prices.uncommon} G</div>}
+                
                 <div className="input-row">
-                    <span style={{ color: '#ffffff' }}>일반</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
+                        <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
+                        {prices.common > 0 && <span className="price-tag">{prices.common} G</span>}
+                    </div>
                     <input type="number" value={ownedCommon} onChange={(e) => setOwnedCommon(Number(e.target.value))} />
                 </div>
-                {prices.common > 0 && <div className="price-tag">{prices.common} G</div>}
+                {results.totalMissingCost > 0 && (
+                    <div style={{ textAlign: 'right', marginTop: 4, fontSize: 12, color: '#fbbf24', fontWeight: 'bold' }}>
+                        부족 재료 총 비용: {Math.floor(results.totalMissingCost).toLocaleString()} G
+                    </div>
+                )}
             </div>
             <div className="res-box">
                 {[
