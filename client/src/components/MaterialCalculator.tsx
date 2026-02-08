@@ -121,12 +121,7 @@ export default function MaterialCalculator() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Revert to setup if configuration becomes invalid (API Error or Missing Fields)
-  useEffect(() => {
-    if (hasEntered && !isConfigured) {
-      setHasEntered(false);
-    }
-  }, [hasEntered, isConfigured]);
+
 
   // Save to local storage
   useEffect(() => {
@@ -496,26 +491,34 @@ export default function MaterialCalculator() {
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
   const isFullyReady = hasEntered && isPriceLoaded;
 
+  // Revert to setup if configuration becomes invalid (API Error or Missing Fields)
+  useEffect(() => {
+    if (hasEntered && !isConfigured) {
+      setHasEntered(false);
+    }
+  }, [hasEntered, isConfigured]);
+
   if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
 
   // Animation Classes
-  // Fixed: Optimized positioning to prevent overlap
-  const bonusClass = `fixed z-[60] flex flex-col items-center md:items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+  // Fixed: Enhanced smooth transitions and centered positioning
+  // Removed sudden alignment changes (items-*) to prevent layout jumps
+  const bonusClass = `fixed z-[60] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       hasEntered 
-      ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100 items-start' 
-      : 'top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
+      ? 'top-6 left-6 scale-100 items-start translate-x-0 translate-y-0' 
+      : 'top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[50%] md:mr-3 md:translate-x-0 md:-translate-y-1/2 scale-95 items-center md:items-end'
   }`;
 
-  const apiClass = `fixed z-50 flex flex-col items-center md:items-start transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+  const apiClass = `fixed z-50 flex flex-col transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
       hasEntered 
-      ? 'top-6 right-6 -translate-x-0 -translate-y-0 scale-100 items-end' 
-      : 'top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
+      ? 'top-6 right-6 scale-100 items-end translate-x-0 translate-y-0' 
+      : 'top-[65%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-[50%] md:ml-3 md:translate-x-0 md:-translate-y-1/2 scale-95 items-center md:items-start'
   }`;
 
-  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
+  const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       hasEntered
-      ? 'top-6 scale-75'
-      : 'top-[15%] md:top-[20%] scale-90 md:scale-100'
+      ? 'top-6 scale-75 opacity-100'
+      : 'top-[15%] md:top-[18%] scale-100 opacity-100'
   }`;
 
   return (
