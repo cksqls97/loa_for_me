@@ -776,11 +776,29 @@ export default function MaterialCalculator() {
                 </div>
             </section>
 
-            <PurchaseRequirements 
+            <div className="flex flex-col gap-6">
+                {/* Timer Display in Right Column */}
+                {craftingState.isActive && craftingState.endTime && (
+                    <div className="flex flex-col gap-3">
+                        {Array.from({ length: craftingState.concurrency }).map((_, idx) => (
+                            <CraftingCard
+                                key={idx}
+                                type={craftingState.type}
+                                isActive={true}
+                                endTime={craftingState.endTime}
+                                slotIndex={idx}
+                            />
+                        ))}
+                    </div>
+                )}
+                
+                <PurchaseRequirements 
                 activeTab={activeTab}
                 results={results}
                 prices={prices}
             />
+            />
+            </div>
           </div>
         ) : (
           <HistoryView history={history} onDelete={deleteHistory} />
@@ -895,20 +913,6 @@ export default function MaterialCalculator() {
                 </div>
             )}
             <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
-            <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
-            {craftingState.isActive && craftingState.endTime && (
-                <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {Array.from({ length: craftingState.concurrency }).map((_, idx) => (
-                        <CraftingCard
-                            key={idx}
-                            type={craftingState.type}
-                            isActive={true}
-                            endTime={craftingState.endTime}
-                            slotIndex={idx}
-                        />
-                    ))}
-                </div>
-            )}
         </div>,
         pipWindow.document.body
       )}
