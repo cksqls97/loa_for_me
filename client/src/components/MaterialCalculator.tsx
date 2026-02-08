@@ -45,6 +45,8 @@ interface CraftingEntry {
   totalCost: number;
   expectedOutput: number;
   expectedProfit: number;
+  actualOutput?: number;
+  actualProfit?: number;
 }
 
 export default function MaterialCalculator() {
@@ -322,6 +324,25 @@ export default function MaterialCalculator() {
     if (confirm('정말 모든 기록을 삭제하시겠습니까?')) {
       setHistory([]);
     }
+  };
+
+  const handleRecordResult = (actualCount: number) => {
+      setHistory(prev => {
+          if (prev.length === 0) return prev;
+          const latest = prev[0];
+          
+          const fusionKey = latest.type === 'abidos' ? 'fusion' : 'superiorFusion';
+          const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
+          const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
+          const unitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
+          
+          const actualRevenue = (actualCount * unitPrice) * 0.95;
+          const actualProfit = actualRevenue - latest.totalCost;
+          
+          const updated = { ...latest, actualOutput: actualCount, actualProfit };
+          return [updated, ...prev.slice(1)];
+      });
+      alert(`[기록 완료] 실제 결과 ${actualCount}개가 저장되었습니다.`);
   };
    
   const handleUpdate = () => {
@@ -720,6 +741,8 @@ export default function MaterialCalculator() {
                   totalSlots={craftingState.totalSlots}
                   onCancel={cancelCrafting}
                   hourlyProfit={Math.floor(profitStats?.hourlySellingProfit || 0)}
+                  expectedOutput={profitStats?.outputQty || 0}
+                  onRecordResult={handleRecordResult}
                 />
                 </div>
             

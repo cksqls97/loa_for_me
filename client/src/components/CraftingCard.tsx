@@ -10,6 +10,8 @@ interface CraftingCardProps {
   totalSlots: number;
   onCancel?: () => void;
   hourlyProfit?: number;
+  onRecordResult?: (count: number) => void;
+  expectedOutput?: number;
 }
 
 export default function CraftingCard({ 
@@ -21,16 +23,27 @@ export default function CraftingCard({
   concurrency,
   totalSlots,
   onCancel,
-  hourlyProfit
+  hourlyProfit,
+  onRecordResult,
+  expectedOutput
 }: CraftingCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [producedItems, setProducedItems] = useState<number>(0);
   const [batchProgress, setBatchProgress] = useState<number>(0);
   const [progressPercent, setProgressPercent] = useState<number>(0);
+  const [actualOutput, setActualOutput] = useState<string>('');
 
   const totalTargetItems = totalSlots * 10;
   const itemsPerBatch = concurrency * 10;
   const itemName = type === 'abidos' ? '아비도스 융화 재료' : '상급 아비도스 융화 재료';
+
+  const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
+
+  useEffect(() => {
+    if (isComplete && expectedOutput) {
+       setActualOutput(Math.floor(expectedOutput).toString());
+    }
+  }, [isComplete, expectedOutput]);
 
   useEffect(() => {
     if (!startTime || !endTime || !batchDuration) {
@@ -189,6 +202,36 @@ export default function CraftingCard({
                         {Math.floor(hourlyProfit).toLocaleString()} <span className="text-[10px] opacity-70">G/h</span>
                     </span>
                 </div>
+              )}
+
+              {isComplete && onRecordResult && (
+                  <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/20 mt-2 animate-in fade-in slide-in-from-bottom-2">
+                       <h4 className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-2">실제 제작 결과 기록</h4>
+                       <div className="flex gap-2">
+                           <div className="relative flex-1">
+                               <input 
+                                  type="number" 
+                                  value={actualOutput}
+                                  onChange={(e) => setActualOutput(e.target.value)}
+                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-3 py-2 text-white font-bold text-lg outline-none focus:border-emerald-500 transition-colors text-right"
+                                  placeholder="수량 입력"
+                               />
+                               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">개</span>
+                           </div>
+                           <button 
+                              onClick={() => {
+                                  if (!actualOutput) return;
+                                  onRecordResult(Number(actualOutput));
+                              }}
+                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-colors shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                           >
+                              기록
+                           </button>
+                       </div>
+                       <p className="text-[10px] text-emerald-400/60 mt-2 font-medium text-right">
+                           * 실제 제작된 수랑을 입력하면 수익이 확정됩니다.
+                       </p>
+                  </div>
               )}
           </div>
 
