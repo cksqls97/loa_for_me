@@ -111,11 +111,11 @@ export default function CraftingCard({
           </div>
 
           <div className="flex items-baseline justify-between">
-              <span className={`text-3xl font-black font-mono tracking-tight ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
-                  {isActive ? producedItems.toLocaleString() : '-'}
+              <span className={`text-3xl font-black font-mono tracking-tight ${(isActive || isComplete) ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
+                  {(isActive || isComplete) ? producedItems.toLocaleString() : '-'}
               </span>
               <span className="text-xs text-slate-500 font-bold mb-1">
-                  / {isActive ? totalTargetItems.toLocaleString() : '-'} items
+                  / {(isActive || isComplete) ? totalTargetItems.toLocaleString() : '-'} items
               </span>
           </div>
 
@@ -179,7 +179,7 @@ export default function CraftingCard({
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>
-                            SLOT {i+1} {(isActive || isComplete) && <span className="text-[10px] opacity-70 ml-1">({Math.min(totalSlots, currentCycle * concurrency)}/{totalSlots})</span>}
+                            SLOT {i+1} {(isActive || isComplete) && <span className="text-[10px] opacity-70 ml-1">({currentCycle}/{totalCycles})</span>}
                         </span>
                     </div>
                 </div>
