@@ -584,8 +584,7 @@ export default function MaterialCalculator() {
 
     // Base Time
     // Abidos: 60m (3600s), Superior: 90m (5400s)
-    // const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
-    const baseTimeSec = 1; // TEMPORARY: For testing (1 second)
+    const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
     
     // Reduction
     // Input is percentage (e.g. 10) + Ninav 10
