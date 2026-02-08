@@ -780,15 +780,12 @@ export default function MaterialCalculator() {
                 {/* Timer Display in Right Column */}
                 {craftingState.isActive && craftingState.endTime && (
                     <div className="flex flex-col gap-3">
-                        {Array.from({ length: craftingState.concurrency }).map((_, idx) => (
-                            <CraftingCard
-                                key={idx}
-                                type={craftingState.type}
-                                isActive={true}
-                                endTime={craftingState.endTime}
-                                slotIndex={idx}
-                            />
-                        ))}
+                        <CraftingCard
+                            type={craftingState.type}
+                            isActive={true}
+                            endTime={craftingState.endTime}
+                            slots={craftingState.concurrency}
+                        />
                     </div>
                 )}
                 
@@ -796,7 +793,6 @@ export default function MaterialCalculator() {
                 activeTab={activeTab}
                 results={results}
                 prices={prices}
-            />
             />
             </div>
           </div>

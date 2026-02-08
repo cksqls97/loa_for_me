@@ -4,11 +4,14 @@ interface CraftingCardProps {
   type: 'abidos' | 'superior';
   isActive: boolean;
   endTime: number | null;
-  slotIndex?: number;
+  slots: number; // Renamed from slotIndex to represent total slots
 }
 
-export default function CraftingCard({ type, isActive, endTime, slotIndex = 0 }: CraftingCardProps) {
+export default function CraftingCard({ type, isActive, endTime, slots }: CraftingCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
+  
+  // Total items = slots * 10
+  const totalItems = slots * 10;
 
   useEffect(() => {
     if (!isActive || !endTime) {
@@ -20,7 +23,6 @@ export default function CraftingCard({ type, isActive, endTime, slotIndex = 0 }:
       const diff = endTime - Date.now();
       if (diff <= 0) {
         setTimeLeft('00:00:00');
-        // Parent handles completion state switch
         return;
       }
       const h = Math.floor(diff / (1000 * 60 * 60));
@@ -43,40 +45,40 @@ export default function CraftingCard({ type, isActive, endTime, slotIndex = 0 }:
       {/* Top Glow Line */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
       
-      {/* Content Container */}
-      <div className="p-4 flex flex-col items-center justify-center gap-3 relative z-10">
-          {/* Header / Timer */}
-          <div className="text-center">
-              <h3 className="text-sm font-bold text-blue-200 tracking-wider mb-1 opacity-80">
-                  {itemName}
+      {/* Content Container - Compact Padding */}
+      <div className="p-3 flex items-center justify-between gap-4 relative z-10 w-full">
+          {/* Left: Info & Timer */}
+          <div className="flex-1 min-w-0">
+              <h3 className="text-xs font-bold text-blue-200 tracking-wider mb-0.5 opacity-80 truncate">
+                  {itemName} ({totalItems}개 제작 중)
               </h3>
               {isActive ? (
-                   <div className="text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] font-mono">
+                   <div className="text-xl font-black text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] font-mono flex items-baseline gap-2">
                       {timeLeft || 'Calculating...'}
+                      <span className="text-[10px] text-blue-300 font-normal opacity-70">남음</span>
                    </div>
               ) : (
-                   <h3 className="text-xl font-bold text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] tracking-wider">
+                   <h3 className="text-lg font-bold text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] tracking-wider">
                       제작 완료!
                    </h3>
               )}
           </div>
           
-          {/* Item Slots Row */}
-          <div className="flex gap-1.5 px-4 py-2 bg-black/40 rounded border border-blue-500/20 shadow-inner">
+          {/* Right: Visual Icons (10 items) - Make them smaller */}
+          <div className="flex gap-1 px-2 py-1.5 bg-black/40 rounded border border-blue-500/20 shadow-inner flex-shrink-0">
               {/* Status Icon */}
-              <div className={`w-8 h-8 rounded flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.3)] border ${isActive ? 'bg-blue-500/20 border-blue-400/50' : 'bg-cyan-500/20 border-cyan-400/50'}`}>
+              <div className={`w-6 h-6 rounded flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.3)] border ${isActive ? 'bg-blue-500/20 border-blue-400/50' : 'bg-cyan-500/20 border-cyan-400/50'}`}>
                   {isActive ? (
-                      <div className="w-4 h-4 border-2 border-blue-300 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 h-3 border-2 border-blue-300 border-t-transparent rounded-full animate-spin" />
                   ) : (
-                      <span className="text-cyan-300 font-bold text-lg">!</span>
+                      <span className="text-cyan-300 font-bold text-sm">!</span>
                   )}
               </div>
               
-              {/* Item Icons (10 items) */}
+              {/* Item Icons (10 items) - Smaller size (w-6 h-6) */}
               {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className={`w-8 h-8 bg-gradient-to-br from-orange-400/20 to-orange-600/20 border border-orange-400/40 rounded flex items-center justify-center relative overflow-hidden ${isActive ? 'opacity-50' : 'opacity-100'}`}>
-                       <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
-                       {/* Shine effect only when complete or active animation? Let's add simple shine */}
+                  <div key={i} className={`w-6 h-6 bg-gradient-to-br from-orange-400/20 to-orange-600/20 border border-orange-400/40 rounded flex items-center justify-center relative overflow-hidden ${isActive ? 'opacity-60' : 'opacity-100'}`}>
+                       <div className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 shadow-[0_0_5px_rgba(249,115,22,0.6)]" />
                        <div className="absolute inset-0 bg-white/20 rotate-45 translate-x-[-100%] animate-[shine_3s_infinite]" style={{ animationDelay: `${i * 0.1}s` }} />
                   </div>
               ))}
@@ -85,11 +87,11 @@ export default function CraftingCard({ type, isActive, endTime, slotIndex = 0 }:
 
       {/* Background Glow */}
       <div className={`absolute inset-0 bg-gradient-to-t pointer-events-none ${isActive ? 'from-blue-900/20' : 'from-blue-600/10'} to-transparent`} />
-      <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_20px_rgba(59,130,246,0.8)] ${isActive ? 'animate-pulse' : ''}`} />
+      <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_15px_rgba(59,130,246,0.8)] ${isActive ? 'animate-pulse' : ''}`} />
       
-      {/* Progress Bar for Active State */}
+      {/* Progress Bar */}
       {isActive && (
-          <div className="absolute bottom-0 left-0 h-[2px] bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,1)] transition-all duration-1000" style={{ width: '100%', opacity: 0.5 }} />
+          <div className="absolute bottom-0 left-0 h-[2px] bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,1)] transition-all duration-1000" style={{ width: '100%', opacity: 0.5 }} />
       )}
     </div>
   );
