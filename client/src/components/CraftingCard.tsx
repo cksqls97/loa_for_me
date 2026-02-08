@@ -112,10 +112,10 @@ export default function CraftingCard({
 
           <div className="flex items-baseline justify-between">
               <span className={`text-3xl font-black font-mono tracking-tight ${(isActive || isComplete) ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
-                  {(isActive || isComplete) ? producedItems.toLocaleString() : '-'}
+                  {(isActive || isComplete) ? (producedItems / 10).toLocaleString() : '-'}
               </span>
               <span className="text-xs text-slate-500 font-bold mb-1">
-                  / {(isActive || isComplete) ? totalTargetItems.toLocaleString() : '-'} items
+                  / {(isActive || isComplete) ? totalSlots.toLocaleString() : '-'} slots
               </span>
           </div>
 
