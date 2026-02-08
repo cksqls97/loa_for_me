@@ -609,7 +609,7 @@ export default function MaterialCalculator() {
         ) : (
           <HistoryView history={history} onDelete={deleteHistory} />
         )}
-        )}
+
       </div>
 
       {/* Theme Selector - Bottom Right Fixed */}
