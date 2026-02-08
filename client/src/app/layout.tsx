@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import React from 'react';
+import { ThemeProvider } from "../contexts/ThemeContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className="antialiased min-h-screen flex items-center justify-center p-4 bg-[#0a0a0c] text-[#e2e8f0]"
+        className="antialiased min-h-screen flex items-center justify-center p-4 bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-500"
       >
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
