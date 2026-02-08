@@ -658,11 +658,7 @@ export default function MaterialCalculator() {
                     </div>
                     <input type="number" value={ownedCommon || ''} onChange={(e) => setOwnedCommon(Number(e.target.value) || 0)} />
                 </div>
-                {results.totalMissingCost > 0 && (
-                    <div style={{ textAlign: 'right', marginTop: 4, fontSize: 12, color: '#fbbf24', fontWeight: 'bold' }}>
-                        부족 재료 총 비용: {Math.floor(results.totalMissingCost).toLocaleString()} G
-                    </div>
-                )}
+
             </div>
             <div className="res-box">
                 {[
