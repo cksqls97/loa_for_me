@@ -82,11 +82,21 @@ export default function CraftingCard({
   const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
   const currentSlots = Math.floor(producedItems / 10);
   const progressPercent = totalSlots > 0 ? Math.floor((currentSlots / totalSlots) * 100) : 0;
-  const eta = endTime ? new Date(endTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-';
+  
+  const formatKoreanTime = (ts: number | null) => {
+    if (!ts) return '-';
+    const d = new Date(ts);
+    const h = d.getHours();
+    const m = d.getMinutes();
+    const ampm = h >= 12 ? '오후' : '오전';
+    const dh = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return `${ampm} ${dh}시 ${m}분`;
+  };
+  const eta = endTime ? formatKoreanTime(endTime) : '-';
 
   return (
     <div 
-      className={`w-full relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : isComplete ? 'bg-slate-900/80 border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
+      className={`w-full h-full flex flex-col relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : isComplete ? 'bg-slate-900/80 border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
@@ -96,32 +106,32 @@ export default function CraftingCard({
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-green-400' : 'via-blue-400'} to-transparent opacity-50`} />
       )}
       
-      <div className="p-5 flex flex-col gap-4 relative z-10">
+      <div className="p-4 flex-1 flex flex-col gap-2 relative z-10 min-h-0">
           
           {/* Header Info */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : isComplete ? 'bg-green-500' : 'bg-slate-600'}`} />
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${isComplete ? 'text-green-400' : 'text-slate-400'}`}>
-                  {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready to Craft'}
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : isComplete ? 'bg-green-500' : 'bg-slate-600'}`} />
+                <h3 className={`text-[10px] font-bold uppercase tracking-wider ${isComplete ? 'text-green-400' : 'text-slate-400'}`}>
+                  {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready'}
                 </h3>
               </div>
           </div>
 
           {/* Progress & Stat Row */}
-          <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col gap-2 mb-2">
               {/* Count & Percent */}
               <div className="flex items-baseline justify-between">
                   <div className="flex items-baseline gap-1.5">
-                      <span className={`text-4xl font-black tracking-tight ${(isActive || isComplete) ? 'text-white' : 'text-slate-500'}`}>
+                      <span className={`text-2xl font-black tracking-tight ${(isActive || isComplete) ? 'text-white' : 'text-slate-500'}`}>
                           {(isActive || isComplete) ? currentSlots.toLocaleString() : '-'}
                       </span>
-                      <span className="text-sm text-slate-500 font-bold">
+                      <span className="text-xs text-slate-500 font-bold">
                           / {(isActive || isComplete) ? totalSlots.toLocaleString() : '-'} Slots
                       </span>
                   </div>
                   {(isActive || isComplete) && (
-                      <span className={`text-3xl font-black ${isComplete ? 'text-green-400' : 'text-blue-500'}`}>
+                      <span className={`text-xl font-black ${isComplete ? 'text-green-400' : 'text-blue-500'}`}>
                           {progressPercent}%
                       </span>
                   )}
@@ -129,16 +139,16 @@ export default function CraftingCard({
 
               {/* Timer & ETA Grid */}
               {(isActive || isComplete) && (
-                  <div className="grid grid-cols-2 gap-4 bg-slate-950/50 rounded-xl p-4 border border-white/5">
-                      <div className="flex flex-col gap-1">
-                          <span className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">남은 시간</span>
-                          <span className={`text-2xl font-bold tracking-tight ${isComplete ? 'text-green-400' : 'text-white'}`}>
+                  <div className="grid grid-cols-2 gap-2 bg-slate-950/50 rounded-lg p-3 border border-white/5">
+                      <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">남은 시간</span>
+                          <span className={`text-lg font-bold tracking-tight ${isComplete ? 'text-green-400' : 'text-white'}`}>
                               {timeLeft || '00:00:00'}
                           </span>
                       </div>
-                      <div className="flex flex-col gap-1 border-l border-white/5 pl-4">
-                          <span className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">예상 종료</span>
-                          <span className="text-2xl font-bold tracking-tight text-slate-300">
+                      <div className="flex flex-col gap-0.5 border-l border-white/5 pl-3">
+                          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">예상 종료</span>
+                          <span className="text-lg font-bold tracking-tight text-slate-300">
                               {eta}
                           </span>
                       </div>
@@ -147,7 +157,7 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex flex-col gap-3 flex-1 min-h-[180px]">
+          <div className="flex flex-col gap-1.5 flex-1 min-h-0 overflow-y-auto pr-1">
             {Array.from({ length: concurrency }).map((_, i) => {
                 const totalCycles = Math.ceil(totalSlots / concurrency);
                 const currentElapsed = (isActive && startTime) 
@@ -161,7 +171,7 @@ export default function CraftingCard({
                 return (
                 <div 
                     key={i} 
-                    className={`flex-1 w-full rounded-lg border relative overflow-hidden transition-all duration-500 ${
+                    className={`shrink-0 w-full h-10 rounded border relative overflow-hidden transition-all duration-500 ${
                         isActive || isComplete
                         ? `bg-slate-800/50 ${isComplete ? 'border-green-500/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
                         : 'bg-white/5 border-white/5 opacity-30'
