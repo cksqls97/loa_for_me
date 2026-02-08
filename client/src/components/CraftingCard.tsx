@@ -3,95 +3,160 @@ import React, { useState, useEffect } from 'react';
 interface CraftingCardProps {
   type: 'abidos' | 'superior';
   isActive: boolean;
+  startTime: number | null;
   endTime: number | null;
-  slots: number; // Renamed from slotIndex to represent total slots
+  batchDuration: number | null;
+  concurrency: number;
+  totalSlots: number;
 }
 
-export default function CraftingCard({ type, isActive, endTime, slots }: CraftingCardProps) {
+export default function CraftingCard({ 
+  type, 
+  isActive, 
+  startTime, 
+  endTime, 
+  batchDuration,
+  concurrency,
+  totalSlots
+}: CraftingCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
-  
-  // Total items = slots * 10
-  const totalItems = slots * 10;
+  const [producedItems, setProducedItems] = useState<number>(0);
+  const [batchProgress, setBatchProgress] = useState<number>(0);
+  const [currentBatchIcons, setCurrentBatchIcons] = useState<number>(0);
+
+  const totalTargetItems = totalSlots * 10;
+  const itemsPerBatch = concurrency * 10;
+  const itemName = type === 'abidos' ? '아비도스 융화 재료' : '상급 아비도스 융화 재료';
 
   useEffect(() => {
-    if (!isActive || !endTime) {
+    if (!isActive || !startTime || !endTime || !batchDuration) {
        setTimeLeft('');
+       setProducedItems(0);
+       setBatchProgress(0);
+       setCurrentBatchIcons(0);
        return;
     }
 
     const updateTimer = () => {
-      const diff = endTime - Date.now();
+      const now = Date.now();
+      const diff = endTime - now;
+
       if (diff <= 0) {
         setTimeLeft('00:00:00');
+        setProducedItems(totalTargetItems);
+        setBatchProgress(100);
+        setCurrentBatchIcons(10);
         return;
       }
+
+      // Time Display
       const h = Math.floor(diff / (1000 * 60 * 60));
       const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const s = Math.floor((diff % (1000 * 60)) / 1000);
       setTimeLeft(`${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+
+      // Batch Logic
+      const elapsed = now - startTime;
+      const completedBatches = Math.floor(elapsed / batchDuration);
+      const currentBatchElapsed = elapsed % batchDuration;
+      
+      // Calculate Produced Items
+      const currentProduced = Math.min(totalTargetItems, completedBatches * itemsPerBatch);
+      setProducedItems(currentProduced);
+
+      // Batch Progress (0-100%)
+      // If we are done with all batches, progress is 100
+      if (currentProduced >= totalTargetItems) {
+          setBatchProgress(100);
+          setCurrentBatchIcons(10);
+      } else {
+          const progress = (currentBatchElapsed / batchDuration);
+          setBatchProgress(progress * 100);
+          setCurrentBatchIcons(Math.floor(progress * 10)); // 0 to 9 icons filled
+      }
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 1000);
+    const interval = setInterval(updateTimer, 100); // Faster update for smooth batch progress
     return () => clearInterval(interval);
-  }, [isActive, endTime]);
-
-  const itemName = type === 'abidos' ? '아비도스 융화 재료' : '상급 아비도스 융화 재료';
+  }, [isActive, startTime, endTime, batchDuration, totalTargetItems, itemsPerBatch]);
 
   return (
     <div 
-      className="w-full relative overflow-hidden rounded-lg border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.2)] bg-gradient-to-b from-slate-800/90 to-slate-900/95 group transition-transform duration-300"
+      className={`w-full relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
     >
-      {/* Top Glow Line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
       
-      {/* Content Container - Compact Padding */}
-      <div className="p-3 flex items-center justify-between gap-4 relative z-10 w-full">
-          {/* Left: Info & Timer */}
-          <div className="flex-1 min-w-0">
-              <h3 className="text-xs font-bold text-blue-200 tracking-wider mb-0.5 opacity-80 truncate">
-                  {itemName} ({totalItems}개 제작 중)
-              </h3>
-              {isActive ? (
-                   <div className="text-xl font-black text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] font-mono flex items-baseline gap-2">
-                      {timeLeft || 'Calculating...'}
-                      <span className="text-[10px] text-blue-300 font-normal opacity-70">남음</span>
-                   </div>
-              ) : (
-                   <h3 className="text-lg font-bold text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] tracking-wider">
-                      제작 완료!
-                   </h3>
-              )}
-          </div>
+      {/* Top Glow (Active) */}
+      {isActive && (
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
+      )}
+      
+      <div className="p-5 flex items-center justify-between gap-6 relative z-10">
           
-          {/* Right: Visual Icons (10 items) - Make them smaller */}
-          <div className="flex gap-1 px-2 py-1.5 bg-black/40 rounded border border-blue-500/20 shadow-inner flex-shrink-0">
-              {/* Status Icon */}
-              <div className={`w-6 h-6 rounded flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.3)] border ${isActive ? 'bg-blue-500/20 border-blue-400/50' : 'bg-cyan-500/20 border-cyan-400/50'}`}>
-                  {isActive ? (
-                      <div className="w-3 h-3 border-2 border-blue-300 border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                      <span className="text-cyan-300 font-bold text-sm">!</span>
-                  )}
+          {/* Left: Status Info */}
+          <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  {isActive ? 'Crafting in Progress' : 'Ready to Craft'}
+                </h3>
               </div>
               
-              {/* Item Icons (10 items) - Smaller size (w-6 h-6) */}
-              {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className={`w-6 h-6 bg-gradient-to-br from-orange-400/20 to-orange-600/20 border border-orange-400/40 rounded flex items-center justify-center relative overflow-hidden ${isActive ? 'opacity-60' : 'opacity-100'}`}>
-                       <div className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 shadow-[0_0_5px_rgba(249,115,22,0.6)]" />
-                       <div className="absolute inset-0 bg-white/20 rotate-45 translate-x-[-100%] animate-[shine_3s_infinite]" style={{ animationDelay: `${i * 0.1}s` }} />
-                  </div>
-              ))}
+              <div className="flex items-baseline gap-3">
+                  <span className={`text-2xl font-black font-mono tracking-tight ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
+                      {isActive ? producedItems.toLocaleString() : '-'}
+                  </span>
+                  <span className="text-xs text-slate-500 font-bold">
+                      / {isActive ? totalTargetItems.toLocaleString() : '-'} items
+                  </span>
+              </div>
+              
+              {isActive && (
+                 <div className="text-xs text-blue-300/80 mt-1 font-mono">
+                    {timeLeft} remaining
+                 </div>
+              )}
+          </div>
+
+          {/* Right: Batch Visualizer (10 Icons) */}
+          <div className="flex flex-col items-end gap-2">
+              <div className="flex gap-1 p-1.5 bg-black/40 rounded-lg border border-white/5 shadow-inner">
+                  {Array.from({ length: 10 }).map((_, i) => {
+                      const isFilled = i < currentBatchIcons;
+                      const isNext = i === currentBatchIcons;
+                      
+                      return (
+                        <div 
+                            key={i} 
+                            className={`w-5 h-8 rounded-sm relative overflow-hidden transition-all duration-300 ${
+                                isFilled 
+                                ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.4)] scale-100 opacity-100' 
+                                : isActive && isNext 
+                                    ? 'bg-white/5 scale-95 opacity-50' 
+                                    : 'bg-white/5 scale-90 opacity-20'
+                            }`}
+                        >
+                            {isFilled && <div className="absolute inset-0 bg-white/20 rotate-45 translate-x-[-100%] animate-[shine_2s_infinite]" />}
+                        </div>
+                      );
+                  })}
+              </div>
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Batch Progress
+              </div>
           </div>
       </div>
 
-      {/* Background Glow */}
-      <div className={`absolute inset-0 bg-gradient-to-t pointer-events-none ${isActive ? 'from-blue-900/20' : 'from-blue-600/10'} to-transparent`} />
-      <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_15px_rgba(59,130,246,0.8)] ${isActive ? 'animate-pulse' : ''}`} />
-      
-      {/* Progress Bar */}
+      {/* Progress Bar (Bottom) */}
       {isActive && (
-          <div className="absolute bottom-0 left-0 h-[2px] bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,1)] transition-all duration-1000" style={{ width: '100%', opacity: 0.5 }} />
+          <div className="absolute bottom-0 left-0 h-1 bg-slate-800 w-full">
+              <div 
+                className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300 ease-linear"
+                style={{ width: `${batchProgress}%` }}
+              />
+          </div>
       )}
     </div>
   );

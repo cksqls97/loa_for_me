@@ -499,9 +499,12 @@ export default function MaterialCalculator() {
   // Crafting Timer State
   const [craftingState, setCraftingState] = useState<{
     isActive: boolean;
+    startTime: number | null;
     endTime: number | null;
+    batchDuration: number | null;
     type: MaterialType;
     concurrency: number;
+    totalSlots: number;
   }>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('craftingState');
@@ -513,9 +516,12 @@ export default function MaterialCalculator() {
     }
     return {
       isActive: false,
+      startTime: null,
       endTime: null,
+      batchDuration: null,
       type: 'superior',
-      concurrency: 3
+      concurrency: 3,
+      totalSlots: 0
     };
   });
 
@@ -579,16 +585,24 @@ export default function MaterialCalculator() {
     const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
     const multiplier = Math.max(0, 1 - (totalReduction / 100)); // Prevent negative time
     
+    // Batch Time (Time for 1 cycle)
     const singleBatchTime = baseTimeSec * multiplier;
+    const batchDuration = singleBatchTime * 1000;
+    
+    // Total Time
     const totalTimeSec = cycles * singleBatchTime;
 
-    const endTime = Date.now() + (totalTimeSec * 1000);
+    const now = Date.now();
+    const endTime = now + (totalTimeSec * 1000);
 
     setCraftingState({
       isActive: true,
+      startTime: now,
       endTime,
+      batchDuration,
       type: activeTab,
-      concurrency
+      concurrency,
+      totalSlots: slots
     });
     
     // Also notify valid start
@@ -777,19 +791,20 @@ export default function MaterialCalculator() {
             </section>
 
             <div className="flex flex-col gap-6">
-                {/* Timer Display in Right Column */}
-                {craftingState.isActive && craftingState.endTime && (
-                    <div className="flex flex-col gap-3">
-                        <CraftingCard
-                            type={craftingState.type}
-                            isActive={true}
-                            endTime={craftingState.endTime}
-                            slots={craftingState.concurrency}
-                        />
-                    </div>
-                )}
+                {/* Timer Display in Right Column - Always Visible */}
+                <div className="flex flex-col gap-3">
+                    <CraftingCard
+                        type={craftingState.type}
+                        isActive={craftingState.isActive}
+                        startTime={craftingState.startTime}
+                        endTime={craftingState.endTime}
+                        batchDuration={craftingState.batchDuration}
+                        concurrency={craftingState.concurrency}
+                        totalSlots={craftingState.totalSlots}
+                    />
+                </div>
                 
-                <PurchaseRequirements 
+                <PurchaseRequirements  
                 activeTab={activeTab}
                 results={results}
                 prices={prices}
