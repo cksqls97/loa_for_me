@@ -130,35 +130,46 @@ export default function CraftingCard({
                         : 'bg-white/5 border-white/5 opacity-30'
                     }`}
                 >
-                    {/* 10-Unit Grid Overlay (Horizontal Row of Vertical Lines) */}
-                    <div className="absolute inset-0 flex pointer-events-none z-20">
-                        {Array.from({ length: 10 }).map((_, idx) => (
-                            <div key={idx} className="flex-1 border-r border-white/10 last:border-0" />
-                        ))}
+                    {/* 10-Unit Segments with Progress */}
+                    <div className="absolute inset-0 flex z-10">
+                        {Array.from({ length: 10 }).map((_, idx) => {
+                            const completedBlocks = Math.floor(batchProgress / 10);
+                            // Calculate percentage for current block (0-100%)
+                            const currentBlockPercent = (batchProgress % 10) * 10;
+                            
+                            const isDone = (isActive && idx < completedBlocks) || isComplete;
+                            const isCurrent = isActive && !isComplete && idx === completedBlocks;
+
+                            return (
+                                <div key={idx} className="flex-1 relative border-r border-white/10 last:border-0">
+                                    {/* Completed Segment (Green) */}
+                                    {isDone && (
+                                        <div className="absolute inset-0 bg-green-500/40 transition-all duration-300 shadow-[inset_0_0_8px_rgba(34,197,94,0.2)]" />
+                                    )}
+                                    
+                                    {/* Current Active Segment (Blue Filling) */}
+                                    {isCurrent && (
+                                        <>
+                                            <div 
+                                                className="absolute top-0 bottom-0 left-0 bg-blue-500/40 transition-all duration-100 ease-linear"
+                                                style={{ width: `${currentBlockPercent}%` }}
+                                            />
+                                            {/* Active Line */}
+                                            <div 
+                                                className="absolute top-0 bottom-0 w-[2px] bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,1)] z-20 transition-all duration-100 ease-linear"
+                                                style={{ left: `${currentBlockPercent}%` }}
+                                            />
+                                        </>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
 
-                    {(isActive || isComplete) && (
-                        <>
-                            {/* Filling Effect (Horizontal: Left to Right) */}
-                            <div 
-                                className={`absolute top-0 bottom-0 left-0 transition-all duration-100 ease-linear z-10 ${isComplete ? 'bg-green-500/30' : 'bg-blue-500/30'}`}
-                                style={{ width: `${batchProgress}%` }}
-                            />
-                            
-                            {/* Active Scanner Line (Horizontal movement) */}
-                            {!isComplete && (
-                                <div 
-                                    className="absolute top-0 bottom-0 w-[2px] bg-blue-400/80 shadow-[0_0_8px_rgba(59,130,246,1)] z-30 transition-all duration-100 ease-linear"
-                                    style={{ left: `${batchProgress}%` }}
-                                />
-                            )}
-                            
-                            {/* Slot Label */}
-                            <div className="absolute inset-0 flex items-center justify-center z-40">
-                                <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>SLOT {i+1}</span>
-                            </div>
-                        </>
-                    )}
+                    {/* Slot Label Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
+                        <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>SLOT {i+1}</span>
+                    </div>
                 </div>
             ))}
           </div>
