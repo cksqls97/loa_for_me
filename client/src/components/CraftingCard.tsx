@@ -106,7 +106,7 @@ export default function CraftingCard({
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-[var(--color-success)]' : 'via-[var(--color-primary)]'} to-transparent opacity-50`} />
       )}
       
-      <div className="p-6 flex-1 flex flex-col gap-6 relative z-10 min-h-0 justify-center">
+      <div className="p-6 flex-1 flex flex-col gap-6 relative z-10 min-h-0 justify-between">
           
           {/* Header Info */}
           <div className="flex items-center justify-between shrink-0">
