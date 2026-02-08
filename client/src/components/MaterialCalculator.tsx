@@ -74,6 +74,8 @@ export default function MaterialCalculator() {
   // Bonus Stats
   const [costReduction, setCostReduction] = useState<number | null>(null);
   const [greatSuccessChance, setGreatSuccessChance] = useState<number | null>(null);
+  const [ninavBlessing, setNinavBlessing] = useState<boolean>(false);
+  const [timeReduction, setTimeReduction] = useState<number | null>(null);
 
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
@@ -84,8 +86,6 @@ export default function MaterialCalculator() {
   // History State
   const [view, setView] = useState<'calculator' | 'history'>('calculator');
   const [history, setHistory] = useState<CraftingEntry[]>([]);
-
-  // Load from local storage
 
   // Load from local storage
   useEffect(() => {
@@ -101,6 +101,8 @@ export default function MaterialCalculator() {
         if (data.apiKey) setApiKey(data.apiKey);
         if (typeof data.costReduction === 'number') setCostReduction(data.costReduction);
         if (typeof data.greatSuccessChance === 'number') setGreatSuccessChance(data.greatSuccessChance);
+        if (typeof data.ninavBlessing === 'boolean') setNinavBlessing(data.ninavBlessing);
+        if (typeof data.timeReduction === 'number') setTimeReduction(data.timeReduction);
         if (data.history) setHistory(data.history);
       } catch (e) { console.error(e); }
     }
@@ -122,10 +124,12 @@ export default function MaterialCalculator() {
         apiKey,
         costReduction,
         greatSuccessChance,
+        ninavBlessing,
+        timeReduction,
         history
     };
     localStorage.setItem('matCalcData', JSON.stringify(data));
-  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, apiKey, costReduction, greatSuccessChance, history]);
+  }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, apiKey, costReduction, greatSuccessChance, ninavBlessing, timeReduction, history]);
 
   const addLog = (msg: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -472,7 +476,7 @@ export default function MaterialCalculator() {
     }
   };
 
-  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && !apiError;
+  const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
   const isFullyReady = isConfigured && isPriceLoaded;
 
   if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
@@ -544,6 +548,10 @@ export default function MaterialCalculator() {
         setCostReduction={setCostReduction}
         greatSuccessChance={greatSuccessChance}
         setGreatSuccessChance={setGreatSuccessChance}
+        ninavBlessing={ninavBlessing}
+        setNinavBlessing={setNinavBlessing}
+        timeReduction={timeReduction}
+        setTimeReduction={setTimeReduction}
         className={bonusClass}
         forceExpanded={!isConfigured}
       />
