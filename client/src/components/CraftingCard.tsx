@@ -61,11 +61,13 @@ export default function CraftingCard({
       const currentProduced = Math.min(totalTargetItems, completedBatches * itemsPerBatch);
       setProducedItems(currentProduced);
 
-      // Batch Progress (0-100%)
+      // Batch Progress (0-100% relative to 10 batches)
       if (currentProduced >= totalTargetItems) {
           setBatchProgress(100);
       } else {
-          setBatchProgress((currentBatchElapsed / batchDuration) * 100);
+          const currentBatchIndex = completedBatches % 10;
+          const currentBatchPercent = (currentBatchElapsed / batchDuration) * 100;
+          setBatchProgress((currentBatchIndex * 10) + (currentBatchPercent / 10));
       }
     };
 
