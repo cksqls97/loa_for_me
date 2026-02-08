@@ -125,12 +125,9 @@ export default function CraftingCard({
                         e.stopPropagation();
                         onCancel();
                     }}
-                    className="p-2 -mr-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors group"
-                    title="제작 취소"
+                    className="px-3 py-1.5 text-xs font-bold text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors"
                   >
-                    <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    제작 취소
                   </button>
               )}
           </div>
