@@ -26,26 +26,17 @@ export default function BonusGuide({ className = "" }: BonusGuideProps) {
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs bg-white/5 p-2 rounded-lg">
            <span className="text-[var(--text-secondary)] font-medium">제작 수수료 감소</span>
-           <div className="text-right">
-             <span className="text-[var(--color-accent)] font-bold">16%</span>
-             <span className="text-[10px] text-[var(--text-secondary)] block">(9% + 7%)</span>
-           </div>
+           <span className="text-[var(--color-accent)] font-bold">16%</span>
         </div>
         
         <div className="flex justify-between items-center text-xs bg-white/5 p-2 rounded-lg">
            <span className="text-[var(--text-secondary)] font-medium">대성공 확률</span>
-           <div className="text-right">
-             <span className="text-[var(--color-accent)] font-bold">7%</span>
-             <span className="text-[10px] text-[var(--text-secondary)] block">(단일 항목)</span>
-           </div>
+           <span className="text-[var(--color-accent)] font-bold">7%</span>
         </div>
 
         <div className="flex justify-between items-center text-xs bg-white/5 p-2 rounded-lg">
            <span className="text-[var(--text-secondary)] font-medium">제작 시간 감소</span>
-           <div className="text-right">
-             <span className="text-[var(--color-accent)] font-bold">13%</span>
-             <span className="text-[10px] text-[var(--text-secondary)] block">(8% + 5%)</span>
-           </div>
+           <span className="text-[var(--color-accent)] font-bold">13%</span>
         </div>
       </div>
       

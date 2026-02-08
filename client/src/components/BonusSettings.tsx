@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import GuideTooltip from './GuideTooltip';
+import BonusGuide from './BonusGuide';
 
 interface BonusSettingsProps {
   costReduction: number | null;
@@ -27,6 +27,7 @@ export default function BonusSettings({
   forceExpanded = false
 }: BonusSettingsProps) {
   const [showBonus, setShowBonus] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const isOpen = showBonus || forceExpanded;
 
   return (
@@ -40,7 +41,25 @@ export default function BonusSettings({
       </button>
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
+          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left relative ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
+              
+              {/* Main Guide Toggle */}
+              <div className="absolute top-4 right-4 z-10">
+                 <div className="relative">
+                    <button 
+                        className="w-5 h-5 rounded-full bg-[var(--text-secondary)]/20 hover:bg-[var(--color-primary)] text-[var(--text-secondary)] hover:text-white flex items-center justify-center text-[10px] font-bold transition-all cursor-help"
+                        onMouseEnter={() => setShowGuide(true)}
+                        onMouseLeave={() => setShowGuide(false)}
+                    >
+                        ?
+                    </button>
+                    {/* Guide Popover */}
+                    <div className={`absolute left-full top-0 ml-4 transition-all duration-300 origin-top-left z-[60] ${showGuide ? 'opacity-100 scale-100 translate-x-0' : 'opacity-0 scale-95 -translate-x-4 pointer-events-none'}`}>
+                        <BonusGuide className="w-80" />
+                    </div>
+                 </div>
+              </div>
+
               <div className="flex flex-col gap-5">
                   
                   {/* Ninav's Blessing */}
@@ -56,15 +75,7 @@ export default function BonusSettings({
 
                   {/* Cost Reduction */}
                   <div>
-                      <div className="flex items-center mb-2">
-                          <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">제작 수수료 감소 (%)</label>
-                          <GuideTooltip 
-                              label="수수료 감소 가이드" 
-                              description="영지 내 '로나운의 고서' 메뉴에서 확인 가능한 수수료 감소 효과의 합계를 입력해주세요."
-                              imageSrc="/images/guide_ronaun.png"
-                              imageAlt="로나운의 고서 예시 이미지"
-                          />
-                      </div>
+                      <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">제작 수수료 감소 (%)</label>
                       <div className="flex items-center bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg px-3">
                           <input 
                               type="number"
@@ -80,9 +91,7 @@ export default function BonusSettings({
 
                   {/* Great Success Details */}
                   <div>
-                      <div className="flex items-center mb-2">
-                          <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">대성공 확률 (%)</label>
-                      </div>
+                      <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">대성공 확률 (%)</label>
                       <div className="flex items-center bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg px-3">
                           <input 
                               type="number"
@@ -98,15 +107,7 @@ export default function BonusSettings({
 
                   {/* Time Reduction */}
                   <div>
-                      <div className="flex items-center mb-2">
-                          <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">제작 시간 감소 (%)</label>
-                          <GuideTooltip 
-                              label="시간 감소 가이드" 
-                              description="영지 내 '로나운의 고서'에서 확인 가능한 시간 감소 효과들의 합계를 입력해주세요. (니나브의 축복은 자동으로 +10%p 적용됩니다)"
-                              imageSrc="/images/guide_ronaun.png"
-                              imageAlt="로나운의 고서 예시 이미지"
-                          />
-                      </div>
+                      <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">제작 시간 감소 (%)</label>
                       <div className="flex items-center bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg px-3">
                           <input 
                               type="number"

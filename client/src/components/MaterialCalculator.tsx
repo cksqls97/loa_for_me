@@ -488,25 +488,19 @@ export default function MaterialCalculator() {
   const bonusClass = `fixed z-50 flex flex-col items-center md:items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100 items-start' 
-      : 'top-[16%] left-1/2 -translate-x-1/2 md:top-1/2 md:left-[15%] md:translate-x-[-50%] md:-translate-y-1/2 scale-90 md:scale-100'
+      : 'top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
   }`;
 
   const apiClass = `fixed z-50 flex flex-col items-center md:items-start transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 right-6 -translate-x-0 -translate-y-0 scale-100 items-end' 
-      : 'top-[84%] left-1/2 -translate-x-1/2 -translate-y-[100%] md:top-1/2 md:left-auto md:right-[15%] md:translate-x-[50%] md:-translate-y-1/2 scale-90 md:scale-100'
-  }`;
-
-  const guideClass = `fixed z-40 flex flex-col items-center transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-      hasEntered
-      ? 'opacity-0 scale-75 pointer-events-none'
-      : 'top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100 scale-90 md:scale-100'
+      : 'top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
   }`;
 
   const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       hasEntered
       ? 'top-6 scale-75'
-      : 'opacity-0 -translate-y-20' // Create space for mobile layout
+      : 'top-[15%] md:top-[20%] scale-90 md:scale-100'
   }`;
 
   return (
@@ -519,38 +513,51 @@ export default function MaterialCalculator() {
                 : 'none' 
           }}
       >
-          {/* Removed Title Component from here to use titleClass one */}
-           {!hasEntered && (
-              <h1 className="absolute top-[5%] md:top-[12%] text-2xl md:text-4xl font-black text-[var(--text-primary)] tracking-tighter drop-shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-4">
-                  <span className="text-[var(--color-primary)]">Setup</span> Wizard
-              </h1>
-           )}
+          <div className="absolute top-[20%] text-center space-y-3 px-4 pt-16">
+              {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
+              <p className={`text-slate-400 text-sm md:text-base font-medium transition-all duration-500 delay-200 ${isConfigured ? 'opacity-0 -translate-y-4' : 'opacity-100 translate-y-0'}`}>
+                  정확한 이득 계산을 위해 <span className="text-white font-bold">API Key</span>와 <span className="text-white font-bold">제작 보너스</span>를 설정해주세요.
+              </p>
+          </div>
+          
+          {/* Manual Entry Button */}
+          <div className={`absolute bottom-10 md:bottom-24 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto z-[100] ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
+               <button 
+                  onClick={() => setHasEntered(true)}
+                  className="group relative px-8 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white text-lg font-black rounded-2xl shadow-2xl hover:shadow-[var(--color-primary)]/50 transition-all active:scale-95 flex items-center gap-3 overflow-hidden"
+               >
+                   <span className="relative z-10">계산기 시작하기</span>
+                   <svg className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                   </svg>
+                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+               </button>
+               <p className="text-center text-[var(--text-secondary)] text-xs mt-4 animate-pulse uppercase tracking-widest font-bold">All Systems Ready</p>
+          </div>
       </div>
 
-      {/* Animated Title - Only visible AFTER entry or transitioning */}
-      {hasEntered && (
-        <div className={titleClass}>
-              <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
-                  <span className="text-[var(--color-primary)]">Lost Ark</span> Material Calculator
-              </h1>
-              
-              {/* View Toggle */}
-              <div className="flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 pointer-events-auto">
-                  <button 
-                    onClick={() => setView('calculator')}
-                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    재료 계산기
-                  </button>
-                  <button 
-                    onClick={() => setView('history')}
-                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    제작 기록
-                  </button>
-              </div>
-        </div>
-      )}
+      {/* Animated Title */}
+      <div className={titleClass}>
+            <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
+                <span className="text-[var(--color-primary)]">Lost Ark</span> Material Calculator
+            </h1>
+            
+            {/* View Toggle */}
+            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${hasEntered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <button 
+                  onClick={() => setView('calculator')}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                >
+                  재료 계산기
+                </button>
+                <button 
+                  onClick={() => setView('history')}
+                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                >
+                  제작 기록
+                </button>
+            </div>
+      </div>
 
       {/* Settings Layer */}
       <BonusSettings 
@@ -565,11 +572,6 @@ export default function MaterialCalculator() {
         className={bonusClass}
         forceExpanded={!hasEntered}
       />
-
-      {/* Feature: Dedicated Guide Panel */}
-      <div className={guideClass}>
-        <BonusGuide />
-      </div>
 
       <APISettings 
         apiKey={apiKey}
