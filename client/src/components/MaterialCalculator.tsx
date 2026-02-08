@@ -576,10 +576,6 @@ export default function MaterialCalculator() {
     
     // Also notify valid start
     addLog(`[타이머] ${activeTab === 'abidos' ? '아비도스' : '상급'} 제작 시작 (${cycles}회 반복, 총 ${Math.floor(totalTimeSec/60)}분)`);
-    if (pipWindow) {
-        // @ts-ignore
-        pipWindow.document.getElementById('timer-status').innerText = `제작 중... (${Math.floor(totalTimeSec/60)}분)`;
-    }
   };
 
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
@@ -882,6 +878,16 @@ export default function MaterialCalculator() {
                 </div>
             )}
             <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
+            {craftingState.isActive && craftingState.endTime && (
+                <div style={{ marginTop: 8, padding: 8, background: 'rgba(59, 130, 246, 0.1)', borderRadius: 8, border: '1px solid #3b82f6' }}>
+                    <p style={{ margin: 0, textAlign: 'center', fontSize: 12, color: '#60a5fa', fontWeight: 'bold' }}>
+                        제작 진행 중... 
+                        <span style={{ display: 'block', fontSize: 10, marginTop: 2, opacity: 0.8 }}>
+                            종료 예정: {new Date(craftingState.endTime).toLocaleTimeString()}
+                        </span>
+                    </p>
+                </div>
+            )}
         </div>,
         pipWindow.document.body
       )}
