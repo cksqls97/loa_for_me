@@ -13,6 +13,7 @@ import ThemeSelector from './ThemeSelector';
 import PurchaseRequirements from './PurchaseRequirements';
 import HistoryView from './HistoryView';
 import CraftingStatus from './CraftingStatus';
+import CraftingCard from './CraftingCard';
 
 type MaterialType = 'abidos' | 'superior';
 
@@ -894,14 +895,18 @@ export default function MaterialCalculator() {
                 </div>
             )}
             <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
+            <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
             {craftingState.isActive && craftingState.endTime && (
-                <div style={{ marginTop: 8, padding: 8, background: 'rgba(59, 130, 246, 0.1)', borderRadius: 8, border: '1px solid #3b82f6' }}>
-                    <p style={{ margin: 0, textAlign: 'center', fontSize: 12, color: '#60a5fa', fontWeight: 'bold' }}>
-                        제작 진행 중... 
-                        <span style={{ display: 'block', fontSize: 10, marginTop: 2, opacity: 0.8 }}>
-                            종료 예정: {new Date(craftingState.endTime).toLocaleTimeString()}
-                        </span>
-                    </p>
+                <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {Array.from({ length: craftingState.concurrency }).map((_, idx) => (
+                        <CraftingCard
+                            key={idx}
+                            type={craftingState.type}
+                            isActive={true}
+                            endTime={craftingState.endTime}
+                            slotIndex={idx}
+                        />
+                    ))}
                 </div>
             )}
         </div>,
