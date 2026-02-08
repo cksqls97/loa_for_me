@@ -58,6 +58,7 @@ export default function MaterialInputs({
                         className="w-full bg-transparent text-right font-bold text-xl outline-none text-slate-200 focus:text-white transition-colors placeholder-slate-700"
                     />
                 </div>
+                {prices.rare > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.rare.toLocaleString()} G</span>
                         <span className="block text-[9px] uppercase">Per {bundleCounts.rare}</span>
@@ -76,6 +77,7 @@ export default function MaterialInputs({
                         className="w-full bg-transparent text-right font-bold text-xl outline-none text-slate-200 focus:text-white transition-colors placeholder-slate-700"
                     />
                 </div>
+                {prices.uncommon > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.uncommon.toLocaleString()} G</span>
                         <span className="block text-[9px] uppercase">Per {bundleCounts.uncommon}</span>
@@ -94,6 +96,7 @@ export default function MaterialInputs({
                         className="w-full bg-transparent text-right font-bold text-xl outline-none text-slate-200 focus:text-white transition-colors placeholder-slate-700"
                     />
                 </div>
+                {prices.common > 0 && (
                     <div className="text-right text-[10px] text-slate-500 w-24 border-l border-white/5 pl-4">
                         <span className="block text-slate-400 font-mono">{prices.common.toLocaleString()} G</span>
                         <span className="block text-[9px] uppercase">Per {bundleCounts.common}</span>
