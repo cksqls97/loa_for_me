@@ -106,10 +106,10 @@ export default function CraftingCard({
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-[var(--color-success)]' : 'via-[var(--color-primary)]'} to-transparent opacity-50`} />
       )}
       
-      <div className="p-8 flex-1 flex flex-col gap-6 relative z-10 min-h-0 justify-between">
+      <div className="p-6 flex-1 flex flex-col gap-6 relative z-10 min-h-0 justify-center">
           
           {/* Header Info */}
-          <div className="flex items-center justify-between mb-2 shrink-0">
+          <div className="flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
                 <h3 className={`text-xs font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
@@ -119,7 +119,7 @@ export default function CraftingCard({
           </div>
 
           {/* Progress & Stat Row */}
-          <div className="flex flex-col gap-4 mb-2 shrink-0">
+          <div className="flex flex-col gap-4 shrink-0">
               {/* Count & Percent */}
               <div className="flex items-baseline justify-between">
                   <div className="flex items-baseline gap-2">
@@ -157,7 +157,7 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 justify-center">
+          <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 shrink-0"> justify-center">
             {Array.from({ length: concurrency }).map((_, i) => {
                 const totalCycles = Math.ceil(totalSlots / concurrency);
                 const currentElapsed = (isActive && startTime) 
