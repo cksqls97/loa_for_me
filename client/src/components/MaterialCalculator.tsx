@@ -785,26 +785,30 @@ export default function MaterialCalculator() {
                 </div>
             </section>
 
-            <div className="flex flex-col gap-6">
-                {/* Timer Display in Right Column - Always Visible */}
-                <div className="flex flex-col gap-3">
-                    <CraftingCard
-                        type={craftingState.type}
-                        isActive={craftingState.isActive}
-                        startTime={craftingState.startTime}
-                        endTime={craftingState.endTime}
-                        batchDuration={craftingState.batchDuration}
-                        concurrency={craftingState.concurrency}
-                        totalSlots={craftingState.totalSlots}
+            <section className="bg-[var(--bg-panel)]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group flex flex-col h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-secondary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                
+                <div className="flex flex-col gap-6 relative z-10 flex-1">
+                    {/* Timer Display - Always Visible */}
+                    <div className="flex flex-col gap-3">
+                        <CraftingCard
+                            type={craftingState.type}
+                            isActive={craftingState.isActive}
+                            startTime={craftingState.startTime}
+                            endTime={craftingState.endTime}
+                            batchDuration={craftingState.batchDuration}
+                            concurrency={craftingState.concurrency}
+                            totalSlots={craftingState.totalSlots}
+                        />
+                    </div>
+                
+                    <PurchaseRequirements  
+                        activeTab={activeTab}
+                        results={results}
+                        prices={prices}
                     />
                 </div>
-                
-                <PurchaseRequirements  
-                activeTab={activeTab}
-                results={results}
-                prices={prices}
-            />
-            </div>
+            </section>
           </div>
         ) : (
           <HistoryView history={history} onDelete={deleteHistory} />
