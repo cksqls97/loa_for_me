@@ -157,7 +157,7 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 shrink-0"> justify-center">
+          <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 shrink-0">
             {Array.from({ length: concurrency }).map((_, i) => {
                 const totalCycles = Math.ceil(totalSlots / concurrency);
                 const currentElapsed = (isActive && startTime) 
