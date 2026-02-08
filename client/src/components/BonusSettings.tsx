@@ -32,16 +32,23 @@ export default function BonusSettings({
 
   return (
     <div className={className}>
-      <button 
-          onClick={() => setShowBonus(!showBonus)}
-          disabled={forceExpanded}
-          className={`pointer-events-auto px-4 py-2 bg-[var(--bg-panel)] hover:bg-[var(--bg-main)] backdrop-blur-md text-white/80 hover:text-white border border-[var(--border-color)] rounded-lg text-sm font-bold transition-all shadow-lg ${forceExpanded ? 'opacity-50 cursor-default' : ''}`}
-      >
-          {isOpen ? (forceExpanded ? '필수 설정' : '보너스 설정 닫기') : '제작 보너스 설정'}
-      </button>
+    <div className={className}>
+      {!forceExpanded && (
+        <button 
+            onClick={() => setShowBonus(!showBonus)}
+            className="pointer-events-auto px-4 py-2 bg-[var(--bg-panel)] hover:bg-[var(--bg-main)] backdrop-blur-md text-white/80 hover:text-white border border-[var(--border-color)] rounded-lg text-sm font-bold transition-all shadow-lg"
+        >
+            {isOpen ? '보너스 설정 닫기' : '제작 보너스 설정'}
+        </button>
+      )}
       
       {isOpen && (
           <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left relative ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
+              
+              {/* Header for Initial Setup */}
+              {forceExpanded && (
+                <h3 className="text-sm font-bold text-[var(--color-primary)] mb-4 text-center uppercase tracking-widest border-b border-white/10 pb-2">제작 보너스 설정</h3>
+              )}
               
               {/* Main Guide Toggle */}
               <div className="absolute top-4 right-4 z-10">
