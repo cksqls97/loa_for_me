@@ -28,7 +28,7 @@ export default function CraftingCard({
   const itemName = type === 'abidos' ? '아비도스 융화 재료' : '상급 아비도스 융화 재료';
 
   useEffect(() => {
-    if (!isActive || !startTime || !endTime || !batchDuration) {
+    if (!startTime || !endTime || !batchDuration) {
        setTimeLeft('');
        setProducedItems(0);
        setBatchProgress(0);
@@ -45,6 +45,9 @@ export default function CraftingCard({
         setBatchProgress(100);
         return;
       }
+      
+      // If not active and not complete, we shouldn't be here (cancelled?)
+      if (!isActive) return;
 
       // Time Display
       const h = Math.floor(diff / (1000 * 60 * 60));
@@ -76,16 +79,18 @@ export default function CraftingCard({
     return () => clearInterval(interval);
   }, [isActive, startTime, endTime, batchDuration, totalTargetItems, itemsPerBatch]);
 
+  const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
+
   return (
     <div 
-      className={`w-full relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
+      className={`w-full relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : isComplete ? 'bg-slate-900/80 border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
       
-      {/* Top Glow (Active) */}
-      {isActive && (
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
+      {/* Top Glow (Active or Complete) */}
+      {(isActive || isComplete) && (
+        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-green-400' : 'via-blue-400'} to-transparent opacity-50`} />
       )}
       
       <div className="p-5 flex flex-col gap-4 relative z-10">
@@ -93,9 +98,9 @@ export default function CraftingCard({
           {/* Header Info */}
           <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  {isActive ? 'Crafting...' : 'Idle'}
+                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : isComplete ? 'bg-green-500' : 'bg-slate-600'}`} />
+                <h3 className={`text-xs font-bold uppercase tracking-wider ${isComplete ? 'text-green-400' : 'text-slate-400'}`}>
+                  {isActive ? 'Crafting...' : isComplete ? 'Completed' : 'Idle'}
                 </h3>
               </div>
               {isActive && (
@@ -120,8 +125,8 @@ export default function CraftingCard({
                 <div 
                     key={i} 
                     className={`flex-1 w-full rounded-lg border relative overflow-hidden transition-all duration-500 ${
-                        isActive 
-                        ? 'bg-slate-800/50 border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]' 
+                        isActive || isComplete
+                        ? `bg-slate-800/50 ${isComplete ? 'border-green-500/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
                         : 'bg-white/5 border-white/5 opacity-30'
                     }`}
                 >
@@ -132,23 +137,25 @@ export default function CraftingCard({
                         ))}
                     </div>
 
-                    {isActive && (
+                    {(isActive || isComplete) && (
                         <>
                             {/* Filling Effect (Horizontal: Left to Right) */}
                             <div 
-                                className="absolute top-0 bottom-0 left-0 bg-blue-500/30 transition-all duration-100 ease-linear z-10"
+                                className={`absolute top-0 bottom-0 left-0 transition-all duration-100 ease-linear z-10 ${isComplete ? 'bg-green-500/30' : 'bg-blue-500/30'}`}
                                 style={{ width: `${batchProgress}%` }}
                             />
                             
                             {/* Active Scanner Line (Horizontal movement) */}
-                            <div 
-                                className="absolute top-0 bottom-0 w-[2px] bg-blue-400/80 shadow-[0_0_8px_rgba(59,130,246,1)] z-30 transition-all duration-100 ease-linear"
-                                style={{ left: `${batchProgress}%` }}
-                            />
+                            {!isComplete && (
+                                <div 
+                                    className="absolute top-0 bottom-0 w-[2px] bg-blue-400/80 shadow-[0_0_8px_rgba(59,130,246,1)] z-30 transition-all duration-100 ease-linear"
+                                    style={{ left: `${batchProgress}%` }}
+                                />
+                            )}
                             
                             {/* Slot Label */}
                             <div className="absolute inset-0 flex items-center justify-center z-40">
-                                <span className="text-xs font-bold text-blue-200/50 tracking-widest">SLOT {i+1}</span>
+                                <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>SLOT {i+1}</span>
                             </div>
                         </>
                     )}

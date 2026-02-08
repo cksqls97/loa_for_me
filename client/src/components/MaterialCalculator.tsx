@@ -541,8 +541,7 @@ export default function MaterialCalculator() {
 
       if (diff <= 0) {
         // Complete
-        setCraftingState(prev => ({ ...prev, isActive: false, endTime: null }));
-        // setShowCraftingStatus(true); // Removed per user request
+        setCraftingState(prev => ({ ...prev, isActive: false })); // Keep endTime to show completion status
         
         // Browser Notification
         if (Notification.permission === 'granted') {
