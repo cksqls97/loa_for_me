@@ -840,9 +840,15 @@ export default function MaterialCalculator() {
                              {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
                          </div>
                     </div>
+                    <div className="profit-split-item">
+                         <span className="profit-label">시간당 수익</span>
+                         <div className={`profit-val ${profitStats.hourlySellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {Math.floor(profitStats.hourlySellingProfit).toLocaleString()} G/h
+                         </div>
+                    </div>
                 </div>
             )}
-            <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
+            <button className="update-btn" onClick={handleUpdate}>제작 예약 완료 (보유량 업데이트)</button>
         </div>,
         pipWindow.document.body
       )}
