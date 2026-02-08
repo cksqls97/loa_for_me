@@ -102,9 +102,9 @@ export default function BonusSettings({
                           <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">제작 시간 감소 (%)</label>
                           <GuideTooltip 
                               label="시간 감소 가이드" 
-                              description="제작 화면 하단에 표시되는 '소요 시간 감소율'을 입력해주세요."
-                              imageSrc="/images/guide_time_reduction.png"
-                              imageAlt="제작 시간 감소 예시 이미지"
+                              description="영지 내 '로나운의 고서'에서 확인 가능한 시간 감소 효과들의 합계를 입력해주세요. (니나브의 축복은 자동으로 +10%p 적용됩니다)"
+                              imageSrc="/images/guide_ronaun.png"
+                              imageAlt="로나운의 고서 예시 이미지"
                           />
                       </div>
                       <div className="flex items-center bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg px-3">
@@ -117,6 +117,9 @@ export default function BonusSettings({
                           />
                           <span className="text-xs text-[var(--text-secondary)] font-bold ml-2">%</span>
                       </div>
+                      <p className="text-[10px] text-[var(--text-secondary)] mt-1.5 leading-snug break-keep opacity-80">
+                          * 최종 감소율: {(timeReduction || 0) + (ninavBlessing ? 10 : 0)}% (입력값 {timeReduction || 0}% + 니나브 {ninavBlessing ? 10 : 0}%)
+                      </p>
                   </div>
 
               </div>
