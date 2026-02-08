@@ -106,7 +106,7 @@ export default function CraftingCard({
     return () => clearInterval(interval);
   }, [isActive, startTime, endTime, batchDuration, totalTargetItems, itemsPerBatch]);
 
-  const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
+
   const currentSlots = Math.floor(producedItems / 10);
   
   const formatKoreanTime = (ts: number | null) => {
