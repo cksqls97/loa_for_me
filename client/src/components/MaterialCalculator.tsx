@@ -318,15 +318,28 @@ export default function MaterialCalculator() {
       const usageProfit = grossRevenue - totalCost;
       
       // Time / Hourly Calculation
-      const cycles = Math.ceil(slots / concurrency);
+      // Calculate based on steady state (full batches), ignoring remainders as requested.
+      const isNinav = ninavBlessing;
+      const currentConcurrency = isNinav ? 4 : 3;
+
+      // Calculate Per-Slot Profit (derived from totals since they are linear)
+      const effectiveSlots = slots || 1;
+      const sellingProfitPerSlot = sellingProfit / effectiveSlots;
+      const usageProfitPerSlot = usageProfit / effectiveSlots;
+      
+      // Batch Time (Time to craft 'currentConcurrency' slots)
       const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
       const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
       const timeMultiplier = Math.max(0, 1 - (totalReduction / 100));
-      const totalTimeSec = cycles * baseTimeSec * timeMultiplier;
-      const totalHours = totalTimeSec / 3600;
+      const batchTimeSec = baseTimeSec * timeMultiplier;
+      
+      // Hourly Profit (Projected)
+      // We produce 'currentConcurrency' slots every 'batchTimeSec' seconds.
+      const batchSellingProfit = sellingProfitPerSlot * currentConcurrency;
+      const batchUsageProfit = usageProfitPerSlot * currentConcurrency;
 
-      const hourlySellingProfit = totalHours > 0 ? sellingProfit / totalHours : 0;
-      const hourlyUsageProfit = totalHours > 0 ? usageProfit / totalHours : 0;
+      const hourlySellingProfit = batchTimeSec > 0 ? (batchSellingProfit / batchTimeSec) * 3600 : 0;
+      const hourlyUsageProfit = batchTimeSec > 0 ? (batchUsageProfit / batchTimeSec) * 3600 : 0;
 
       return {
           grossRevenue,
@@ -340,7 +353,7 @@ export default function MaterialCalculator() {
           hourlySellingProfit,
           hourlyUsageProfit
       };
-  }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance, concurrency, timeReduction, isNinav]);
+  }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance, ninavBlessing, timeReduction]);
 
   const saveHistory = useCallback(() => {
     // Calculate Unit Cost based on Standard Recipe (ignoring owned counts)
