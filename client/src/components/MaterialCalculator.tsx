@@ -660,18 +660,18 @@ export default function MaterialCalculator() {
             <section className="bg-[var(--bg-panel)]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-secondary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 
-                <header className="mb-6 relative z-10">
+                <header className="mb-4 relative z-10">
                     <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner">
                         <button 
                             onClick={() => setActiveTab('abidos')}
-                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`py-2 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <span>아비도스</span>
                             {prices.fusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.fusion} G</span>}
                         </button>
                         <button 
                             onClick={() => setActiveTab('superior')}
-                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-[var(--color-secondary)] text-white shadow-lg shadow-[var(--color-secondary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`py-2 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-[var(--color-secondary)] text-white shadow-lg shadow-[var(--color-secondary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <span>상급 아비도스</span>
                             {prices.superiorFusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.superiorFusion} G</span>}
@@ -692,10 +692,10 @@ export default function MaterialCalculator() {
                     bundleCounts={bundleCounts}
                 />
 
-                <div className="pt-5 border-t border-white/5 mt-6">
+                <div className="pt-4 border-t border-white/5 mt-4">
                     <button 
                         onClick={openPip} 
-                        className="w-full py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] hover:brightness-110 text-white rounded-xl font-bold transition-all shadow-xl shadow-[var(--color-primary)]/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
+                        className="w-full py-3 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] hover:brightness-110 text-white rounded-xl font-bold transition-all shadow-xl shadow-[var(--color-primary)]/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                     >
                         <span>오버레이 실행</span>
                         <svg className="w-4 h-4 opacity-70 group-hover/btn:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
