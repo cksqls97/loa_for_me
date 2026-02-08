@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface APISettingsProps {
   apiKey: string;
@@ -22,6 +22,12 @@ export default function APISettings({
   apiError
 }: APISettingsProps) {
   const [showSettings, setShowSettings] = useState(false);
+
+  // Reset manual state when forceExpanded changes
+  useEffect(() => {
+    setShowSettings(false);
+  }, [forceExpanded]);
+
   const isOpen = showSettings || forceExpanded;
 
   return (

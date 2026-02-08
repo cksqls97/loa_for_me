@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BonusGuide from './BonusGuide';
 
 interface BonusSettingsProps {
@@ -27,6 +27,12 @@ export default function BonusSettings({
   forceExpanded = false
 }: BonusSettingsProps) {
   const [showBonus, setShowBonus] = useState(false);
+  
+  // Reset manual state when forceExpanded changes (e.g. entering/exiting setup mode)
+  useEffect(() => {
+    setShowBonus(false);
+  }, [forceExpanded]);
+
   const [showGuide, setShowGuide] = useState(false);
   const isOpen = showBonus || forceExpanded;
 
