@@ -8,6 +8,7 @@ import BonusSettings from './BonusSettings';
 import APISettings from './APISettings';
 import MaterialInputs from './MaterialInputs';
 import ProfitDisplay from './ProfitDisplay';
+import ThemeSelector from './ThemeSelector';
 
 import PurchaseRequirements from './PurchaseRequirements';
 import HistoryView from './HistoryView';
@@ -459,7 +460,7 @@ export default function MaterialCalculator() {
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && !apiError;
   const isFullyReady = isConfigured && isPriceLoaded;
 
-  if (!isInitialized) return <div className="min-h-screen bg-[#0f111a]" />;
+  if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
 
   // Animation Classes
   // Fixed: Use origin-center consistently to prevent animation artifacts.
@@ -484,7 +485,7 @@ export default function MaterialCalculator() {
   return (
     <>
       <div 
-          className={`fixed inset-0 bg-[#0f111a]/95 backdrop-blur-md z-40 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0 invisible' : 'opacity-100'}`}
+          className={`fixed inset-0 bg-[var(--bg-main)]/95 backdrop-blur-md z-40 pointer-events-none flex flex-col items-center justify-center ${isConfigured ? 'opacity-0 invisible' : 'opacity-100'}`}
           style={{ 
             transition: enableTransition 
                 ? `opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear ${isConfigured ? '1s' : '0s'}`
@@ -501,24 +502,29 @@ export default function MaterialCalculator() {
 
       {/* Animated Title */}
       <div className={titleClass}>
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
-                <span className="text-blue-500">Lost Ark</span> Material Calculator
+            <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
+                <span className="text-[var(--color-primary)]">Lost Ark</span> Material Calculator
             </h1>
             
-            {/* View Toggle */}
-            <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                <button 
-                  onClick={() => setView('calculator')}
-                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-white text-black shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                >
-                  재료 계산기
-                </button>
-                <button 
-                  onClick={() => setView('history')}
-                  className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-white text-black shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
-                >
-                  제작 기록
-                </button>
+            {/* View Toggle & Theme Selector */}
+            <div className="flex flex-col items-center gap-4">
+                <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                    <button 
+                    onClick={() => setView('calculator')}
+                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'calculator' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                    >
+                    재료 계산기
+                    </button>
+                    <button 
+                    onClick={() => setView('history')}
+                    className={`px-8 py-2 rounded-full text-sm font-bold transition-all ${view === 'history' ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-lg scale-105' : 'text-slate-400 hover:text-white'}`}
+                    >
+                    제작 기록
+                    </button>
+                </div>
+                <div className={`transition-all duration-500 delay-300 ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                    <ThemeSelector />
+                </div>
             </div>
       </div>
 
@@ -549,21 +555,21 @@ export default function MaterialCalculator() {
         
         {view === 'calculator' ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <section className="bg-[#1a1d29]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            <section className="bg-[var(--bg-panel)]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-secondary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 
                 <header className="mb-6 relative z-10">
                     <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner">
                         <button 
                             onClick={() => setActiveTab('abidos')}
-                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'abidos' ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <span>아비도스</span>
                             {prices.fusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.fusion} G</span>}
                         </button>
                         <button 
                             onClick={() => setActiveTab('superior')}
-                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`py-2.5 rounded-lg text-sm font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${activeTab === 'superior' ? 'bg-[var(--color-secondary)] text-white shadow-lg shadow-[var(--color-secondary)]/20 scale-[1.02]' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <span>상급 아비도스</span>
                             {prices.superiorFusion > 0 && <span className="text-[10px] opacity-90 font-mono bg-black/20 px-2 py-0.5 rounded-full">{prices.superiorFusion} G</span>}
@@ -587,7 +593,7 @@ export default function MaterialCalculator() {
                 <div className="pt-5 border-t border-white/5 mt-6">
                     <button 
                         onClick={openPip} 
-                        className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
+                        className="w-full py-3.5 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] hover:brightness-110 text-white rounded-xl font-bold transition-all shadow-xl shadow-[var(--color-primary)]/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                     >
                         <span>오버레이 실행</span>
                         <svg className="w-4 h-4 opacity-70 group-hover/btn:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
