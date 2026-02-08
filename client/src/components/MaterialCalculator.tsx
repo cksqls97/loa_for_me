@@ -406,6 +406,12 @@ export default function MaterialCalculator() {
   const deleteHistory = (id: string) => {
     setHistory(prev => prev.filter(entry => entry.id !== id));
   };
+
+  const clearHistory = () => {
+    if (confirm('정말 모든 기록을 삭제하시겠습니까?')) {
+      setHistory([]);
+    }
+  };
    
   const handleUpdate = () => {
      setOwnedRare(prev => {
@@ -806,7 +812,7 @@ export default function MaterialCalculator() {
             </div>
           </div>
         ) : (
-          <HistoryView history={history} onDelete={deleteHistory} />
+          <HistoryView history={history} onDelete={deleteHistory} onClear={clearHistory} />
         )}
 
       </div>

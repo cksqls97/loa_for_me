@@ -13,9 +13,10 @@ interface CraftingEntry {
 interface HistoryViewProps {
   history: CraftingEntry[];
   onDelete: (id: string) => void;
+  onClear?: () => void;
 }
 
-export default function HistoryView({ history, onDelete }: HistoryViewProps) {
+export default function HistoryView({ history, onDelete, onClear }: HistoryViewProps) {
   const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'abidos' | 'superior'>('all');
@@ -86,12 +87,22 @@ export default function HistoryView({ history, onDelete }: HistoryViewProps) {
               </button>
 
               {history.length > 0 && (
-                  <button 
-                      onClick={() => setIsDeleteMode(!isDeleteMode)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDeleteMode ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
-                  >
-                      {isDeleteMode ? '완료' : '편집'}
-                  </button>
+                  <>
+                    {onClear && (
+                        <button 
+                            onClick={onClear}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mr-2"
+                        >
+                            모두 삭제
+                        </button>
+                    )}
+                    <button 
+                        onClick={() => setIsDeleteMode(!isDeleteMode)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDeleteMode ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                    >
+                        {isDeleteMode ? '완료' : '편집'}
+                    </button>
+                  </>
               )}
           </div>
         </div>
