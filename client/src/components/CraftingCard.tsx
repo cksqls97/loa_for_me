@@ -9,6 +9,7 @@ interface CraftingCardProps {
   concurrency: number;
   totalSlots: number;
   onCancel?: () => void;
+  hourlyProfit?: number;
 }
 
 export default function CraftingCard({ 
@@ -19,7 +20,8 @@ export default function CraftingCard({
   batchDuration,
   concurrency,
   totalSlots,
-  onCancel
+  onCancel,
+  hourlyProfit
 }: CraftingCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [producedItems, setProducedItems] = useState<number>(0);
@@ -124,7 +126,7 @@ export default function CraftingCard({
               <div className="flex items-center gap-3">
                 <span className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
                 <h3 className={`text-sm font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
-                  {isActive ? '제작 중' : isComplete ? '제작 완료' : '제작 대기'}
+                  {isActive ? '제작 중' : isComplete ? '제작 예약 완료' : '제작 대기'}
                 </h3>
               </div>
 
@@ -143,6 +145,7 @@ export default function CraftingCard({
 
           {/* Progress & Stat Row */}
           <div className="flex flex-col gap-6 shrink-0">
+              {/* Count & Percent */}
               {/* Count & Percent */}
               <div className="flex items-baseline justify-between">
                   <div className="flex items-baseline gap-3">

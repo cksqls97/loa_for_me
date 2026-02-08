@@ -37,7 +37,7 @@ export default function MaterialInputs({
                     min="1" 
                     className="w-full bg-transparent text-4xl font-black text-white focus:outline-none placeholder-slate-700"
                 />
-                <span className="text-base font-bold text-slate-500">슬롯</span>
+                <span className="text-base font-bold text-slate-500 whitespace-nowrap">슬롯</span>
             </div>
         </div>
 
