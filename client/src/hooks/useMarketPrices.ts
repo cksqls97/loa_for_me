@@ -144,6 +144,7 @@ export function useMarketPrices(apiKey: string): UseMarketPricesReturn {
         prices,
         bundleCounts,
         isLoading,
+        isPriceLoaded,
         apiError,
         logs,
         fetchPrices,

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { LostArkService } from '../services/lostark';
 import { LOGGING_MATERIALS } from '../constants/items';
+import { useMarketPrices } from '../hooks/useMarketPrices';
 import BonusSettings from './BonusSettings';
 import APISettings from './APISettings';
 import MaterialInputs from './MaterialInputs';
@@ -54,25 +55,19 @@ export default function MaterialCalculator() {
   const [ownedCommon, setOwnedCommon] = useState<number>(0);
   
   // API Integration State
+  // API Integration State
   const [apiKey, setApiKey] = useState<string>('');
-  const [prices, setPrices] = useState<{ 
-      rare: number, uncommon: number, common: number, 
-      fusion: number, superiorFusion: number 
-  }>({ 
-      rare: 0, uncommon: 0, common: 0, 
-      fusion: 0, superiorFusion: 0 
-  });
-  const [bundleCounts, setBundleCounts] = useState<{ 
-      rare: number, uncommon: number, common: number, 
-      fusion: number, superiorFusion: number 
-  }>({ 
-      rare: 10, uncommon: 10, common: 10, 
-      fusion: 10, superiorFusion: 10 
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [apiError, setApiError] = useState<string | null>(null);
   
+  const { 
+      prices, 
+      bundleCounts, 
+      isLoading, 
+      isPriceLoaded, 
+      apiError, 
+      logs, 
+      addLog 
+  } = useMarketPrices(apiKey);
+
   // Bonus Stats
   const [costReduction, setCostReduction] = useState<number | null>(null);
   const [greatSuccessChance, setGreatSuccessChance] = useState<number | null>(null);
@@ -82,7 +77,6 @@ export default function MaterialCalculator() {
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [isPriceLoaded, setIsPriceLoaded] = useState<boolean>(false);
   const [enableTransition, setEnableTransition] = useState<boolean>(false);
   
   // History State
