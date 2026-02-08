@@ -88,7 +88,7 @@ export default function HistoryView({ history, onDelete, onClear }: HistoryViewP
 
               {history.length > 0 && (
                   <>
-                    {onClear && (
+                    {isDeleteMode && onClear && (
                         <button 
                             onClick={onClear}
                             className="px-3 py-1.5 rounded-lg text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mr-2"
