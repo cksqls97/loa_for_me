@@ -33,7 +33,7 @@ export default function PurchaseRequirements({
   };
 
   return (
-    <section className="bg-white/[0.03] border border-white/5 rounded-[2rem] p-4 flex flex-col relative overflow-hidden shrink-0">
+    <section className="bg-[var(--bg-panel)]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-4 flex flex-col relative overflow-hidden shrink-0">
         <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
             구매 필요 횟수 ({activeTab === 'abidos' ? '아비도스' : '상급 아비도스'})

@@ -96,14 +96,14 @@ export default function CraftingCard({
 
   return (
     <div 
-      className={`w-full flex flex-col relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-slate-900/90 border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : isComplete ? 'bg-slate-900/80 border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'bg-slate-900/50 border-white/5 opacity-80 hover:opacity-100'}`}
+      className={`w-full h-full flex flex-col relative overflow-hidden rounded-2xl border transition-all duration-300 ${isActive ? 'bg-[var(--bg-panel)] border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/10' : isComplete ? 'bg-[var(--bg-panel)] border-[var(--color-success)]/30 shadow-lg shadow-[var(--color-success)]/10' : 'bg-[var(--bg-panel)]/60 border-white/5 hover:border-[var(--color-primary)]/20'}`}
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
       
       {/* Top Glow (Active or Complete) */}
       {(isActive || isComplete) && (
-        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-green-400' : 'via-blue-400'} to-transparent opacity-50`} />
+        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent ${isComplete ? 'via-[var(--color-success)]' : 'via-[var(--color-primary)]'} to-transparent opacity-50`} />
       )}
       
       <div className="p-4 flex-1 flex flex-col gap-2 relative z-10 min-h-0">
@@ -111,8 +111,8 @@ export default function CraftingCard({
           {/* Header Info */}
           <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : isComplete ? 'bg-green-500' : 'bg-slate-600'}`} />
-                <h3 className={`text-[10px] font-bold uppercase tracking-wider ${isComplete ? 'text-green-400' : 'text-slate-400'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[var(--color-primary)] animate-pulse' : isComplete ? 'bg-[var(--color-success)]' : 'bg-slate-600'}`} />
+                <h3 className={`text-[10px] font-bold uppercase tracking-wider ${isComplete ? 'text-[var(--color-success)]' : 'text-slate-400'}`}>
                   {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready'}
                 </h3>
               </div>
@@ -131,7 +131,7 @@ export default function CraftingCard({
                       </span>
                   </div>
                   {(isActive || isComplete) && (
-                      <span className={`text-xl font-black ${isComplete ? 'text-green-400' : 'text-blue-500'}`}>
+                      <span className={`text-xl font-black ${isComplete ? 'text-[var(--color-success)]' : 'text-[var(--color-primary)]'}`}>
                           {progressPercent}%
                       </span>
                   )}
@@ -139,10 +139,10 @@ export default function CraftingCard({
 
               {/* Timer & ETA Grid */}
               {(isActive || isComplete) && (
-                  <div className="grid grid-cols-2 gap-2 bg-slate-950/50 rounded-lg p-3 border border-white/5">
+                  <div className="grid grid-cols-2 gap-2 bg-black/20 rounded-lg p-3 border border-white/5">
                       <div className="flex flex-col gap-0.5">
                           <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">남은 시간</span>
-                          <span className={`text-lg font-bold tracking-tight ${isComplete ? 'text-green-400' : 'text-white'}`}>
+                          <span className={`text-lg font-bold tracking-tight ${isComplete ? 'text-[var(--color-success)]' : 'text-white'}`}>
                               {timeLeft || '00:00:00'}
                           </span>
                       </div>
@@ -173,7 +173,7 @@ export default function CraftingCard({
                     key={i} 
                     className={`shrink-0 w-full h-10 rounded border relative overflow-hidden transition-all duration-500 ${
                         isActive || isComplete
-                        ? `bg-slate-800/50 ${isComplete ? 'border-green-500/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
+                        ? `bg-black/20 ${isComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
                         : 'bg-white/5 border-white/5 opacity-30'
                     }`}
                 >
@@ -188,22 +188,22 @@ export default function CraftingCard({
                             const isCurrent = isActive && !isComplete && idx === completedBlocks;
 
                             return (
-                                <div key={idx} className="flex-1 relative border-r border-white/10 last:border-0">
+                                <div key={idx} className="flex-1 relative border-r border-white/5 last:border-0">
                                     {/* Completed Segment (Green) */}
                                     {isDone && (
-                                        <div className="absolute inset-0 bg-green-500/40 transition-all duration-300 shadow-[inset_0_0_8px_rgba(34,197,94,0.2)]" />
+                                        <div className="absolute inset-0 bg-[var(--color-success)]/40 transition-all duration-300" />
                                     )}
                                     
                                     {/* Current Active Segment (Blue Filling) */}
                                     {isCurrent && (
                                         <>
                                             <div 
-                                                className="absolute top-0 bottom-0 left-0 bg-blue-500/40 transition-all duration-100 ease-linear"
+                                                className="absolute top-0 bottom-0 left-0 bg-[var(--color-primary)]/40 transition-all duration-100 ease-linear"
                                                 style={{ width: `${currentBlockPercent}%` }}
                                             />
                                             {/* Active Line */}
                                             <div 
-                                                className="absolute top-0 bottom-0 w-[2px] bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,1)] z-20 transition-all duration-100 ease-linear"
+                                                className="absolute top-0 bottom-0 w-[2px] bg-[var(--color-primary)] z-20 transition-all duration-100 ease-linear"
                                                 style={{ left: `${currentBlockPercent}%` }}
                                             />
                                         </>
@@ -215,7 +215,7 @@ export default function CraftingCard({
 
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-                        <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>
+                        <span className={`text-[10px] font-bold tracking-widest ${isComplete ? 'text-[var(--color-success)]/80' : 'text-[var(--color-primary)]/80'}`}>
                             SLOT {i+1} {(isActive || isComplete) && <span className="text-[10px] opacity-70 ml-1">({currentCycle}/{totalCycles})</span>}
                         </span>
                     </div>
@@ -227,9 +227,9 @@ export default function CraftingCard({
 
       {/* Progress Bar (Bottom) */}
       {isActive && (
-          <div className="absolute bottom-0 left-0 h-1 bg-slate-800 w-full">
+          <div className="absolute bottom-0 left-0 h-1 bg-black/40 w-full">
               <div 
-                className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300 ease-linear"
+                className="h-full bg-[var(--color-primary)] shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300 ease-linear"
                 style={{ width: `${(producedItems / totalTargetItems) * 100}%` }}
               />
           </div>

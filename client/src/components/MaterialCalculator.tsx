@@ -786,7 +786,7 @@ export default function MaterialCalculator() {
 
             <div className="flex flex-col gap-6 h-full">
                 {/* Timer Display - Always Visible */}
-                <div className="flex flex-col gap-3 shrink min-h-0">
+                <div className="flex flex-col gap-3 flex-1 min-h-0">
                     <CraftingCard
                         type={craftingState.type}
                         isActive={craftingState.isActive}
