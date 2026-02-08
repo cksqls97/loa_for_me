@@ -320,6 +320,22 @@ export default function MaterialCalculator() {
     setHistory(prev => prev.filter(entry => entry.id !== id));
   };
 
+  const updateHistoryEntry = (id: string, actualCount: number) => {
+      setHistory(prev => prev.map(entry => {
+          if (entry.id !== id) return entry;
+          
+          const fusionKey = entry.type === 'abidos' ? 'fusion' : 'superiorFusion';
+          const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
+          const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
+          const unitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
+          
+          const actualRevenue = (actualCount * unitPrice) * 0.95;
+          const actualProfit = actualRevenue - entry.totalCost;
+          
+          return { ...entry, actualOutput: actualCount, actualProfit };
+      }));
+  };
+
   const clearHistory = () => {
     if (confirm('정말 모든 기록을 삭제하시겠습니까?')) {
       setHistory([]);
@@ -754,7 +770,12 @@ export default function MaterialCalculator() {
             </div>
           </div>
         ) : (
-          <HistoryView history={history} onDelete={deleteHistory} onClear={clearHistory} />
+          <HistoryView 
+            history={history} 
+            onDelete={deleteHistory} 
+            onClear={clearHistory}
+            onUpdateEntry={updateHistoryEntry}
+          />
         )}
 
       </div>

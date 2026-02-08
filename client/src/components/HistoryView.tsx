@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+// Reading file first to be safe.
 
 interface CraftingEntry {
   id: string;
@@ -8,18 +9,42 @@ interface CraftingEntry {
   totalCost: number;
   expectedOutput: number;
   expectedProfit: number;
+  actualOutput?: number;
+  actualProfit?: number;
 }
 
 interface HistoryViewProps {
   history: CraftingEntry[];
   onDelete: (id: string) => void;
   onClear?: () => void;
+  onUpdateEntry?: (id: string, actualCount: number) => void;
 }
 
-export default function HistoryView({ history, onDelete, onClear }: HistoryViewProps) {
+export default function HistoryView({ history, onDelete, onClear, onUpdateEntry }: HistoryViewProps) {
   const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'abidos' | 'superior'>('all');
+  
+  // Editing State
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
+
+  const startEditing = (entry: CraftingEntry) => {
+    setEditingId(entry.id);
+    setEditValue((entry.actualOutput ?? Math.floor(entry.expectedOutput)).toString());
+  };
+
+  const commitEditing = () => {
+    if (editingId && onUpdateEntry && editValue) {
+        onUpdateEntry(editingId, Number(editValue));
+    }
+    setEditingId(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') commitEditing();
+    if (e.key === 'Escape') setEditingId(null);
+  };
 
   const filteredHistory = useMemo(() => {
     let data = [...history];
@@ -38,7 +63,7 @@ export default function HistoryView({ history, onDelete, onClear }: HistoryViewP
   }, [history, filterType, sortOrder]);
 
   const totalProfit = useMemo(() => {
-    return filteredHistory.reduce((sum, entry) => sum + (entry.expectedProfit || 0), 0);
+    return filteredHistory.reduce((sum, entry) => sum + (entry.actualProfit ?? entry.expectedProfit ?? 0), 0);
   }, [filteredHistory]);
 
   return (
@@ -116,8 +141,8 @@ export default function HistoryView({ history, onDelete, onClear }: HistoryViewP
                           <th className="border border-[var(--border-color)] px-3 py-2">종류</th>
                           <th className="border border-[var(--border-color)] px-3 py-2 text-right">단가</th>
                           <th className="border border-[var(--border-color)] px-3 py-2 text-right">총 비용</th>
-                          <th className="border border-[var(--border-color)] px-3 py-2 text-right">예상 결과</th>
-                          <th className="border border-[var(--border-color)] px-3 py-2 text-right">예상 수익</th>
+                          <th className="border border-[var(--border-color)] px-3 py-2 text-right">제작 결과</th>
+                          <th className="border border-[var(--border-color)] px-3 py-2 text-right">실질 수익</th>
                           {isDeleteMode && <th className="border border-[var(--border-color)] px-3 py-2 text-center w-[50px] bg-[var(--color-danger)]/20 text-red-200">삭제</th>}
                       </tr>
                   </thead>
@@ -139,10 +164,31 @@ export default function HistoryView({ history, onDelete, onClear }: HistoryViewP
                                   {Math.floor(entry.totalCost).toLocaleString()} G
                               </td>
                               <td className="border border-[var(--border-color)] px-3 py-2 text-right text-[var(--text-primary)] whitespace-nowrap">
-                                  {Math.floor(entry.expectedOutput).toLocaleString()} 개
+                                  {editingId === entry.id ? (
+                                      <input 
+                                          type="number"
+                                          value={editValue}
+                                          onChange={(e) => setEditValue(e.target.value)}
+                                          onKeyDown={handleKeyDown}
+                                          onBlur={commitEditing}
+                                          autoFocus
+                                          className="w-20 bg-black/40 border border-[var(--color-primary)] rounded px-2 py-1 text-right text-white font-bold outline-none"
+                                      />
+                                  ) : (
+                                      <div 
+                                          onClick={() => onUpdateEntry && startEditing(entry)}
+                                          className={`cursor-pointer hover:text-[var(--color-primary)] transition-colors flex flex-col items-end`}
+                                          title="클릭하여 수정"
+                                      >
+                                          <span className={`font-bold ${entry.actualOutput ? 'text-[var(--color-accent)]' : ''}`}>
+                                              {Math.floor(entry.actualOutput ?? entry.expectedOutput).toLocaleString()} 개
+                                          </span>
+                                          {entry.actualOutput && <span className="text-[9px] text-[var(--color-accent)]/70">실제 결과</span>}
+                                      </div>
+                                  )}
                               </td>
-                              <td className={`border border-[var(--border-color)] px-3 py-2 text-right font-bold whitespace-nowrap ${entry.expectedProfit >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
-                                  {entry.expectedProfit > 0 ? '+' : ''}{Math.floor(entry.expectedProfit || 0).toLocaleString()} G
+                              <td className={`border border-[var(--border-color)] px-3 py-2 text-right font-bold whitespace-nowrap ${(entry.actualProfit ?? entry.expectedProfit) >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+                                  {(entry.actualProfit ?? entry.expectedProfit) > 0 ? '+' : ''}{Math.floor(entry.actualProfit ?? entry.expectedProfit).toLocaleString()} G
                               </td>
                               {isDeleteMode && (
                                   <td className="border border-[var(--border-color)] px-3 py-2 text-center bg-[var(--color-danger)]/10">
@@ -161,7 +207,7 @@ export default function HistoryView({ history, onDelete, onClear }: HistoryViewP
                   <tfoot className="bg-[var(--bg-main)] font-bold">
                       <tr>
                           <td colSpan={5} className="border border-[var(--border-color)] px-3 py-3 text-right text-[var(--text-secondary)]">
-                              총 예상 수익 합계
+                                  총 실질 수익 합계 (예상 포함)
                           </td>
                           <td className={`border border-[var(--border-color)] px-3 py-3 text-right text-lg ${totalProfit >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
                               {totalProfit > 0 ? '+' : ''}{Math.floor(totalProfit).toLocaleString()} G
