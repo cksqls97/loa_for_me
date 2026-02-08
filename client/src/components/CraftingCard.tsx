@@ -269,7 +269,7 @@ export default function CraftingCard({
                 return (
                 <div 
                     key={i} 
-// Reading file first to be safe.
+                    className={`w-full aspect-[10/1] rounded-lg border relative overflow-hidden transition-all duration-500 ${
                         isRowRelevant
                             ? (isRowActive || isRowComplete)
                                 ? `bg-black/20 ${isRowComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
