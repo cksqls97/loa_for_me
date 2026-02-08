@@ -436,7 +436,7 @@ export default function MaterialCalculator() {
         .update-btn:active { background: #1d4ed8; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .price-tag { font-size: 10px; color: #94a3b8; font-family: monospace; }
+        .price-tag { font-size: 10px; color: #94a3b8; font-weight: bold; }
         .profit-split-container { display: flex; background: #1e293b; border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid #334155; }
         .profit-split-item { flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .profit-split-item:first-child { border-right: 1px solid #334155; }
@@ -675,7 +675,7 @@ export default function MaterialCalculator() {
                                 {data.buyCount > 0 ? (
                                     <>
                                         <span className="buy-val" style={{ marginRight: 6 }}>{data.buyCount}회</span>
-                                        <span style={{ fontSize: 11, color: '#fbbf24', fontFamily: 'monospace' }}>
+                                        <span style={{ fontSize: 11, color: '#fbbf24', fontWeight: 'bold' }}>
                                             ({Math.floor(data.cost).toLocaleString()} G)
                                         </span>
                                     </>
