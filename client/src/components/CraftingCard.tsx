@@ -22,7 +22,6 @@ export default function CraftingCard({
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [producedItems, setProducedItems] = useState<number>(0);
   const [batchProgress, setBatchProgress] = useState<number>(0);
-  const [currentBatchIcons, setCurrentBatchIcons] = useState<number>(0);
 
   const totalTargetItems = totalSlots * 10;
   const itemsPerBatch = concurrency * 10;
@@ -33,7 +32,6 @@ export default function CraftingCard({
        setTimeLeft('');
        setProducedItems(0);
        setBatchProgress(0);
-       setCurrentBatchIcons(0);
        return;
     }
 
@@ -45,7 +43,6 @@ export default function CraftingCard({
         setTimeLeft('00:00:00');
         setProducedItems(totalTargetItems);
         setBatchProgress(100);
-        setCurrentBatchIcons(10);
         return;
       }
 
@@ -65,14 +62,10 @@ export default function CraftingCard({
       setProducedItems(currentProduced);
 
       // Batch Progress (0-100%)
-      // If we are done with all batches, progress is 100
       if (currentProduced >= totalTargetItems) {
           setBatchProgress(100);
-          setCurrentBatchIcons(10);
       } else {
-          const progress = (currentBatchElapsed / batchDuration);
-          setBatchProgress(progress * 100);
-          setCurrentBatchIcons(Math.floor(progress * 10)); // 0 to 9 icons filled
+          setBatchProgress((currentBatchElapsed / batchDuration) * 100);
       }
     };
 
@@ -93,60 +86,63 @@ export default function CraftingCard({
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
       )}
       
-      <div className="p-5 flex items-center justify-between gap-6 relative z-10">
+      <div className="p-5 flex flex-col gap-4 relative z-10">
           
-          {/* Left: Status Info */}
-          <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
+          {/* Header Info */}
+          <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  {isActive ? 'Crafting in Progress' : 'Ready to Craft'}
+                  {isActive ? 'Crafting...' : 'Idle'}
                 </h3>
               </div>
-              
-              <div className="flex items-baseline gap-3">
-                  <span className={`text-2xl font-black font-mono tracking-tight ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
-                      {isActive ? producedItems.toLocaleString() : '-'}
-                  </span>
-                  <span className="text-xs text-slate-500 font-bold">
-                      / {isActive ? totalTargetItems.toLocaleString() : '-'} items
-                  </span>
-              </div>
-              
               {isActive && (
-                 <div className="text-xs text-blue-300/80 mt-1 font-mono">
-                    {timeLeft} remaining
+                 <div className="text-xs text-blue-300/80 font-mono">
+                    {timeLeft}
                  </div>
               )}
           </div>
 
-          {/* Right: Batch Visualizer (10 Icons) */}
-          <div className="flex flex-col items-end gap-2">
-              <div className="flex gap-1 p-1.5 bg-black/40 rounded-lg border border-white/5 shadow-inner">
-                  {Array.from({ length: 10 }).map((_, i) => {
-                      const isFilled = i < currentBatchIcons;
-                      const isNext = i === currentBatchIcons;
-                      
-                      return (
-                        <div 
-                            key={i} 
-                            className={`w-5 h-8 rounded-sm relative overflow-hidden transition-all duration-300 ${
-                                isFilled 
-                                ? 'bg-gradient-to-t from-orange-600 to-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.4)] scale-100 opacity-100' 
-                                : isActive && isNext 
-                                    ? 'bg-white/5 scale-95 opacity-50' 
-                                    : 'bg-white/5 scale-90 opacity-20'
-                            }`}
-                        >
-                            {isFilled && <div className="absolute inset-0 bg-white/20 rotate-45 translate-x-[-100%] animate-[shine_2s_infinite]" />}
-                        </div>
-                      );
-                  })}
-              </div>
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  Batch Progress
-              </div>
+          <div className="flex items-baseline justify-between">
+              <span className={`text-3xl font-black font-mono tracking-tight ${isActive ? 'text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-slate-500'}`}>
+                  {isActive ? producedItems.toLocaleString() : '-'}
+              </span>
+              <span className="text-xs text-slate-500 font-bold mb-1">
+                  / {isActive ? totalTargetItems.toLocaleString() : '-'} items
+              </span>
           </div>
+
+          {/* Slots Visualization */}
+          <div className="flex gap-2 h-12">
+            {Array.from({ length: concurrency }).map((_, i) => (
+                <div 
+                    key={i} 
+                    className={`flex-1 rounded-lg border relative overflow-hidden transition-all duration-500 ${
+                        isActive 
+                        ? 'bg-slate-800/50 border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]' 
+                        : 'bg-white/5 border-white/5 opacity-30'
+                    }`}
+                >
+                    {isActive && (
+                        <>
+                            {/* Filling Effect */}
+                            <div 
+                                className="absolute bottom-0 left-0 right-0 bg-blue-500/20 transition-all duration-100 ease-linear"
+                                style={{ height: `${batchProgress}%` }}
+                            />
+                            {/* Animated Scanner Line */}
+                            <div className="absolute top-0 left-0 right-0 h-[1px] bg-blue-400/50 shadow-[0_0_5px_rgba(59,130,246,0.8)] animate-[scan_2s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.2}s` }} />
+                            
+                            {/* Slot Label */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-[10px] font-bold text-blue-200/50">SLOT {i+1}</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            ))}
+          </div>
+
       </div>
 
       {/* Progress Bar (Bottom) */}
@@ -154,7 +150,7 @@ export default function CraftingCard({
           <div className="absolute bottom-0 left-0 h-1 bg-slate-800 w-full">
               <div 
                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-300 ease-linear"
-                style={{ width: `${batchProgress}%` }}
+                style={{ width: `${(producedItems / totalTargetItems) * 100}%` }}
               />
           </div>
       )}
