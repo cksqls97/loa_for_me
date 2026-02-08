@@ -670,16 +670,29 @@ export default function MaterialCalculator() {
                     return (
                         <div key={key} className="res-row">
                             <span style={{ fontSize: 13, fontWeight: 'bold', color }}>{label}</span>
-                            <span className="buy-val">
+                            <div style={{ textAlign: 'right' }}>
                                 {data.buyCount > 0 ? (
-                                    <>{data.buyCount}<span style={{ fontSize: 12, fontWeight: 'normal', color: '#64748b' }}>회</span></>
+                                    <>
+                                        <span className="buy-val" style={{ marginRight: 6 }}>{data.buyCount}회</span>
+                                        <span style={{ fontSize: 11, color: '#fbbf24', fontFamily: 'monospace' }}>
+                                            ({Math.floor(data.cost).toLocaleString()} G)
+                                        </span>
+                                    </>
                                 ) : (
                                     <span style={{ color: '#475569', fontSize: 14 }}>충분</span>
                                 )}
-                            </span>
+                            </div>
                         </div>
                     );
                 })}
+                {results.totalMissingCost > 0 && (
+                    <div style={{ borderTop: '1px solid #334155', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>총 구매 비용</span>
+                        <span style={{ fontSize: 16, color: '#fbbf24', fontWeight: 'bold' }}>
+                            {Math.floor(results.totalMissingCost).toLocaleString()} G
+                        </span>
+                    </div>
+                )}
             </div>
             {profitStats && (
                 <div className="profit-split-container">
