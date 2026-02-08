@@ -40,10 +40,11 @@ export default function CraftingCard({
   const isComplete = !isActive && endTime !== null && Date.now() >= endTime;
 
   useEffect(() => {
-    if (isComplete && expectedOutput !== undefined && !actualOutput) {
-       setActualOutput(Math.floor(expectedOutput).toString());
+    if (isComplete && !actualOutput) {
+       // Default to basic output (without great success prob)
+       setActualOutput(totalTargetItems.toString());
     }
-  }, [isComplete, expectedOutput]);
+  }, [isComplete, totalTargetItems]);
 
   useEffect(() => {
     if (!startTime || !endTime || !batchDuration) {
@@ -216,25 +217,48 @@ export default function CraftingCard({
                            <div className="text-[10px] text-emerald-500/60 font-medium">실제 제작된 수량을 입력해주세요</div>
                        </div>
                        
-                       <div className="flex gap-2 w-full max-w-[240px]">
-                           <div className="relative flex-1">
+                       <div className="flex gap-2 w-full max-w-[340px] items-stretch">
+                           {/* Decrease */}
+                           <button 
+                                onClick={() => {
+                                    const val = Number(actualOutput) || 0;
+                                    setActualOutput(Math.max(0, val - 10).toString());
+                                }}
+                                className="px-3 bg-black/40 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-400 transition-colors flex items-center justify-center active:scale-95"
+                           >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
+                           </button>
+
+                           <div className="relative flex-1 min-w-[80px]">
                                <input 
                                   type="number" 
                                   value={actualOutput}
                                   onChange={(e) => setActualOutput(e.target.value)}
-                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-4 py-3 text-white font-bold text-xl outline-none focus:border-emerald-500 transition-colors text-right"
+                                  className="w-full bg-black/40 border border-emerald-500/30 rounded-lg px-2 py-3 text-white font-bold text-xl outline-none focus:border-emerald-500 transition-colors text-center"
                                   autoFocus
                                />
-                               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">개</span>
                            </div>
+
+                           {/* Increase */}
+                           <button 
+                                onClick={() => {
+                                    const val = Number(actualOutput) || 0;
+                                    setActualOutput((val + 10).toString());
+                                }}
+                                className="px-3 bg-black/40 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-emerald-400 transition-colors flex items-center justify-center active:scale-95"
+                           >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                           </button>
+                           
+                           {/* Submit */}
                            <button 
                               onClick={() => {
                                   if (!actualOutput) return;
                                   onRecordResult(Number(actualOutput));
                               }}
-                              className="px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap active:scale-95"
+                              className="px-5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap active:scale-95 ml-1"
                            >
-                              기록하기
+                              기록
                            </button>
                        </div>
                        <p className="text-[10px] text-emerald-400/40 font-medium text-center max-w-[200px] leading-relaxed">
