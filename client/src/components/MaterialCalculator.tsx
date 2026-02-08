@@ -793,109 +793,91 @@ export default function MaterialCalculator() {
                 </button>
             </div>
 
-            {/* Target Slots */}
-            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '12px', marginBottom: '8px' }}>
-                <label className="label" style={{ marginBottom: 4, display: 'block', fontSize: 10, opacity: 0.7 }}>목표 제작 슬롯</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input 
-                        type="number" 
-                        value={targetSlots || ''} 
-                        onChange={(e) => setTargetSlots(Number(e.target.value) || 0)} 
-                        style={{ fontSize: 24, fontWeight: 900, width: '100%', textAlign: 'right', color: 'white' }}
-                    />
-                    <span style={{ fontSize: 12, fontWeight: 'bold', opacity: 0.5 }}>Slots</span>
+            <div>
+                <label className="label">목표 슬롯</label>
+                <div className="input-row">
+                    <input type="number" value={targetSlots || ''} onChange={(e) => setTargetSlots(Number(e.target.value) || 0)} />
                 </div>
             </div>
-
-            {/* Owned Materials */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label className="label" style={{ fontSize: 10, opacity: 0.7 }}>현재 보유량</label>
-                
-                {/* Rare */}
-                <div className="input-row" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.3)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
-                        <span style={{ color: '#3b82f6', fontSize: 12, fontWeight: 'bold' }}>희귀</span>
-                        {prices.rare > 0 && <span className="price-tag" style={{ fontSize: 9 }}>{prices.rare} G</span>}
+            <div>
+                <label className="label">보유량</label>
+                <div className="input-row" style={{ marginBottom: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
+                        <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
+                        {prices.rare > 0 && <span className="price-tag">{prices.rare.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedRare || ''} onChange={(e) => setOwnedRare(Number(e.target.value) || 0)} />
                 </div>
                 
-                {/* Uncommon */}
-                <div className="input-row" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.3)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
-                        <span style={{ color: '#10b981', fontSize: 12, fontWeight: 'bold' }}>고급</span>
-                        {prices.uncommon > 0 && <span className="price-tag" style={{ fontSize: 9 }}>{prices.uncommon} G</span>}
+                <div className="input-row" style={{ marginBottom: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
+                        <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
+                        {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedUncommon || ''} onChange={(e) => setOwnedUncommon(Number(e.target.value) || 0)} />
                 </div>
                 
-                {/* Common */}
-                <div className="input-row" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.3)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
-                        <span style={{ color: '#ffffff', fontSize: 12, fontWeight: 'bold' }}>일반</span>
-                        {prices.common > 0 && <span className="price-tag" style={{ fontSize: 9 }}>{prices.common} G</span>}
+                <div className="input-row">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
+                        <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
+                        {prices.common > 0 && <span className="price-tag">{prices.common.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedCommon || ''} onChange={(e) => setOwnedCommon(Number(e.target.value) || 0)} />
                 </div>
-            </div>
 
-            {/* Required to Buy */}
-            <div className="res-box" style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <label className="label" style={{ fontSize: 10, opacity: 0.7, marginBottom: 8, display: 'block' }}>부족재료 구매 필요</label>
+            </div>
+            <div className="res-box">
                 {[
                     { key: 'rare', label: '희귀', color: '#3b82f6' },
-                    { key: 'uncommon', label: '고급', color: '#10b981' },
+                    { key: 'uncommon', label: '고급', color: '#1eff00' },
                     { key: 'common', label: '일반', color: '#ffffff' }
                 ].map(({ key, label, color }) => {
                     const data = results[key as keyof Omit<Results, 'totalMissingCost'>] as CalculationResult;
                     if (!data) return null;
                     return (
-                        <div key={key} className="res-row" style={{ marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 'bold', color }}>{label}</span>
+                        <div key={key} className="res-row">
+                            <span style={{ fontSize: 13, fontWeight: 'bold', color }}>{label}</span>
                             <div style={{ textAlign: 'right' }}>
                                 {data.buyCount > 0 ? (
                                     <>
-                                        <span className="buy-val" style={{ marginRight: 6, fontSize: 16 }}>{data.buyCount}회</span>
-                                        <span style={{ fontSize: 10, color: '#fbbf24', fontWeight: 'bold', opacity: 0.8 }}>
+                                        <span className="buy-val" style={{ marginRight: 6 }}>{data.buyCount}회</span>
+                                        <span style={{ fontSize: 11, color: '#fbbf24', fontWeight: 'bold' }}>
                                             ({Math.floor(data.cost).toLocaleString()} G)
                                         </span>
                                     </>
                                 ) : (
-                                    <span style={{ color: '#475569', fontSize: 12 }}>충분</span>
+                                    <span style={{ color: '#475569', fontSize: 14 }}>충분</span>
                                 )}
                             </div>
                         </div>
                     );
                 })}
-            </div>
-
-            {/* Results / Profit */}
-            <div style={{ background: 'rgba(0,0,0,0.4)', borderRadius: 8, padding: 8, marginTop: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <span style={{ fontSize: 11, color: '#94a3b8' }}>총 구매 비용</span>
-                    <span style={{ fontSize: 14, color: '#fbbf24', fontWeight: 'bold' }}>
-                        {Math.floor(results.totalMissingCost).toLocaleString()} G
-                    </span>
-                </div>
-                {profitStats && (
-                    <div className="profit-split-container" style={{ marginTop: 0, border: 'none', background: 'transparent' }}>
-                        <div className="profit-split-item" style={{ padding: '4px 0', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                             <span className="profit-label" style={{ fontSize: 9 }}>판매 이익</span>
-                             <div className={`profit-val ${profitStats.sellingProfit >= 0 ? 'val-plus' : 'val-minus'}`} style={{ fontSize: 16 }}>
-                                 {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()}
-                             </div>
-                        </div>
-                        <div className="profit-split-item" style={{ padding: '4px 0' }}>
-                             <span className="profit-label" style={{ fontSize: 9 }}>사용 이익</span>
-                             <div className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`} style={{ fontSize: 16 }}>
-                                 {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
-                             </div>
-                        </div>
+                {results.totalMissingCost > 0 && (
+                    <div style={{ borderTop: '1px solid #334155', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>총 구매 비용</span>
+                        <span style={{ fontSize: 16, color: '#fbbf24', fontWeight: 'bold' }}>
+                            {Math.floor(results.totalMissingCost).toLocaleString()} G
+                        </span>
                     </div>
                 )}
             </div>
-
-            <button className="update-btn" onClick={handleUpdate} style={{ marginTop: 12 }}>제작 완료 (보유량 업데이트)</button>
+            {profitStats && (
+                <div className="profit-split-container">
+                    <div className="profit-split-item">
+                         <span className="profit-label">판매 시 (수수료 5%)</span>
+                         <div className={`profit-val ${profitStats.sellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()}
+                         </div>
+                    </div>
+                    <div className="profit-split-item">
+                         <span className="profit-label">사용 시 (수수료 없음)</span>
+                         <div className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
+                         </div>
+                    </div>
+                </div>
+            )}
+            <button className="update-btn" onClick={handleUpdate}>제작 완료 (보유량 업데이트)</button>
             {craftingState.isActive && craftingState.endTime && (
                 <div style={{ marginTop: 8, padding: 8, background: 'rgba(59, 130, 246, 0.1)', borderRadius: 8, border: '1px solid #3b82f6' }}>
                     <p style={{ margin: 0, textAlign: 'center', fontSize: 12, color: '#60a5fa', fontWeight: 'bold' }}>
