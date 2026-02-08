@@ -104,6 +104,14 @@ export default function MaterialCalculator() {
         if (typeof data.ninavBlessing === 'boolean') setNinavBlessing(data.ninavBlessing);
         if (typeof data.timeReduction === 'number') setTimeReduction(data.timeReduction);
         if (data.history) setHistory(data.history);
+        
+        // Auto-start if all configuration is present
+        if (data.apiKey && 
+            typeof data.costReduction === 'number' && 
+            typeof data.greatSuccessChance === 'number' && 
+            typeof data.timeReduction === 'number') {
+            setHasEntered(true);
+        }
       } catch (e) { console.error(e); }
     }
     setIsInitialized(true);
@@ -112,6 +120,13 @@ export default function MaterialCalculator() {
     const timer = setTimeout(() => setEnableTransition(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Revert to setup if API error occurs
+  useEffect(() => {
+    if (apiError) {
+      setHasEntered(false);
+    }
+  }, [apiError]);
 
   // Save to local storage
   useEffect(() => {
@@ -485,7 +500,7 @@ export default function MaterialCalculator() {
 
   // Animation Classes
   // Fixed: Optimized positioning to prevent overlap
-  const bonusClass = `fixed z-50 flex flex-col items-center md:items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+  const bonusClass = `fixed z-[60] flex flex-col items-center md:items-end transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 left-6 -translate-x-0 -translate-y-0 scale-100 items-start' 
       : 'top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:left-auto md:right-[52%] md:translate-x-0 md:-translate-y-1/2 scale-90 md:scale-110'
