@@ -476,6 +476,25 @@ export default function MaterialCalculator() {
         .val-minus { color: var(--color-danger); }
       `;
       win.document.head.appendChild(style);
+      // Add start button logic
+      const btnContainer = win.document.createElement('div');
+      btnContainer.className = 'res-box';
+      btnContainer.innerHTML = `
+        <div class="res-row" style="margin-top: 10px;">
+           <button id="start-craft-btn" class="update-btn" style="background: linear-gradient(to right, #3b82f6, #2563eb);">
+             제작 시작 (타이머)
+           </button>
+        </div>
+        <p id="timer-status" style="text-align: center; font-size: 11px; color: var(--color-success); margin-top: 4px; font-weight: bold;"></p>
+      `;
+      win.document.body.appendChild(btnContainer);
+
+      win.document.getElementById('start-craft-btn')?.addEventListener('click', () => {
+        if ((window as any).startCrafting) {
+            (window as any).startCrafting();
+            win.document.getElementById('timer-status')!.innerText = "제작 타이머 시작됨";
+        }
+      });
 
       win.addEventListener("pagehide", () => {
         setPipWindow(null);
@@ -486,7 +505,105 @@ export default function MaterialCalculator() {
     }
   };
 
+  // Expose function for PiP
+  useEffect(() => {
+    (window as any).startCrafting = startCrafting;
+    return () => { (window as any).startCrafting = undefined; };
+  }, [startCrafting]);
+
   const [hasEntered, setHasEntered] = useState<boolean>(false);
+
+import CraftingStatus from './CraftingStatus';
+
+// ... imports
+
+  // Crafting Timer State
+  const [craftingState, setCraftingState] = useState<{
+    isActive: boolean;
+    endTime: number | null;
+    type: MaterialType;
+    concurrency: number;
+  }>({
+    isActive: false,
+    endTime: null,
+    type: 'superior',
+    concurrency: 3
+  });
+
+  const [showCraftingStatus, setShowCraftingStatus] = useState(false);
+
+  // Timer Logic
+  useEffect(() => {
+    if (!craftingState.isActive || !craftingState.endTime) return;
+
+    const checkTimer = setInterval(() => {
+      const now = Date.now();
+      const diff = craftingState.endTime! - now;
+
+      if (diff <= 0) {
+        // Complete
+        setCraftingState(prev => ({ ...prev, isActive: false, endTime: null }));
+        setShowCraftingStatus(true);
+        
+        // Browser Notification
+        if (Notification.permission === 'granted') {
+          new Notification("제작 완료!", {
+            body: `${craftingState.type === 'abidos' ? '아비도스' : '상급 아비도스'} 융화 재료 제작이 완료되었습니다.`,
+            icon: '/icon.png' // Optional
+          });
+        }
+        
+        clearInterval(checkTimer);
+      }
+    }, 1000);
+
+    return () => clearInterval(checkTimer);
+  }, [craftingState]);
+
+  // Request Notification Permission
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  const startCrafting = () => {
+    const isNinav = ninavBlessing;
+    const concurrency = isNinav ? 4 : 3;
+    const slots = Math.max(1, targetSlots); // Total slots to craft (e.g. 10 slots = 100 items)
+    
+    // Cycles calculation: How many rounds the slots need to run
+    // e.g. 10 slots / 4 concurrency = 2.5 -> 3 cycles
+    const cycles = Math.ceil(slots / concurrency);
+
+    // Base Time
+    // Abidos: 60m (3600s), Superior: 90m (5400s)
+    const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
+    
+    // Reduction
+    // Input is percentage (e.g. 10) + Ninav 10
+    const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
+    const multiplier = Math.max(0, 1 - (totalReduction / 100)); // Prevent negative time
+    
+    const singleBatchTime = baseTimeSec * multiplier;
+    const totalTimeSec = cycles * singleBatchTime;
+
+    const endTime = Date.now() + (totalTimeSec * 1000);
+
+    setCraftingState({
+      isActive: true,
+      endTime,
+      type: activeTab,
+      concurrency
+    });
+    
+    // Also notify valid start
+    addLog(`[타이머] ${activeTab === 'abidos' ? '아비도스' : '상급'} 제작 시작 (${cycles}회 반복, 총 ${Math.floor(totalTimeSec/60)}분)`);
+    if (pipWindow) {
+        // @ts-ignore
+        pipWindow.document.getElementById('timer-status').innerText = `제작 중... (${Math.floor(totalTimeSec/60)}분)`;
+    }
+  };
 
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
   const isFullyReady = hasEntered && isPriceLoaded;
@@ -602,8 +719,13 @@ export default function MaterialCalculator() {
         apiError={apiError}
       />
 
-      {/* Main Content Layer */}
-      {/* Added pt-32 to separate from fixed title and toggle */}
+      <CraftingStatus 
+         type={craftingState.type}
+         concurrency={craftingState.concurrency}
+         isVisible={showCraftingStatus}
+         onClose={() => setShowCraftingStatus(false)}
+      />
+
       <div className={`max-w-5xl w-full relative transition-opacity duration-1000 pt-32 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         
         {view === 'calculator' ? (
