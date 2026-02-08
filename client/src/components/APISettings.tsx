@@ -35,7 +35,7 @@ export default function APISettings({
       </button>
       
       {isOpen && (
-          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'h-60 flex flex-col justify-center' : ''}`}>
+          <div className={`pointer-events-auto mt-3 w-80 bg-[var(--bg-main)]/95 backdrop-blur-xl border border-[var(--border-color)] rounded-xl p-4 shadow-2xl animate-in fade-in slide-in-from-top-4 origin-top-left ${forceExpanded ? 'flex flex-col justify-center min-h-[320px]' : ''}`}>
               <div className="flex flex-col gap-4">
                   <div>
                       <label className="block text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">Lost Ark API Key</label>
