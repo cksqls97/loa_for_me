@@ -168,7 +168,9 @@ export default function CraftingCard({
 
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-                        <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>SLOT {i+1}</span>
+                        <span className={`text-xs font-bold tracking-widest ${isComplete ? 'text-green-200/50' : 'text-blue-200/50'}`}>
+                            SLOT {i+1} {(isActive || isComplete) && <span className="text-[10px] opacity-70 ml-1">({currentCycle}/{totalCycles})</span>}
+                        </span>
                     </div>
                 </div>
             ))}
