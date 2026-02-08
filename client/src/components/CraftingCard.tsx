@@ -173,64 +173,81 @@ export default function CraftingCard({
           {/* Slots Visualization */}
           <div className="flex flex-col gap-4 min-h-0 overflow-y-auto pr-1 shrink-0">
             {Array.from({ length: concurrency }).map((_, i) => {
-                const totalCycles = Math.ceil(totalSlots / concurrency);
+                // Calculate total cycles for THIS specific row (thread)
+                const baseCycles = Math.floor(totalSlots / concurrency);
+                const remainder = totalSlots % concurrency;
+                const myTotalCycles = baseCycles + (remainder > 0 && i < remainder ? 1 : 0);
+                
+                // If this row has no work at all (e.g. slots < concurrency), it's inactive
+                const isRowRelevant = myTotalCycles > 0;
+
                 const currentElapsed = (isActive && startTime) 
                     ? Date.now() - startTime 
                     : (isComplete && startTime && endTime) 
                         ? endTime - startTime 
                         : 0;
-                const cyclesDone = Math.floor(currentElapsed / (batchDuration || 1));
-                const currentCycle = Math.min(totalCycles, cyclesDone + (isActive ? 1 : 0));
+                
+                // Global cycles done
+                const globalCyclesDone = Math.floor(currentElapsed / (batchDuration || 1));
+                
+                const isRowComplete = isComplete || (isActive && globalCyclesDone >= myTotalCycles);
+                const isRowActive = isActive && globalCyclesDone < myTotalCycles;
+                
+                const myCurrentCycle = Math.min(myTotalCycles, globalCyclesDone + 1);
 
                 return (
                 <div 
                     key={i} 
                     className={`w-full aspect-[10/1] rounded-lg border relative overflow-hidden transition-all duration-500 ${
-                        isActive || isComplete
-                        ? `bg-black/20 ${isComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
-                        : 'bg-white/5 border-white/5 opacity-30'
+                        isRowRelevant
+                            ? (isRowActive || isRowComplete)
+                                ? `bg-black/20 ${isRowComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
+                                : 'bg-white/5 border-white/5 opacity-30'
+                            : 'bg-transparent border-white/5 opacity-10 grayscale'
                     }`}
                 >
                     {/* 10-Unit Segments with Progress */}
-                    <div className="absolute inset-0 flex z-10">
-                        {Array.from({ length: 10 }).map((_, idx) => {
-                            const completedBlocks = Math.floor(batchProgress / 10);
-                            // Calculate percentage for current block (0-100%)
-                            const currentBlockPercent = (batchProgress % 10) * 10;
-                            
-                            const isDone = (isActive && idx < completedBlocks) || isComplete;
-                            const isCurrent = isActive && !isComplete && idx === completedBlocks;
+                    {isRowRelevant && (
+                        <div className="absolute inset-0 flex z-10">
+                            {Array.from({ length: 10 }).map((_, idx) => {
+                                const completedBlocks = Math.floor(batchProgress / 10);
+                                const currentBlockPercent = (batchProgress % 10) * 10;
+                                
+                                const isDone = isRowComplete || (isRowActive && idx < completedBlocks);
+                                const isCurrent = isRowActive && !isRowComplete && idx === completedBlocks;
 
-                            return (
-                                <div key={idx} className="flex-1 relative border-r border-white/5 last:border-0">
-                                    {/* Completed Segment (Green) */}
-                                    {isDone && (
-                                        <div className="absolute inset-0 bg-[var(--color-success)]/40 transition-all duration-300" />
-                                    )}
-                                    
-                                    {/* Current Active Segment (Blue Filling) */}
-                                    {isCurrent && (
-                                        <>
-                                            <div 
-                                                className="absolute top-0 bottom-0 left-0 bg-[var(--color-primary)]/40 transition-all duration-100 ease-linear"
-                                                style={{ width: `${currentBlockPercent}%` }}
-                                            />
-                                            {/* Active Line */}
-                                            <div 
-                                                className="absolute top-0 bottom-0 w-[2px] bg-[var(--color-primary)] z-20 transition-all duration-100 ease-linear"
-                                                style={{ left: `${currentBlockPercent}%` }}
-                                            />
-                                        </>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
+                                return (
+                                    <div key={idx} className="flex-1 relative border-r border-white/5 last:border-0">
+                                        {/* Completed Segment (Green) */}
+                                        {isDone && (
+                                            <div className="absolute inset-0 bg-[var(--color-success)]/40 transition-all duration-300" />
+                                        )}
+                                        
+                                        {/* Current Active Segment (Blue Filling) */}
+                                        {isCurrent && (
+                                            <>
+                                                <div 
+                                                    className="absolute top-0 bottom-0 left-0 bg-[var(--color-primary)]/40 transition-all duration-100 ease-linear"
+                                                    style={{ width: `${currentBlockPercent}%` }}
+                                                />
+                                                {/* Active Line */}
+                                                <div 
+                                                    className="absolute top-0 bottom-0 w-[2px] bg-[var(--color-primary)] z-20 transition-all duration-100 ease-linear"
+                                                    style={{ left: `${currentBlockPercent}%` }}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-                        <span className={`text-[10px] font-bold tracking-widest ${isComplete ? 'text-[var(--color-success)]/80' : 'text-[var(--color-primary)]/80'}`}>
-                            SLOT {i+1} {(isActive || isComplete) && <span className="text-[10px] opacity-70 ml-1">({currentCycle}/{totalCycles})</span>}
+                        <span className={`text-[10px] font-bold tracking-widest ${isRowComplete ? 'text-[var(--color-success)]/80' : isRowActive ? 'text-[var(--color-primary)]/80' : 'text-slate-600'}`}>
+                            SLOT {i+1} {isRowRelevant && (isRowActive || isRowComplete) && <span className="text-[10px] opacity-70 ml-1">({myCurrentCycle}/{myTotalCycles})</span>}
+                            {!isRowRelevant && <span className="text-[10px] opacity-50 ml-1">(EMPTY)</span>}
                         </span>
                     </div>
                 </div>
