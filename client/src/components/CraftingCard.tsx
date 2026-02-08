@@ -242,7 +242,7 @@ export default function CraftingCard({
                            * 기록 시 수익이 확정되며<br/>히스토리 탭에 저장됩니다.
                        </p>
                   </div>
-            ) : (
+[{"AllowMultiple":false,"EndLine":246,"ReplacementContent":"            )}\r\n            <div className={`flex flex-col gap-4 w-full transition-opacity duration-500 ${isComplete && onRecordResult ? 'invisible' : 'opacity-100'}`}>\r\n                {Array.from({ length: concurrency }).map((_, i) => {","StartLine":245,"TargetContent":"            ) : (\n                Array.from({ length: concurrency }).map((_, i) => {"},{"AllowMultiple":false,"EndLine":338,"ReplacementContent":"            ); })}\r\n            </div>","StartLine":338,"TargetContent":"            ); }) ) }"}]
                 Array.from({ length: concurrency }).map((_, i) => {
                 // Calculate total cycles for THIS specific row (thread)
                 const baseCycles = Math.floor(totalSlots / concurrency);
@@ -335,7 +335,8 @@ export default function CraftingCard({
                         </span>
                     </div>
                 </div>
-            ); }) ) }
+            ); })}
+            </div>
           </div>
 
       </div>
