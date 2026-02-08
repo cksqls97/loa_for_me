@@ -613,6 +613,13 @@ export default function MaterialCalculator() {
     addLog(`[타이머] ${activeTab === 'abidos' ? '아비도스' : '상급'} 제작 시작 (${cycles}회 반복, 총 ${Math.floor(totalTimeSec/60)}분)`);
   };
 
+  const cancelCrafting = () => {
+    if (confirm('제작을 취소하시겠습니까?')) {
+        setCraftingState(prev => ({ ...prev, isActive: false, endTime: null }));
+        addLog('[타이머] 제작 취소됨');
+    }
+  };
+
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
   const isFullyReady = hasEntered && isPriceLoaded;
 
@@ -800,6 +807,7 @@ export default function MaterialCalculator() {
                         batchDuration={craftingState.batchDuration}
                         concurrency={craftingState.concurrency}
                         totalSlots={craftingState.totalSlots}
+                        onCancel={cancelCrafting}
                     />
                 </div>
             

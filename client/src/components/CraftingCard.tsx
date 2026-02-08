@@ -8,6 +8,7 @@ interface CraftingCardProps {
   batchDuration: number | null;
   concurrency: number;
   totalSlots: number;
+  onCancel?: () => void;
 }
 
 export default function CraftingCard({ 
@@ -17,7 +18,8 @@ export default function CraftingCard({
   endTime, 
   batchDuration,
   concurrency,
-  totalSlots
+  totalSlots,
+  onCancel
 }: CraftingCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [producedItems, setProducedItems] = useState<number>(0);
@@ -116,6 +118,21 @@ export default function CraftingCard({
                   {isActive ? 'Crafting In Progress' : isComplete ? 'Crafting Complete' : 'Ready'}
                 </h3>
               </div>
+
+              {isActive && onCancel && (
+                  <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onCancel();
+                    }}
+                    className="p-2 -mr-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors group"
+                    title="제작 취소"
+                  >
+                    <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+              )}
           </div>
 
           {/* Progress & Stat Row */}
