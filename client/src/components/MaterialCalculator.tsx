@@ -518,7 +518,7 @@ export default function MaterialCalculator() {
   const titleClass = `fixed left-1/2 -translate-x-1/2 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 flex flex-col items-center whitespace-nowrap pointer-events-none ${
       hasEntered
       ? 'top-6 scale-75 opacity-100'
-      : 'top-[8%] md:top-[10%] scale-100 opacity-100'
+      : 'top-[5%] md:top-[7%] scale-100 opacity-100'
   }`;
 
   return (
@@ -531,7 +531,7 @@ export default function MaterialCalculator() {
                 : 'none' 
           }}
       >
-          <div className="absolute top-[14%] md:top-[16%] text-center space-y-3 px-4 pt-16 w-full">
+          <div className="absolute top-[10%] md:top-[12%] text-center space-y-3 px-4 pt-16 w-full">
               {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
               <p className={`text-slate-300 text-lg md:text-xl font-medium transition-all duration-500 delay-200 ${isConfigured ? 'opacity-0 -translate-y-4' : 'opacity-100 translate-y-0'}`}>
                   정확한 이득 계산을 위해 <span className="text-[var(--color-primary)] font-bold text-xl md:text-2xl decoration-wavy underline decoration-[var(--color-primary)]/30 underline-offset-4">API Key</span>와 <span className="text-[var(--color-primary)] font-bold text-xl md:text-2xl decoration-wavy underline decoration-[var(--color-primary)]/30 underline-offset-4">제작 보너스</span>를 설정해주세요.
