@@ -210,11 +210,24 @@ export default function CraftingCard({
                     {isRowRelevant && (
                         <div className="absolute inset-0 flex z-10">
                             {Array.from({ length: 10 }).map((_, idx) => {
-                                const completedBlocks = Math.floor(batchProgress / 10);
-                                const currentBlockPercent = (batchProgress % 10) * 10;
+                                const completionPage = Math.floor((isRowComplete ? Math.max(0, myTotalCycles - 1) : globalCyclesDone) / 10);
+                                const absoluteBatchIdx = idx + (completionPage * 10);
                                 
-                                const isDone = isRowComplete || (isRowActive && idx < completedBlocks);
-                                const isCurrent = isRowActive && !isRowComplete && idx === completedBlocks;
+                                const isPast = absoluteBatchIdx < globalCyclesDone;
+                                const isCurrent = !isRowComplete && absoluteBatchIdx === globalCyclesDone;
+                                const isValid = absoluteBatchIdx < myTotalCycles;
+
+                                if (!isValid) {
+                                    return (
+                                        <div key={idx} className="flex-1 relative border-r border-white/5 last:border-0 bg-transparent" />
+                                    );
+                                }
+                                
+                                const isDone = isRowComplete || isPast;
+
+                                const currentPercent = isCurrent 
+                                    ? ((currentElapsed % (batchDuration || 1)) / (batchDuration || 1)) * 100
+                                    : 0;
 
                                 return (
                                     <div key={idx} className="flex-1 relative border-r border-white/5 last:border-0">
@@ -228,12 +241,12 @@ export default function CraftingCard({
                                             <>
                                                 <div 
                                                     className="absolute top-0 bottom-0 left-0 bg-[var(--color-primary)]/40 transition-all duration-100 ease-linear"
-                                                    style={{ width: `${currentBlockPercent}%` }}
+                                                    style={{ width: `${currentPercent}%` }}
                                                 />
                                                 {/* Active Line */}
                                                 <div 
                                                     className="absolute top-0 bottom-0 w-[2px] bg-[var(--color-primary)] z-20 transition-all duration-100 ease-linear"
-                                                    style={{ left: `${currentBlockPercent}%` }}
+                                                    style={{ left: `${currentPercent}%` }}
                                                 />
                                             </>
                                         )}
