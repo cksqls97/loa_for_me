@@ -428,7 +428,7 @@ export default function MaterialCalculator() {
         .label { font-size: 11px; font-weight: bold; color: #475569; margin-bottom: 2px; display: block; }
         .input-row { display: flex; align-items: center; background: #1a1d29; border-radius: 8px; padding: 5px 10px; }
         .input-row span { font-size: 11px; font-weight: bold; }
-        input { background: transparent; border: none; color: white; text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; }
+        input { background: transparent; border: none; color: white; text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; font-family: inherit; }
         .res-box { margin-top: 5px; padding-top: 8px; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 4px; }
         .res-row { display: flex; justify-content: space-between; align-items: center; }
         .buy-val { color: #fbbf24; font-weight: 900; font-size: 20px; }
@@ -638,7 +638,7 @@ export default function MaterialCalculator() {
                 <div className="input-row" style={{ marginBottom: 4 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
-                        {prices.rare > 0 && <span className="price-tag">{prices.rare} G</span>}
+                        {prices.rare > 0 && <span className="price-tag">{prices.rare.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedRare || ''} onChange={(e) => setOwnedRare(Number(e.target.value) || 0)} />
                 </div>
@@ -646,7 +646,7 @@ export default function MaterialCalculator() {
                 <div className="input-row" style={{ marginBottom: 4 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
-                        {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon} G</span>}
+                        {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedUncommon || ''} onChange={(e) => setOwnedUncommon(Number(e.target.value) || 0)} />
                 </div>
@@ -654,7 +654,7 @@ export default function MaterialCalculator() {
                 <div className="input-row">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
                         <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
-                        {prices.common > 0 && <span className="price-tag">{prices.common} G</span>}
+                        {prices.common > 0 && <span className="price-tag">{prices.common.toLocaleString()} G</span>}
                     </div>
                     <input type="number" value={ownedCommon || ''} onChange={(e) => setOwnedCommon(Number(e.target.value) || 0)} />
                 </div>
