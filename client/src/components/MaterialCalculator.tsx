@@ -11,6 +11,7 @@ import ProfitDisplay from './ProfitDisplay';
 import ThemeSelector from './ThemeSelector';
 
 import PurchaseRequirements from './PurchaseRequirements';
+import HistoryView from './HistoryView';
 import CraftingStatus from './CraftingStatus';
 
 type MaterialType = 'abidos' | 'superior';
@@ -420,6 +421,7 @@ export default function MaterialCalculator() {
      });
 
      saveHistory();
+     startCrafting();
   };
 
   const openPip = async () => {
@@ -476,25 +478,6 @@ export default function MaterialCalculator() {
         .val-minus { color: var(--color-danger); }
       `;
       win.document.head.appendChild(style);
-      // Add start button logic
-      const btnContainer = win.document.createElement('div');
-      btnContainer.className = 'res-box';
-      btnContainer.innerHTML = `
-        <div class="res-row" style="margin-top: 10px;">
-           <button id="start-craft-btn" class="update-btn" style="background: linear-gradient(to right, #3b82f6, #2563eb);">
-             제작 시작 (타이머)
-           </button>
-        </div>
-        <p id="timer-status" style="text-align: center; font-size: 11px; color: var(--color-success); margin-top: 4px; font-weight: bold;"></p>
-      `;
-      win.document.body.appendChild(btnContainer);
-
-      win.document.getElementById('start-craft-btn')?.addEventListener('click', () => {
-        if ((window as any).startCrafting) {
-            (window as any).startCrafting();
-            win.document.getElementById('timer-status')!.innerText = "제작 타이머 시작됨";
-        }
-      });
 
       win.addEventListener("pagehide", () => {
         setPipWindow(null);
@@ -505,17 +488,11 @@ export default function MaterialCalculator() {
     }
   };
 
-  // Expose function for PiP
-  useEffect(() => {
-    (window as any).startCrafting = startCrafting;
-    return () => { (window as any).startCrafting = undefined; };
-  }, [startCrafting]);
+
 
   const [hasEntered, setHasEntered] = useState<boolean>(false);
 
-import CraftingStatus from './CraftingStatus';
 
-// ... imports
 
   // Crafting Timer State
   const [craftingState, setCraftingState] = useState<{
@@ -614,6 +591,12 @@ import CraftingStatus from './CraftingStatus';
       setHasEntered(false);
     }
   }, [hasEntered, isConfigured]);
+
+  // Expose function for PiP
+  useEffect(() => {
+    (window as any).startCrafting = startCrafting;
+    return () => { (window as any).startCrafting = undefined; };
+  }, [startCrafting]);
 
   if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
 
