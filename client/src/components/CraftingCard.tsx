@@ -157,7 +157,7 @@ export default function CraftingCard({
           </div>
 
           {/* Slots Visualization */}
-          <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto pr-1">
+          <div className={`grid ${concurrency === 4 ? 'grid-cols-2' : 'grid-cols-3'} gap-3 min-h-0 overflow-y-auto pr-1`}>
             {Array.from({ length: concurrency }).map((_, i) => {
                 const totalCycles = Math.ceil(totalSlots / concurrency);
                 const currentElapsed = (isActive && startTime) 
@@ -171,7 +171,7 @@ export default function CraftingCard({
                 return (
                 <div 
                     key={i} 
-                    className={`w-full flex-1 min-h-[3.5rem] rounded-lg border relative overflow-hidden transition-all duration-500 ${
+                    className={`w-full aspect-square rounded-lg border relative overflow-hidden transition-all duration-500 ${
                         isActive || isComplete
                         ? `bg-black/20 ${isComplete ? 'border-[var(--color-success)]/30 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]' : 'border-[var(--color-primary)]/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)]'}` 
                         : 'bg-white/5 border-white/5 opacity-30'
