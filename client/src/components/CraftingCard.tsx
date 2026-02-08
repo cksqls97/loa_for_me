@@ -180,6 +180,16 @@ export default function CraftingCard({
                       </div>
                   </div>
               )}
+
+              {/* Hourly Profit (Overlay Only) */}
+              {hourlyProfit !== undefined && (
+                <div className="mt-2 pt-3 border-t border-white/5 flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">시간당 수익</span>
+                    <span className={`text-sm font-bold font-mono ${hourlyProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {Math.floor(hourlyProfit).toLocaleString()} <span className="text-[10px] opacity-70">G/h</span>
+                    </span>
+                </div>
+              )}
           </div>
 
           {/* Slots Visualization */}
