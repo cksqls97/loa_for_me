@@ -1,27 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { LostArkService } from '../services/lostark';
-import { LOGGING_MATERIALS } from '../constants/items';
+import { COSTS, MaterialType } from '../constants/gameData';
 import { useMarketPrices } from '../hooks/useMarketPrices';
+import { usePipWindow } from '../hooks/usePipWindow';
+import { useCraftingTimer } from '../hooks/useCraftingTimer';
+import { useCraftingHistory } from '../hooks/useCraftingHistory';
+
 import BonusSettings from './BonusSettings';
 import APISettings from './APISettings';
 import MaterialInputs from './MaterialInputs';
 import ProfitDisplay from './ProfitDisplay';
 import ThemeSelector from './ThemeSelector';
-
 import PurchaseRequirements from './PurchaseRequirements';
 import HistoryView from './HistoryView';
-import CraftingStatus from './CraftingStatus';
 import CraftingCard from './CraftingCard';
-
-type MaterialType = 'abidos' | 'superior';
-
-const COSTS: Record<MaterialType, { rare: number, uncommon: number, common: number, gold: number }> = {
-  abidos: { rare: 33, uncommon: 45, common: 86, gold: 400 },
-  superior: { rare: 43, uncommon: 59, common: 112, gold: 520 }
-};
 
 interface CalculationResult {
   buyCount: number;
@@ -37,18 +31,6 @@ interface Results {
   totalMissingCost: number;
 }
 
-interface CraftingEntry {
-  id: string;
-  timestamp: number;
-  type: MaterialType;
-  unitCost: number;
-  totalCost: number;
-  expectedOutput: number;
-  expectedProfit: number;
-  actualOutput?: number;
-  actualProfit?: number;
-}
-
 export default function MaterialCalculator() {
   const [activeTab, setActiveTab] = useState<MaterialType>('superior');
   const [targetSlots, setTargetSlots] = useState<number>(1);
@@ -56,7 +38,6 @@ export default function MaterialCalculator() {
   const [ownedUncommon, setOwnedUncommon] = useState<number>(0);
   const [ownedCommon, setOwnedCommon] = useState<number>(0);
   
-  // API Integration State
   // API Integration State
   const [apiKey, setApiKey] = useState<string>('');
   
@@ -77,14 +58,19 @@ export default function MaterialCalculator() {
   const [ninavBlessing, setNinavBlessing] = useState<boolean>(false);
   const [timeReduction, setTimeReduction] = useState<number | null>(null);
 
-  const [pipWindow, setPipWindow] = useState<Window | null>(null);
+  // Custom Hooks
+  const { pipWindow, openPip } = usePipWindow();
+  
+  const { history, setHistory, updateHistoryEntry, deleteHistory, clearHistory, saveHistory, handleRecordResult } = useCraftingHistory([]);
+
+  const { craftingState, startCrafting, cancelCrafting, setCraftingState } = useCraftingTimer(addLog);
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [enableTransition, setEnableTransition] = useState<boolean>(false);
   
-  // History State
+  // View State
   const [view, setView] = useState<'calculator' | 'history'>('calculator');
-  const [history, setHistory] = useState<CraftingEntry[]>([]);
+  const [hasEntered, setHasEntered] = useState<boolean>(false);
 
   // Load from local storage
   useEffect(() => {
@@ -118,9 +104,7 @@ export default function MaterialCalculator() {
     // Enable transitions after initial render to prevent flash
     const timer = setTimeout(() => setEnableTransition(true), 100);
     return () => clearTimeout(timer);
-  }, []);
-
-
+  }, [setHistory]);
 
   // Save to local storage
   useEffect(() => {
@@ -139,8 +123,6 @@ export default function MaterialCalculator() {
     };
     localStorage.setItem('matCalcData', JSON.stringify(data));
   }, [targetSlots, ownedRare, ownedUncommon, ownedCommon, activeTab, apiKey, costReduction, greatSuccessChance, ninavBlessing, timeReduction, history]);
-
-
 
   const results: Results = useMemo(() => {
     const slots = Math.max(0, targetSlots);
@@ -169,17 +151,14 @@ export default function MaterialCalculator() {
       const slots = Math.max(0, targetSlots);
       if (slots === 0) return null;
 
-      // Price check to avoid initial negative values
       const currentRecipe = COSTS[activeTab];
       const fusionKey = activeTab === 'abidos' ? 'fusion' : 'superiorFusion';
       const outputPrice = prices[fusionKey as keyof typeof prices];
       
-      // If output price or material prices are 0, return null (loading or no data)
       if (!outputPrice) return null;
       if (prices.rare === 0 || prices.uncommon === 0 || prices.common === 0) return null;
 
-      
-      // 1. Material Cost (for ALL slots)
+      // 1. Material Cost
       let totalMaterialCost = 0;
       (['rare', 'uncommon', 'common'] as const).forEach(key => {
           const needed = currentRecipe[key] * slots;
@@ -190,18 +169,16 @@ export default function MaterialCalculator() {
       });
 
       // 2. Gold Cost
-      // Apply reduction: Gold * (1 - reduction/100)
       const baseGold = currentRecipe.gold * slots;
       const reductionMult = 1 - ((costReduction || 0) / 100);
       const totalGoldCost = baseGold * reductionMult;
 
       // 3. Expected Revenue
       const baseProb = 0.05;
-      const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100)); // e.g. 0.05 * 1.07 = 0.0535
+      const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100));
       const expectedOutputPerSlot = 10 * (1 + finalProb);
       const totalExpectedOutput = expectedOutputPerSlot * slots;
 
-      // Price of output
       const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
       const outputUnitPrice = outputPrice / outputBundle; 
 
@@ -211,31 +188,24 @@ export default function MaterialCalculator() {
       const totalCost = totalMaterialCost + totalGoldCost;
 
       // Profit Calculation
-      // Selling Profit: 5% Tax on Revenue
       const sellingRevenue = grossRevenue * 0.95;
       const sellingProfit = sellingRevenue - totalCost;
 
-      // Usage Profit: No Tax
       const usageProfit = grossRevenue - totalCost;
       
-      // Time / Hourly Calculation
-      // Calculate based on steady state (full batches), ignoring remainders as requested.
+      // Hourly Calculation
       const isNinav = ninavBlessing;
       const currentConcurrency = isNinav ? 4 : 3;
 
-      // Calculate Per-Slot Profit (derived from totals since they are linear)
       const effectiveSlots = slots || 1;
       const sellingProfitPerSlot = sellingProfit / effectiveSlots;
       const usageProfitPerSlot = usageProfit / effectiveSlots;
       
-      // Batch Time (Time to craft 'currentConcurrency' slots)
-      const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
+      const baseTimeSec = activeTab === 'abidos' ? 3600 : 4500;
       const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
       const timeMultiplier = Math.max(0, 1 - (totalReduction / 100));
       const batchTimeSec = baseTimeSec * timeMultiplier;
       
-      // Hourly Profit (Projected)
-      // We produce 'currentConcurrency' slots every 'batchTimeSec' seconds.
       const batchSellingProfit = sellingProfitPerSlot * currentConcurrency;
       const batchUsageProfit = usageProfitPerSlot * currentConcurrency;
 
@@ -256,111 +226,6 @@ export default function MaterialCalculator() {
       };
   }, [targetSlots, activeTab, prices, bundleCounts, costReduction, greatSuccessChance, ninavBlessing, timeReduction]);
 
-  const saveHistory = useCallback(() => {
-    // Calculate Unit Cost based on Standard Recipe (ignoring owned counts)
-    // 1. Current Price specific to activeTab
-    const currentRecipe = COSTS[activeTab];
-    const slots = targetSlots;
-    if (slots <= 0) return;
-
-    // Material Cost
-    let matCost = 0;
-    (['rare', 'uncommon', 'common'] as const).forEach(key => {
-       const needed = currentRecipe[key] * slots;
-       const price = prices[key];
-       const bundle = bundleCounts[key] || 1;
-       const unitPrice = price / bundle;
-       matCost += needed * unitPrice;
-    });
-
-    // Gold Cost
-    const baseGold = currentRecipe.gold * slots;
-    const reductionMult = 1 - ((costReduction || 0) / 100);
-    const goldCost = baseGold * reductionMult;
-
-    const totalCost = matCost + goldCost;
-
-    // Expected Output
-    // Output per slot = 10 * (1 + prob)
-    const baseProb = 0.05;
-    const finalProb = baseProb * (1 + ((greatSuccessChance || 0) / 100));
-    const outputPerSlot = 10 * (1 + finalProb);
-    const expectedOutput = outputPerSlot * slots;
-
-    // Unit Cost
-    const unitCost = totalCost / expectedOutput;
-
-    // Expected Profit
-    const fusionKey = activeTab === 'abidos' ? 'fusion' : 'superiorFusion';
-    const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
-    const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
-    const outputUnitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
-    
-    // Revenue (Net after 5% tax)
-    const totalRevenue = (expectedOutput * outputUnitPrice) * 0.95;
-    const expectedProfit = totalRevenue - totalCost;
-
-    addLog(`[디버그] ${fusionKey} 가격: ${outputPrice}, 번들: ${outputBundle}, 개당가격: ${outputUnitPrice}, 예상수익: ${expectedProfit}`);
-
-    const newEntry: CraftingEntry = {
-      id: crypto.randomUUID(),
-      timestamp: Date.now(),
-      type: activeTab,
-      unitCost,
-      totalCost,
-      expectedOutput,
-      expectedProfit
-    };
-
-    setHistory(prev => [newEntry, ...prev]);
-    addLog(`[기록] 제작 완료 - 이익: ${Math.floor(expectedProfit).toLocaleString()}G`);
-  }, [activeTab, targetSlots, prices, bundleCounts, costReduction, greatSuccessChance]);
-
-  const deleteHistory = (id: string) => {
-    setHistory(prev => prev.filter(entry => entry.id !== id));
-  };
-
-  const updateHistoryEntry = (id: string, actualCount: number) => {
-      setHistory(prev => prev.map(entry => {
-          if (entry.id !== id) return entry;
-          
-          const fusionKey = entry.type === 'abidos' ? 'fusion' : 'superiorFusion';
-          const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
-          const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
-          const unitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
-          
-          const actualRevenue = (actualCount * unitPrice) * 0.95;
-          const actualProfit = actualRevenue - entry.totalCost;
-          
-          return { ...entry, actualOutput: actualCount, actualProfit };
-      }));
-  };
-
-  const clearHistory = () => {
-    if (confirm('정말 모든 기록을 삭제하시겠습니까?')) {
-      setHistory([]);
-    }
-  };
-
-  const handleRecordResult = (actualCount: number) => {
-      setHistory(prev => {
-          if (prev.length === 0) return prev;
-          const latest = prev[0];
-          
-          const fusionKey = latest.type === 'abidos' ? 'fusion' : 'superiorFusion';
-          const outputPrice = prices[fusionKey as keyof typeof prices] || 0;
-          const outputBundle = bundleCounts[fusionKey as keyof typeof bundleCounts] || 1;
-          const unitPrice = outputBundle > 0 ? (outputPrice / outputBundle) : 0;
-          
-          const actualRevenue = (actualCount * unitPrice) * 0.95;
-          const actualProfit = actualRevenue - latest.totalCost;
-          
-          const updated = { ...latest, actualOutput: actualCount, actualProfit };
-          return [updated, ...prev.slice(1)];
-      });
-      alert(`[기록 완료] 실제 결과 ${actualCount}개가 저장되었습니다.`);
-  };
-   
   const handleUpdate = () => {
      setOwnedRare(prev => {
         const data = results.rare;
@@ -375,203 +240,14 @@ export default function MaterialCalculator() {
         return (prev + (data.buyCount * data.bundleSize)) - data.needed;
      });
 
-     saveHistory();
-     startCrafting();
-  };
-
-  const openPip = async () => {
-    if (!('documentPictureInPicture' in window)) {
-      alert("PiP 미지원");
-      return;
-    }
-    try {
-      // @ts-ignore
-      const win = await window.documentPictureInPicture.requestWindow({ width: 360, height: 600 });
-      setPipWindow(win);
-
-      // Get current theme variables
-      const computedStyle = getComputedStyle(document.body);
-      
-      const style = document.createElement('style');
-      style.textContent = `
-        :root {
-          --bg-main: ${computedStyle.getPropertyValue('--bg-main')};
-          --bg-panel: ${computedStyle.getPropertyValue('--bg-panel')};
-          --text-primary: ${computedStyle.getPropertyValue('--text-primary')};
-          --text-secondary: ${computedStyle.getPropertyValue('--text-secondary')};
-          --color-primary: ${computedStyle.getPropertyValue('--color-primary')};
-          --color-secondary: ${computedStyle.getPropertyValue('--color-secondary')};
-          --color-accent: ${computedStyle.getPropertyValue('--color-accent')};
-          --color-success: ${computedStyle.getPropertyValue('--color-success')};
-          --color-danger: ${computedStyle.getPropertyValue('--color-danger')};
-          --border-color: ${computedStyle.getPropertyValue('--border-color')};
-        }
-        * { box-sizing: border-box; }
-        body { background: var(--bg-main); color: var(--text-primary); font-family: 'Pretendard', sans-serif; padding: 12px 10px; margin: 0; overflow: hidden; transition: background 0.5s; }
-        .container { display: flex; flex-direction: column; gap: 8px; }
-        .tab-box { display: flex; background: var(--bg-panel); border-radius: 8px; padding: 2px; margin-bottom: 5px; }
-        .tab-btn { flex: 1; padding: 6px; border: none; background: transparent; color: var(--text-secondary); font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 6px; }
-        .tab-btn.active.abidos { background: var(--color-primary); color: white; }
-        .tab-btn.active.superior { background: var(--color-secondary); color: white; }
-        .label { font-size: 11px; font-weight: bold; color: var(--text-secondary); margin-bottom: 2px; display: block; }
-        .input-row { display: flex; align-items: center; background: var(--bg-panel); border-radius: 8px; padding: 5px 10px; border: 1px solid var(--border-color); }
-        .input-row span { font-size: 11px; font-weight: bold; }
-        input { background: transparent; border: none; color: var(--text-primary); text-align: right; font-weight: 900; width: 100%; outline: none; font-size: 16px; font-family: inherit; }
-        .res-box { margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px; }
-        .res-row { display: flex; justify-content: space-between; align-items: center; }
-        .buy-val { color: var(--color-accent); font-weight: 900; font-size: 20px; }
-        .update-btn { width: 100%; padding: 10px; background: linear-gradient(to right, var(--color-primary), var(--color-secondary)); color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 8px; cursor: pointer; }
-        .update-btn:active { filter: brightness(0.9); transform: scale(0.98); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .price-tag { font-size: 10px; color: var(--text-secondary); font-weight: bold; }
-        .profit-split-container { display: flex; background: var(--bg-panel); border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid var(--border-color); }
-        .profit-split-item { flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .profit-split-item:first-child { border-right: 1px solid var(--border-color); }
-        .profit-label { font-size: 10px; color: var(--text-secondary); font-weight: bold; margin-bottom: 4px; }
-        .profit-val { font-size: 18px; font-weight: 900; line-height: 1; }
-        .val-plus { color: var(--color-success); }
-        .val-minus { color: var(--color-danger); }
-      `;
-      win.document.head.appendChild(style);
-
-      win.addEventListener("pagehide", () => {
-        setPipWindow(null);
-      });
-    } catch (e) {
-      console.error(e);
-      alert("PiP 실행 실패");
-    }
-  };
-
-
-
-  const [hasEntered, setHasEntered] = useState<boolean>(false);
-
-
-
-
-  // Crafting Timer State
-  const [craftingState, setCraftingState] = useState<{
-    isActive: boolean;
-    startTime: number | null;
-    endTime: number | null;
-    batchDuration: number | null;
-    type: MaterialType;
-    concurrency: number;
-    totalSlots: number;
-  }>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('craftingState');
-      if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch (e) { console.error('Failed to parse craftingState', e); }
-      }
-    }
-    return {
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      batchDuration: null,
-      type: 'superior',
-      concurrency: 3,
-      totalSlots: 0
-    };
-  });
-
-  useEffect(() => {
-    localStorage.setItem('craftingState', JSON.stringify(craftingState));
-  }, [craftingState]);
-
-  // const [showCraftingStatus, setShowCraftingStatus] = useState(false); // Removed
-
-  // Timer Logic
-  useEffect(() => {
-    if (!craftingState.isActive || !craftingState.endTime) return;
-
-    const checkTimer = setInterval(() => {
-      const now = Date.now();
-      const diff = craftingState.endTime! - now;
-
-      if (diff <= 0) {
-        // Complete
-        setCraftingState(prev => ({ ...prev, isActive: false })); // Keep endTime to show completion status
-        
-        // Browser Notification
-        if (Notification.permission === 'granted') {
-          new Notification("제작 완료!", {
-            body: `${craftingState.type === 'abidos' ? '아비도스' : '상급 아비도스'} 융화 재료 제작이 완료되었습니다.`,
-            icon: '/icon.png' // Optional
-          });
-        }
-        
-        clearInterval(checkTimer);
-      }
-    }, 1000);
-
-    return () => clearInterval(checkTimer);
-  }, [craftingState]);
-
-  // Request Notification Permission
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  const startCrafting = () => {
-    const isNinav = ninavBlessing;
-    const concurrency = isNinav ? 4 : 3;
-    const slots = Math.max(1, targetSlots); // Total slots to craft (e.g. 10 slots = 100 items)
-    
-    // Cycles calculation: How many rounds the slots need to run
-    // e.g. 10 slots / 4 concurrency = 2.5 -> 3 cycles
-    const cycles = Math.ceil(slots / concurrency);
-
-    // Base Time
-    // Abidos: 60m (3600s), Superior: 90m (5400s)
-    const baseTimeSec = activeTab === 'abidos' ? 3600 : 5400;
-    
-    // Reduction
-    // Input is percentage (e.g. 10) + Ninav 10
-    const totalReduction = (timeReduction || 0) + (isNinav ? 10 : 0);
-    const multiplier = Math.max(0, 1 - (totalReduction / 100)); // Prevent negative time
-    
-    // Batch Time (Time for 1 cycle)
-    const singleBatchTime = baseTimeSec * multiplier;
-    const batchDuration = singleBatchTime * 1000;
-    
-    // Total Time
-    const totalTimeSec = cycles * singleBatchTime;
-
-    const now = Date.now();
-    const endTime = now + (totalTimeSec * 1000);
-
-    setCraftingState({
-      isActive: true,
-      startTime: now,
-      endTime,
-      batchDuration,
-      type: activeTab,
-      concurrency,
-      totalSlots: slots
-    });
-    
-    // Also notify valid start
-    addLog(`[타이머] ${activeTab === 'abidos' ? '아비도스' : '상급'} 제작 시작 (${cycles}회 반복, 총 ${Math.floor(totalTimeSec/60)}분)`);
-  };
-
-  const cancelCrafting = () => {
-    if (confirm('제작을 취소하시겠습니까?')) {
-        setCraftingState(prev => ({ ...prev, isActive: false, endTime: null }));
-        addLog('[타이머] 제작 취소됨');
-    }
+     saveHistory(activeTab, targetSlots, prices, bundleCounts, costReduction, greatSuccessChance, addLog);
+     startCrafting(activeTab, targetSlots, ninavBlessing, timeReduction);
   };
 
   const isConfigured = !!apiKey && costReduction !== null && greatSuccessChance !== null && timeReduction !== null && !apiError;
   const isFullyReady = hasEntered && isPriceLoaded;
 
-  // Revert to setup if configuration becomes invalid (API Error or Missing Fields)
+  // Revert to setup if configuration becomes invalid
   useEffect(() => {
     if (hasEntered && !isConfigured) {
       setHasEntered(false);
@@ -580,15 +256,13 @@ export default function MaterialCalculator() {
 
   // Expose function for PiP
   useEffect(() => {
-    (window as any).startCrafting = startCrafting;
+    (window as any).startCrafting = () => startCrafting(activeTab, targetSlots, ninavBlessing, timeReduction);
     return () => { (window as any).startCrafting = undefined; };
-  }, [startCrafting]);
+  }, [startCrafting, activeTab, targetSlots, ninavBlessing, timeReduction]);
 
   if (!isInitialized) return <div className="min-h-screen bg-[var(--bg-main)]" />;
 
   // Animation Classes
-  // Fixed: Enhanced smooth transitions and centered positioning
-  // Removed sudden alignment changes (items-*) to prevent layout jumps
   const bonusClass = `fixed z-[60] flex flex-col transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
       hasEntered 
       ? 'top-6 left-6 scale-100 items-start translate-x-0 translate-y-0' 
@@ -618,13 +292,11 @@ export default function MaterialCalculator() {
           }}
       >
           <div className="absolute top-[10%] md:top-[12%] text-center space-y-3 px-4 pt-16 w-full">
-              {/* Title Placeholder to keep spacing for subtext if needed, or just remove title from here */}
               <p className={`text-slate-300 text-lg md:text-xl font-medium transition-all duration-500 delay-200 ${isConfigured ? 'opacity-0 -translate-y-4' : 'opacity-100 translate-y-0'}`}>
                   정확한 이득 계산을 위해 <span className="text-[var(--color-primary)] font-bold text-xl md:text-2xl decoration-wavy underline decoration-[var(--color-primary)]/30 underline-offset-4">API Key</span>와 <span className="text-[var(--color-primary)] font-bold text-xl md:text-2xl decoration-wavy underline decoration-[var(--color-primary)]/30 underline-offset-4">제작 보너스</span>를 설정해주세요.
               </p>
           </div>
           
-          {/* Manual Entry Button */}
           <div className={`absolute bottom-10 md:bottom-24 left-1/2 -translate-x-1/2 transition-all duration-700 pointer-events-auto z-[100] ${isConfigured ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
                <button 
                   onClick={() => setHasEntered(true)}
@@ -640,13 +312,11 @@ export default function MaterialCalculator() {
           </div>
       </div>
 
-      {/* Animated Title */}
       <div className={titleClass}>
             <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] tracking-tighter drop-shadow-2xl flex items-center gap-2 mb-4">
                 <span className="text-[var(--color-primary)]">Lost Ark</span> Material Calculator
             </h1>
             
-            {/* View Toggle */}
             <div className={`flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 transition-all duration-500 delay-200 pointer-events-auto ${hasEntered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                 <button 
                   onClick={() => setView('calculator')}
@@ -663,7 +333,6 @@ export default function MaterialCalculator() {
             </div>
       </div>
 
-      {/* Settings Layer */}
       <BonusSettings 
         costReduction={costReduction}
         setCostReduction={setCostReduction}
@@ -680,15 +349,13 @@ export default function MaterialCalculator() {
       <APISettings 
         apiKey={apiKey}
         setApiKey={setApiKey}
-        fetchPrices={fetchPrices}
+        fetchPrices={(key) => fetchPrices(key)}
         isLoading={isLoading}
         logs={logs}
         className={apiClass}
         forceExpanded={!hasEntered}
         apiError={apiError}
       />
-
-
 
       <div className={`max-w-5xl w-full relative transition-opacity duration-1000 pt-32 ${isFullyReady ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none h-0 overflow-hidden'}`}>
         
@@ -731,7 +398,7 @@ export default function MaterialCalculator() {
 
                 <div className="pt-4 border-t border-white/5 mt-4">
                     <button 
-                        onClick={openPip} 
+                        onClick={() => openPip(activeTab, setActiveTab)} 
                         className="w-full py-3 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] hover:brightness-110 text-white rounded-xl font-bold transition-all shadow-xl shadow-[var(--color-primary)]/20 active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                     >
                         <span>오버레이 실행</span>
@@ -740,7 +407,17 @@ export default function MaterialCalculator() {
                         </svg>
                     </button>
                     
-                    <ProfitDisplay profitStats={profitStats} />
+                    {profitStats && (
+                        <div className="mt-4">
+                            <button 
+                                onClick={handleUpdate}
+                                className="w-full py-3 bg-[var(--bg-main)] hover:bg-black/40 border border-white/10 hover:border-[var(--color-success)]/50 text-[var(--color-success)] rounded-xl font-bold transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 mb-4"
+                            >
+                                <span>재료 차감 및 제작 시작</span>
+                            </button>
+                            <ProfitDisplay profitStats={profitStats} />
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -758,7 +435,7 @@ export default function MaterialCalculator() {
                   onCancel={cancelCrafting}
                   hourlyProfit={Math.floor(profitStats?.hourlySellingProfit || 0)}
                   expectedOutput={profitStats?.outputQty || 0}
-                  onRecordResult={handleRecordResult}
+                  onRecordResult={(count) => handleRecordResult(count, prices, bundleCounts)}
                 />
                 </div>
             
@@ -774,13 +451,11 @@ export default function MaterialCalculator() {
             history={history} 
             onDelete={deleteHistory} 
             onClear={clearHistory}
-            onUpdateEntry={updateHistoryEntry}
+            onUpdateEntry={(id, count) => updateHistoryEntry(id, count, prices, bundleCounts)}
           />
         )}
-
       </div>
 
-      {/* Theme Selector - Bottom Right Fixed */}
       <div className={`fixed bottom-6 right-6 z-50 transition-all duration-500 delay-500 ${hasEntered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
           <ThemeSelector />
       </div>
@@ -800,99 +475,66 @@ export default function MaterialCalculator() {
                 >
                     상급 아비도스
                 </button>
-            </div>
+             </div>
+             
+             <div className="res-box">
+                  <div className="res-row">
+                      <span className="label">희귀 (33/43)</span>
+                      <span className="price-tag">{prices.rare}G</span>
+                  </div>
+                  <div className="res-row">
+                     <span className="label text-xs">필요: {results.rare.needed}</span>
+                     <span className="buy-val">{results.rare.buyCount}</span>
+                  </div>
+             </div>
+             <div className="res-box">
+                  <div className="res-row">
+                      <span className="label">고급 (45/59)</span>
+                      <span className="price-tag">{prices.uncommon}G</span>
+                  </div>
+                  <div className="res-row">
+                     <span className="label text-xs">필요: {results.uncommon.needed}</span>
+                     <span className="buy-val">{results.uncommon.buyCount}</span>
+                  </div>
+             </div>
+             <div className="res-box">
+                  <div className="res-row">
+                      <span className="label">일반 (86/112)</span>
+                      <span className="price-tag">{prices.common}G</span>
+                  </div>
+                  <div className="res-row">
+                     <span className="label text-xs">필요: {results.common.needed}</span>
+                     <span className="buy-val">{results.common.buyCount}</span>
+                  </div>
+             </div>
 
-            <div>
-                <label className="label">목표 슬롯</label>
-                <div className="input-row">
-                    <input type="number" value={targetSlots || ''} onChange={(e) => setTargetSlots(Number(e.target.value) || 0)} />
-                </div>
-            </div>
-            <div>
-                <label className="label">보유량</label>
-                <div className="input-row" style={{ marginBottom: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
-                        <span style={{ color: '#3b82f6', fontSize: 13, fontWeight: 'bold' }}>희귀</span>
-                        {prices.rare > 0 && <span className="price-tag">{prices.rare.toLocaleString()} G</span>}
-                    </div>
-                    <input type="number" value={ownedRare || ''} onChange={(e) => setOwnedRare(Number(e.target.value) || 0)} />
-                </div>
-                
-                <div className="input-row" style={{ marginBottom: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
-                        <span style={{ color: '#1eff00', fontSize: 13, fontWeight: 'bold' }}>고급</span>
-                        {prices.uncommon > 0 && <span className="price-tag">{prices.uncommon.toLocaleString()} G</span>}
-                    </div>
-                    <input type="number" value={ownedUncommon || ''} onChange={(e) => setOwnedUncommon(Number(e.target.value) || 0)} />
-                </div>
-                
-                <div className="input-row">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 100 }}>
-                        <span style={{ color: '#ffffff', fontSize: 13, fontWeight: 'bold' }}>일반</span>
-                        {prices.common > 0 && <span className="price-tag">{prices.common.toLocaleString()} G</span>}
-                    </div>
-                    <input type="number" value={ownedCommon || ''} onChange={(e) => setOwnedCommon(Number(e.target.value) || 0)} />
-                </div>
+             <div className="res-box">
+                 <span className="label">부족분 구매 비용</span>
+                 <span className="buy-val" style={{color: 'var(--color-danger)'}}>
+                     {results.totalMissingCost.toLocaleString()} G
+                 </span>
+             </div>
 
-            </div>
-            <div className="res-box">
-                {[
-                    { key: 'rare', label: '희귀', color: '#3b82f6' },
-                    { key: 'uncommon', label: '고급', color: '#1eff00' },
-                    { key: 'common', label: '일반', color: '#ffffff' }
-                ].map(({ key, label, color }) => {
-                    const data = results[key as keyof Omit<Results, 'totalMissingCost'>] as CalculationResult;
-                    if (!data) return null;
-                    return (
-                        <div key={key} className="res-row">
-                            <span style={{ fontSize: 13, fontWeight: 'bold', color }}>{label}</span>
-                            <div style={{ textAlign: 'right' }}>
-                                {data.buyCount > 0 ? (
-                                    <>
-                                        <span className="buy-val" style={{ marginRight: 6 }}>{data.buyCount}회</span>
-                                        <span style={{ fontSize: 11, color: '#fbbf24', fontWeight: 'bold' }}>
-                                            ({Math.floor(data.cost).toLocaleString()} G)
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span style={{ color: '#475569', fontSize: 14 }}>충분</span>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-                {results.totalMissingCost > 0 && (
-                    <div style={{ borderTop: '1px solid #334155', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: 12, color: '#94a3b8' }}>총 구매 비용</span>
-                        <span style={{ fontSize: 16, color: '#fbbf24', fontWeight: 'bold' }}>
-                            {Math.floor(results.totalMissingCost).toLocaleString()} G
-                        </span>
-                    </div>
-                )}
-            </div>
-            {profitStats && (
-                <div className="profit-split-container">
-                    <div className="profit-split-item">
-                         <span className="profit-label">판매 시 (수수료 5%)</span>
-                         <div className={`profit-val ${profitStats.sellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
-                             {profitStats.sellingProfit >= 0 ? '+' : ''}{Math.floor(profitStats.sellingProfit).toLocaleString()}
-                         </div>
-                    </div>
-                    <div className="profit-split-item">
-                         <span className="profit-label">사용 시 (수수료 없음)</span>
-                         <div className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
-                             {profitStats.usageProfit >= 0 ? '+' : ''}{Math.floor(profitStats.usageProfit).toLocaleString()}
-                         </div>
-                    </div>
-                    <div className="profit-split-item">
-                         <span className="profit-label">시간당 수익</span>
-                         <div className={`profit-val ${profitStats.hourlySellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
-                             {Math.floor(profitStats.hourlySellingProfit).toLocaleString()} G/h
-                         </div>
-                    </div>
-                </div>
-            )}
-            <button className="update-btn" onClick={handleUpdate}>제작 예약 완료 (보유량 업데이트)</button>
+             <button className="update-btn" onClick={handleUpdate}>
+                 차감 및 제작 시작
+             </button>
+
+             {profitStats && (
+                 <div className="profit-split-container">
+                     <div className="profit-split-item">
+                         <span className="profit-label">판매 수익</span>
+                         <span className={`profit-val ${profitStats.sellingProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {Math.floor(profitStats.sellingProfit).toLocaleString()}
+                         </span>
+                     </div>
+                     <div className="profit-split-item">
+                         <span className="profit-label">사용 수익</span>
+                         <span className={`profit-val ${profitStats.usageProfit >= 0 ? 'val-plus' : 'val-minus'}`}>
+                             {Math.floor(profitStats.usageProfit).toLocaleString()}
+                         </span>
+                     </div>
+                 </div>
+             )}
         </div>,
         pipWindow.document.body
       )}
