@@ -356,7 +356,7 @@ export default function CraftingCard({
                     {/* Slot Label Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <span className={`text-[10px] font-bold tracking-widest ${isRowComplete ? 'text-[var(--color-success)]/80' : isRowActive ? 'text-[var(--color-primary)]/80' : 'text-slate-600'}`}>
-                            슬롯 {i+1} {isRowRelevant && (isRowActive || isRowComplete) && <span className="text-[10px] opacity-70 ml-1">({myCurrentCycle}/{myTotalCycles})</span>}
+                            슬롯 {i+1} {isRowRelevant && (isRowActive || isRowComplete) && <span className="text-[10px] opacity-70 ml-1">({Math.min(myTotalCycles, globalCyclesDone)}/{myTotalCycles})</span>}
                             {!isRowRelevant && <span className="text-[10px] opacity-50 ml-1">(빈 슬롯)</span>}
                         </span>
                     </div>
